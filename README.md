@@ -11,6 +11,7 @@ This over-complication makes writing simple bytecode-generating utilities more d
 While such tools are undoubtedly useful (and appropriate in many situations) users can develop an unnecessary dependency on them and find themselves incapable of designing the bytecode without the tool to do it for them.
 
 Foundation is designed to set a balance between doing too much and too little, while also providing a builder method to make the process cleaner.
+Foundation uses [ASM](https://asm.ow2.io) internally to create the bytecode and automatically calculate stack map frames and sizes.
 
 ### Maven Information
 
