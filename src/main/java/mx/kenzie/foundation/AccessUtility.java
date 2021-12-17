@@ -1,13 +1,14 @@
 package mx.kenzie.foundation;
 
+import org.objectweb.asm.Handle;
 import sun.misc.Unsafe;
 
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.util.Arrays;
+
+import static org.objectweb.asm.Opcodes.*;
 
 class AccessUtility {
     
@@ -45,6 +46,19 @@ class AccessUtility {
         return builder.toString();
     }
     //endregion
+    
+    static Handle getHandle(final Constructor<?> constructor) {
+        return new Handle(H_INVOKESPECIAL, new Type(constructor.getDeclaringClass()).internalName(), "<init>", AccessUtility.getDescriptor(new Type(void.class), Type.of(constructor.getParameterTypes())), false);
+    }
+    
+    static Handle getHandle(final Method method) {
+        final int code;
+        if (Modifier.isStatic(method.getModifiers())) code = H_INVOKESTATIC;
+        else if (Modifier.isAbstract(method.getModifiers())) code = H_INVOKEINTERFACE;
+        else if (Modifier.isPrivate(method.getModifiers())) code = H_INVOKESPECIAL;
+        else code = H_INVOKEVIRTUAL;
+        return new Handle(code, new Type(method.getDeclaringClass()).internalName(), method.getName(), AccessUtility.getDescriptor(new Type(method.getReturnType()), Type.of(method.getParameterTypes())), code == H_INVOKEINTERFACE);
+    }
     
     static Method getMatchingMethod(Object object, Method method) {
         Method match = null;

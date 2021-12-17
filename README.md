@@ -16,7 +16,6 @@ Foundation uses [ASM](https://asm.ow2.io) internally to create the bytecode and 
 ### Maven Information
 
 ```xml
-
 <repository>
     <id>pan-repo</id>
     <name>Pandaemonium Repository</name>
@@ -25,7 +24,6 @@ Foundation uses [ASM](https://asm.ow2.io) internally to create the bytecode and 
 ``` 
 
 ```xml
-
 <dependency>
     <groupId>mx.kenzie</groupId>
     <artifactId>foundation</artifactId>

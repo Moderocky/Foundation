@@ -1,5 +1,6 @@
 package mx.kenzie.foundation;
 
+import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
@@ -70,6 +71,18 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
             method.visitInsn(ATHROW);
             method.visitLabel(label);
         };
+    }
+    
+    static SimpleWriteInstruction noOp() {
+        return method -> method.visitInsn(NOP);
+    }
+    
+    static SimpleWriteInstruction implementationDependent1() {
+        return method -> method.visitInsn(254);
+    }
+    
+    static SimpleWriteInstruction implementationDependent2() {
+        return method -> method.visitInsn(255);
     }
     //endregion
     
@@ -386,6 +399,10 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
         return method -> method.visitTypeInsn(NEW, type.internalName());
     }
     
+    static SimpleWriteInstruction allocate(final Class<?> type) {
+        return allocate(new Type(type));
+    }
+    
     static SimpleWriteInstruction instanceOf(final Type type) {
         return method -> method.visitTypeInsn(INSTANCEOF, type.internalName());
     }
@@ -600,12 +617,75 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
         }
         throw new IllegalArgumentException("Cannot match '" + comparison + "' to instruction.");
     }
+    
+    static WriteInstruction jumpIfAnyEquals(final String label, final Type type) {
+        return switch (type.dotPath()) {
+            case "int", "byte", "boolean", "short", "char" -> jumpIfEQ(label);
+            case "long" -> (writer, method) -> {
+                writer.labels.putIfAbsent(label, new Label());
+                final Label to = writer.labels.get(label);
+                method.visitInsn(LCMP);
+                method.visitJumpInsn(IFEQ, to);
+            };
+            case "float" -> (writer, method) -> {
+                writer.labels.putIfAbsent(label, new Label());
+                final Label to = writer.labels.get(label);
+                method.visitInsn(FCMPL);
+                method.visitJumpInsn(IFEQ, to);
+            };
+            case "double" -> (writer, method) -> {
+                writer.labels.putIfAbsent(label, new Label());
+                final Label to = writer.labels.get(label);
+                method.visitInsn(DCMPL);
+                method.visitJumpInsn(IFEQ, to);
+            };
+            default -> jumpIfEquals(label);
+        };
+    }
+    
+    static WriteInstruction jumpIfAnyNotEquals(final String label, final Type type) {
+        return switch (type.dotPath()) {
+            case "int", "byte", "boolean", "short", "char" -> jumpIfEQ(label);
+            case "long" -> (writer, method) -> {
+                writer.labels.putIfAbsent(label, new Label());
+                final Label to = writer.labels.get(label);
+                method.visitInsn(LCMP);
+                method.visitJumpInsn(IFNE, to);
+            };
+            case "float" -> (writer, method) -> {
+                writer.labels.putIfAbsent(label, new Label());
+                final Label to = writer.labels.get(label);
+                method.visitInsn(FCMPL);
+                method.visitJumpInsn(IFNE, to);
+            };
+            case "double" -> (writer, method) -> {
+                writer.labels.putIfAbsent(label, new Label());
+                final Label to = writer.labels.get(label);
+                method.visitInsn(DCMPL);
+                method.visitJumpInsn(IFNE, to);
+            };
+            default -> jumpIfEquals(label);
+        };
+    }
     //endregion
     //endregion
     
     //region Constants
+    static SimpleWriteInstruction loadClassConstant(final Type value) {
+        return method -> method.visitLdcInsn(org.objectweb.asm.Type.getObjectType(value.internalName()));
+    }
+    
     static SimpleWriteInstruction loadConstant(final Object value) {
+        if (value instanceof Type) return WriteInstruction.loadClassConstant((Type) value);
         return method -> method.visitLdcInsn(value);
+    }
+    
+    static SimpleWriteInstruction loadConstant(final Method method) {
+        return m -> m.visitLdcInsn(AccessUtility.getHandle(method));
+    }
+    
+    static SimpleWriteInstruction loadConstant(final Constructor<?> constructor) {
+        return m -> m.visitLdcInsn(AccessUtility.getHandle(constructor));
     }
     
     static SimpleWriteInstruction pushNull() {
@@ -788,11 +868,26 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
     static SimpleWriteInstruction xorLong() {
         return method -> method.visitInsn(LXOR);
     }
+    
+    static SimpleWriteInstruction flipSmall() {
+        return method -> {
+            method.visitInsn(ICONST_M1);
+            method.visitInsn(IXOR);
+        };
+    }
+    
+    static SimpleWriteInstruction flipLong() {
+        return method -> {
+            method.visitInsn(ICONST_M1);
+            method.visitInsn(LXOR);
+        };
+    }
     //endregion
     //endregion
     
     //region Number Conversion
     static SimpleWriteInstruction convert(final Class<?> from, final Class<?> to) {
+        if (!from.isPrimitive() && !to.isPrimitive()) return cast(new Type(to));
         final int opcode;
         if (from == float.class) {
             if (to == double.class) opcode = F2D;
@@ -816,23 +911,80 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
         }
         return method -> method.visitInsn(opcode);
     }
+    
+    static SimpleWriteInstruction convert(final Type from, final Type to) {
+        if (!from.isPrimitive() && !to.isPrimitive()) return cast(to);
+        final int opcode = switch (from.dotPath()) {
+            case "float" -> switch (to.dotPath()) {
+                case "double" -> F2D;
+                case "long" -> F2L;
+                default -> F2I;
+            };
+            case "double" -> switch (to.dotPath()) {
+                case "float" -> D2F;
+                case "long" -> D2L;
+                default -> D2I;
+            };
+            case "long" -> switch (to.dotPath()) {
+                case "float" -> L2F;
+                case "double" -> L2D;
+                default -> L2I;
+            };
+            default -> switch (to.dotPath()) {
+                case "float" -> I2F;
+                case "double" -> I2D;
+                case "byte" -> I2B;
+                case "short" -> I2S;
+                case "char" -> I2C;
+                default -> I2L;
+            };
+        };
+        return method -> method.visitInsn(opcode);
+    }
     //endregion
     
     //region Field Access
+    static SimpleWriteInstruction setStaticField(final Field field) {
+        return setStaticField(new Type(field.getDeclaringClass()), new FieldErasure(field));
+    }
+    
+    static SimpleWriteInstruction setStaticField(final Type owner, final FieldErasure erasure) {
+        return method -> method.visitFieldInsn(PUTSTATIC, owner.internalName(), erasure.name(), erasure.type().descriptorString());
+    }
+    
     static SimpleWriteInstruction setStaticField(final Type owner, final Type type, final String name) {
         return method -> method.visitFieldInsn(PUTSTATIC, owner.internalName(), name, type.descriptorString());
     }
     
+    static SimpleWriteInstruction setField(final Type owner, final FieldErasure erasure) {
+        return method -> method.visitFieldInsn(PUTFIELD, owner.internalName(), erasure.name(), erasure.type().descriptorString());
+    }
+    
     static SimpleWriteInstruction setField(final Type owner, final Type type, final String name) {
         return method -> method.visitFieldInsn(PUTFIELD, owner.internalName(), name, type.descriptorString());
+    }
+    static SimpleWriteInstruction getStaticField(final Field field) {
+        return setStaticField(new Type(field.getDeclaringClass()), new FieldErasure(field));
+    }
+    
+    static SimpleWriteInstruction getStaticField(final Type owner, final FieldErasure erasure) {
+        return method -> method.visitFieldInsn(GETSTATIC, owner.internalName(), erasure.name(), erasure.type().descriptorString());
     }
     
     static SimpleWriteInstruction getStaticField(final Type owner, final Type type, final String name) {
         return method -> method.visitFieldInsn(GETSTATIC, owner.internalName(), name, type.descriptorString());
     }
     
+    static SimpleWriteInstruction getField(final Type owner, final FieldErasure erasure) {
+        return method -> method.visitFieldInsn(GETFIELD, owner.internalName(), erasure.name(), erasure.type().descriptorString());
+    }
+    
     static SimpleWriteInstruction getField(final Type owner, final Type type, final String name) {
         return method -> method.visitFieldInsn(GETFIELD, owner.internalName(), name, type.descriptorString());
+    }
+    
+    static SimpleWriteInstruction setFieldDynamic(final Type returnType, final String name, final Type[] parameterTypes, final Handle handle, final Object... parameters) {
+        return method -> method.visitInvokeDynamicInsn(name, AccessUtility.getDescriptor(returnType, parameterTypes), handle, parameters);
     }
     
     static SimpleWriteInstruction getField(final Field field) {
@@ -856,6 +1008,10 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
     
     static SimpleWriteInstruction invokeVirtual(final Type owner, final Type returnType, final String name, final Type... parameterTypes) {
         return invokeVirtual(false, owner, returnType, name, parameterTypes);
+    }
+    
+    static SimpleWriteInstruction invokeVirtual(final Type owner, final MethodErasure method) {
+        return invokeVirtual(false, owner, method.returnType(), method.name(), method.parameterTypes());
     }
     
     static SimpleWriteInstruction invokeVirtual(final Method method) {
@@ -883,6 +1039,10 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
         return invokeStatic(false, owner, returnType, name, parameterTypes);
     }
     
+    static SimpleWriteInstruction invokeStatic(final Type owner, final MethodErasure method) {
+        return invokeStatic(false, owner, method.returnType(), method.name(), method.parameterTypes());
+    }
+    
     static SimpleWriteInstruction invokeStatic(final Method method) {
         return invokeStatic(Modifier.isInterface(method.getDeclaringClass()
             .getModifiers()), new Type(method.getDeclaringClass()), new Type(method.getReturnType()), method.getName(), Type.of(method.getParameterTypes()));
@@ -890,9 +1050,25 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
     //endregion
     
     //region Invoke Dynamic
-    static SimpleWriteInstruction invokeDynamic(boolean isInterface, final Type owner, final Type returnType, final String name, final Type... parameterTypes) {
-        return method -> method.visitMethodInsn(INVOKEDYNAMIC, owner.internalName(), name, AccessUtility.getDescriptor(returnType, parameterTypes), isInterface);
+    static SimpleWriteInstruction invokeDynamic(final Type returnType, final String name, final Type[] parameterTypes, final Handle handle, final Object... parameters) {
+        return method -> method.visitInvokeDynamicInsn(name, AccessUtility.getDescriptor(returnType, parameterTypes), handle, parameters);
     }
+    
+    static SimpleWriteInstruction invokeDynamic(final Method target, final Method bootstrap, final Object... parameters) {
+        if (Modifier.isStatic(target.getModifiers()))
+            return method -> method.visitInvokeDynamicInsn(target.getName(), AccessUtility.getDescriptor(new Type(target.getReturnType()), Type.of(target.getParameterTypes())), AccessUtility.getHandle(bootstrap), parameters);
+        else {
+            int length = target.getParameterTypes().length;
+            Class<?>[] ps = target.getParameterTypes();
+            Type[] params = new Type[length+1];
+            for (int i = 0; i < length; i++) {
+                params[i+1] = new Type(ps[i]);
+            }
+            params[0] = new Type(target.getDeclaringClass());
+            return method -> method.visitInvokeDynamicInsn(target.getName(), AccessUtility.getDescriptor(new Type(target.getReturnType()), params), AccessUtility.getHandle(bootstrap), parameters);
+        }
+    }
+    
     //endregion
     
     //region Invoke Special
@@ -942,6 +1118,10 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
     static SimpleWriteInstruction storeDouble(int index) {
         return method -> method.visitVarInsn(DSTORE, index);
     }
+    
+    static SimpleWriteInstruction store(final Type type, int index) {
+        return method -> method.visitVarInsn(type.getStoreOpcode(), index);
+    }
     //endregion
     
     //region Load Variable
@@ -967,6 +1147,10 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
     
     static SimpleWriteInstruction loadDouble(int index) {
         return method -> method.visitVarInsn(DLOAD, index);
+    }
+    
+    static SimpleWriteInstruction load(final Type type, int index) {
+        return method -> method.visitVarInsn(type.getLoadOpcode(), index);
     }
     
     static SimpleWriteInstruction exitSubroutine(int index) {
