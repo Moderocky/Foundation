@@ -192,18 +192,20 @@ public class ClassBuilder {
         }
         final ClassWriter writer = new ClassWriter(ASM9 + computation);
         writer.visit(version.version, modifiers, type.internalName(), null, superclass.internalName(), inheritance.toArray(new String[0]));
-        annotations: {
+        annotations:
+        {
             for (AnnotationBuilder<ClassBuilder> annotation : annotations) {
                 final AnnotationVisitor visitor = writer.visitAnnotation(annotation.type.descriptorString(), annotation.visible);
                 visitAnnotation(visitor, annotation);
             }
         }
-        inners: {
+        inners:
+        {
             for (Map.Entry<Type, Integer> entry : inners.entrySet()) {
                 final String internal = entry.getKey().internalName();
                 final int x = internal.lastIndexOf('$');
                 final String first = internal.substring(0, x);
-                final String last = internal.substring(x+1);
+                final String last = internal.substring(x + 1);
                 writer.visitInnerClass(internal, first, last, entry.getValue());
             }
         }

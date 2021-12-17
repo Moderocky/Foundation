@@ -143,13 +143,15 @@ public class MethodBuilder implements SubBuilder {
         }
         final MethodVisitor methodVisitor;
         methodVisitor = writer.visitMethod(modifiers, name, builder.toString(), null, exceptions);
-        annotations: {
+        annotations:
+        {
             for (AnnotationBuilder<MethodBuilder> annotation : annotations) {
                 final AnnotationVisitor visitor = methodVisitor.visitAnnotation(annotation.type.descriptorString(), annotation.visible);
                 visitAnnotation(visitor, annotation);
             }
         }
-        write_code: {
+        write_code:
+        {
             if (Modifier.isAbstract(modifiers)) break write_code;
             methodVisitor.visitCode();
             if (this.writer.isEmpty()) {
@@ -169,7 +171,7 @@ public class MethodBuilder implements SubBuilder {
     static void addValue(AnnotationVisitor visitor, String name, Object value) {
         if (value instanceof Type type) {
             visitor.visit(name, org.objectweb.asm.Type.getType(type.descriptor()));
-        } else  visitor.visit(name, value);
+        } else visitor.visit(name, value);
     }
     
     static void visitAnnotation(AnnotationVisitor visitor, AnnotationBuilder<?> annotation) {

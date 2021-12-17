@@ -25,7 +25,7 @@ public record Type(String dotPath, String descriptor, String internalName)
     
     public String getSimpleName() {
         if (descriptor.startsWith("["))
-            return internalName.substring(internalName.lastIndexOf('/') + 1, internalName.length()-1) + arrayBlocks();
+            return internalName.substring(internalName.lastIndexOf('/') + 1, internalName.length() - 1) + arrayBlocks();
         else return internalName.substring(internalName.lastIndexOf('/') + 1);
     }
     

@@ -949,7 +949,8 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
     }
     
     static SimpleWriteInstruction setStaticField(final Type owner, final FieldErasure erasure) {
-        return method -> method.visitFieldInsn(PUTSTATIC, owner.internalName(), erasure.name(), erasure.type().descriptorString());
+        return method -> method.visitFieldInsn(PUTSTATIC, owner.internalName(), erasure.name(), erasure.type()
+            .descriptorString());
     }
     
     static SimpleWriteInstruction setStaticField(final Type owner, final Type type, final String name) {
@@ -957,18 +958,21 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
     }
     
     static SimpleWriteInstruction setField(final Type owner, final FieldErasure erasure) {
-        return method -> method.visitFieldInsn(PUTFIELD, owner.internalName(), erasure.name(), erasure.type().descriptorString());
+        return method -> method.visitFieldInsn(PUTFIELD, owner.internalName(), erasure.name(), erasure.type()
+            .descriptorString());
     }
     
     static SimpleWriteInstruction setField(final Type owner, final Type type, final String name) {
         return method -> method.visitFieldInsn(PUTFIELD, owner.internalName(), name, type.descriptorString());
     }
+    
     static SimpleWriteInstruction getStaticField(final Field field) {
         return setStaticField(new Type(field.getDeclaringClass()), new FieldErasure(field));
     }
     
     static SimpleWriteInstruction getStaticField(final Type owner, final FieldErasure erasure) {
-        return method -> method.visitFieldInsn(GETSTATIC, owner.internalName(), erasure.name(), erasure.type().descriptorString());
+        return method -> method.visitFieldInsn(GETSTATIC, owner.internalName(), erasure.name(), erasure.type()
+            .descriptorString());
     }
     
     static SimpleWriteInstruction getStaticField(final Type owner, final Type type, final String name) {
@@ -976,7 +980,8 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
     }
     
     static SimpleWriteInstruction getField(final Type owner, final FieldErasure erasure) {
-        return method -> method.visitFieldInsn(GETFIELD, owner.internalName(), erasure.name(), erasure.type().descriptorString());
+        return method -> method.visitFieldInsn(GETFIELD, owner.internalName(), erasure.name(), erasure.type()
+            .descriptorString());
     }
     
     static SimpleWriteInstruction getField(final Type owner, final Type type, final String name) {
@@ -1060,9 +1065,9 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
         else {
             int length = target.getParameterTypes().length;
             Class<?>[] ps = target.getParameterTypes();
-            Type[] params = new Type[length+1];
+            Type[] params = new Type[length + 1];
             for (int i = 0; i < length; i++) {
-                params[i+1] = new Type(ps[i]);
+                params[i + 1] = new Type(ps[i]);
             }
             params[0] = new Type(target.getDeclaringClass());
             return method -> method.visitInvokeDynamicInsn(target.getName(), AccessUtility.getDescriptor(new Type(target.getReturnType()), params), AccessUtility.getHandle(bootstrap), parameters);

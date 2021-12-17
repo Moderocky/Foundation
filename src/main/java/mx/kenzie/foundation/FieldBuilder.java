@@ -82,7 +82,8 @@ public class FieldBuilder implements SubBuilder {
     void compile(ClassWriter writer) {
         final FieldVisitor fieldVisitor;
         fieldVisitor = writer.visitField(modifiers, name, type.descriptor(), null, null);
-        annotations: {
+        annotations:
+        {
             for (AnnotationBuilder<FieldBuilder> annotation : annotations) {
                 final AnnotationVisitor visitor = fieldVisitor.visitAnnotation(annotation.type.descriptorString(), annotation.visible);
                 visitAnnotation(visitor, annotation);
