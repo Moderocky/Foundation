@@ -40,7 +40,7 @@ public class DynamicTest {
                 invokeDynamic(test2, bootstrap, Type.getType(DynamicTest.class)),
                 newInstance(new mx.kenzie.foundation.Type(DynamicTest.class), DynamicTest.class.getConstructor()),
                 println("Dynamic ins try?"),
-                (WriteInstruction) (codeWriter, methodVisitor) -> {
+                (codeWriter, methodVisitor) -> {
     
                 },
                 invokeDynamic(new mx.kenzie.foundation.Type(void.class), "test3", new mx.kenzie.foundation.Type[]{new mx.kenzie.foundation.Type(this.getClass())}, getHandle(bootstrap2), Type.getType(DynamicTest.class)),

@@ -1194,4 +1194,22 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
     }
     //endregion
     
+    //region Debug Instructions
+    static SimpleWriteInstruction lineNumber(final int line, final Label label) {
+        return method -> method.visitLineNumber(line, label);
+    }
+    
+    static SimpleWriteInstruction lineNumber(final int line) {
+        return method -> {
+            final Label label = new Label();
+            method.visitLabel(label);
+            method.visitLineNumber(line, label);
+        };
+    }
+    
+    static SimpleWriteInstruction nameVariable(final String name, final java.lang.reflect.Type type, final Label start, final Label end, final int slot) {
+        return method -> method.visitLocalVariable(name, new Type(type.getTypeName()).descriptorString(), null, start, end, slot);
+    }
+    //endregion
+    
 }
