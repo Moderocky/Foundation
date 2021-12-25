@@ -23,6 +23,7 @@ public class ClassBuilder {
     protected final List<MethodBuilder> methods = new ArrayList<>();
     protected int computation = ClassWriter.COMPUTE_FRAMES;
     protected final List<ClassBuilder> suppressed = new ArrayList<>();
+    protected ClassBuilder suppressor;
     protected RuntimeClassLoader loader = DEFAULT_LOADER;
     protected List<AnnotationBuilder<ClassBuilder>> annotations = new ArrayList<>();
     protected final Map<Type, Integer> inners = new HashMap<>();
@@ -99,7 +100,16 @@ public class ClassBuilder {
     
     public ClassBuilder suppress(final ClassBuilder builder) {
         this.suppressed.add(builder);
+        builder.suppressor = this;
         return this;
+    }
+    
+    public ClassBuilder getSuppressor() {
+        return suppressor;
+    }
+    
+    public boolean hasSuppressor() {
+        return suppressor != null;
     }
     
     public String getName() {
