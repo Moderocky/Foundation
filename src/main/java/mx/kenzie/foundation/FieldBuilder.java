@@ -36,6 +36,10 @@ public class FieldBuilder implements SubBuilder {
         return builder;
     }
     
+    public FieldErasure getErasure() {
+        return new FieldErasure(type, name);
+    }
+    
     //region Type
     public FieldBuilder setType(Class<?> type) {
         this.type = new Type(type);

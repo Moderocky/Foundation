@@ -183,9 +183,11 @@ public class MethodBuilder implements SubBuilder {
                 for (Object o : array) {
                     addValue(inner, null, o);
                 }
+                inner.visitEnd();
             } else if (entry.getValue() instanceof AnnotationBuilder note) {
                 final AnnotationVisitor inner = visitor.visitAnnotation(entry.getKey(), note.type.descriptorString());
                 visitAnnotation(inner, note);
+                inner.visitEnd();
             } else addValue(visitor, entry.getKey(), entry.getValue());
         }
         visitor.visitEnd();
