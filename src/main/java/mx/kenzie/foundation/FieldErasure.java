@@ -5,20 +5,16 @@ import java.util.Objects;
 
 public record FieldErasure(Type type, String name) {
     
-    public FieldErasure(Class<?> returnType, String name) {
-        this(new Type(returnType), name);
-    }
-    
     public FieldErasure(Field field) {
         this(field.getType(), field.getName());
     }
     
-    public boolean matches(FieldErasure erasure) {
-        return this.equals(erasure);
+    public FieldErasure(Class<?> returnType, String name) {
+        this(new Type(returnType), name);
     }
     
-    public boolean matches(Field field) {
-        return this.equals(new FieldErasure(field));
+    public boolean matches(FieldErasure erasure) {
+        return this.equals(erasure);
     }
     
     @Override
@@ -31,6 +27,10 @@ public record FieldErasure(Type type, String name) {
     @Override
     public int hashCode() {
         return Objects.hash(type, name);
+    }
+    
+    public boolean matches(Field field) {
+        return this.equals(new FieldErasure(field));
     }
     
 }

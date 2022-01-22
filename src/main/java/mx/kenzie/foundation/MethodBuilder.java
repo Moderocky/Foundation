@@ -31,6 +31,31 @@ public class MethodBuilder implements SubBuilder {
         this.modifiers = Modifier.PUBLIC;
     }
     
+    static void addValue(AnnotationVisitor visitor, String name, Object value) {
+        if (value instanceof Type type) {
+            visitor.visit(name, org.objectweb.asm.Type.getType(type.descriptor()));
+        } else visitor.visit(name, value);
+    }
+    
+    static void visitAnnotation(AnnotationVisitor visitor, AnnotationBuilder<?> annotation) {
+        for (Map.Entry<String, Object> entry : annotation.values.entrySet()) {
+            if (entry.getValue() instanceof Enum e) {
+                visitor.visitEnum(entry.getKey(), e.getDeclaringClass().descriptorString(), e.name());
+            } else if (entry.getValue() instanceof Object[] array) {
+                final AnnotationVisitor inner = visitor.visitArray(entry.getKey());
+                for (Object o : array) {
+                    addValue(inner, null, o);
+                }
+                inner.visitEnd();
+            } else if (entry.getValue() instanceof AnnotationBuilder note) {
+                final AnnotationVisitor inner = visitor.visitAnnotation(entry.getKey(), note.type.descriptorString());
+                visitAnnotation(inner, note);
+                inner.visitEnd();
+            } else addValue(visitor, entry.getKey(), entry.getValue());
+        }
+        visitor.visitEnd();
+    }
+    
     public AnnotationBuilder<MethodBuilder> addAnnotation(Type type) {
         final AnnotationBuilder<MethodBuilder> builder = new AnnotationBuilder<>(this, type);
         annotations.add(builder);
@@ -42,6 +67,7 @@ public class MethodBuilder implements SubBuilder {
         annotations.add(builder);
         return builder;
     }
+    //endregion
     
     //region Type
     public MethodBuilder setReturnType(Class<?> type) {
@@ -81,8 +107,24 @@ public class MethodBuilder implements SubBuilder {
         this.thrown.addAll(Arrays.asList(types));
         return this;
     }
+    
+    //region Code
+    public MethodBuilder writeCode(WriteInstruction... instructions) {
+        this.writer.addInstruction(instructions);
+        return this;
+    }
     //endregion
     
+    public MethodErasure getErasure() {
+        return new MethodErasure(returnType, name, parameters.toArray(new Type[0]));
+    }
+    //endregion
+    
+    //region Inherited
+    @Override
+    public ClassBuilder finish() {
+        return builder;
+    }
     
     //region Modifiers
     @Override
@@ -90,6 +132,7 @@ public class MethodBuilder implements SubBuilder {
         this.modifiers = modifiers;
         return this;
     }
+    //endregion
     
     @Override
     public MethodBuilder addModifiers(int... modifiers) {
@@ -106,25 +149,6 @@ public class MethodBuilder implements SubBuilder {
         }
         return this;
     }
-    //endregion
-    
-    //region Code
-    public MethodBuilder writeCode(WriteInstruction... instructions) {
-        this.writer.addInstruction(instructions);
-        return this;
-    }
-    //endregion
-    
-    public MethodErasure getErasure() {
-        return new MethodErasure(returnType, name, parameters.toArray(new Type[0]));
-    }
-    
-    //region Inherited
-    @Override
-    public ClassBuilder finish() {
-        return builder;
-    }
-    //endregion
     
     void compile(ClassWriter writer) {
         final StringBuilder builder = new StringBuilder().append("(");
@@ -166,30 +190,5 @@ public class MethodBuilder implements SubBuilder {
             }
         }
         methodVisitor.visitEnd();
-    }
-    
-    static void addValue(AnnotationVisitor visitor, String name, Object value) {
-        if (value instanceof Type type) {
-            visitor.visit(name, org.objectweb.asm.Type.getType(type.descriptor()));
-        } else visitor.visit(name, value);
-    }
-    
-    static void visitAnnotation(AnnotationVisitor visitor, AnnotationBuilder<?> annotation) {
-        for (Map.Entry<String, Object> entry : annotation.values.entrySet()) {
-            if (entry.getValue() instanceof Enum e) {
-                visitor.visitEnum(entry.getKey(), e.getDeclaringClass().descriptorString(), e.name());
-            } else if (entry.getValue() instanceof Object[] array) {
-                final AnnotationVisitor inner = visitor.visitArray(entry.getKey());
-                for (Object o : array) {
-                    addValue(inner, null, o);
-                }
-                inner.visitEnd();
-            } else if (entry.getValue() instanceof AnnotationBuilder note) {
-                final AnnotationVisitor inner = visitor.visitAnnotation(entry.getKey(), note.type.descriptorString());
-                visitAnnotation(inner, note);
-                inner.visitEnd();
-            } else addValue(visitor, entry.getKey(), entry.getValue());
-        }
-        visitor.visitEnd();
     }
 }

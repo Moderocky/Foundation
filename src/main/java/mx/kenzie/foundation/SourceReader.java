@@ -13,6 +13,10 @@ import java.util.List;
 
 public class SourceReader {
     
+    public static List<WriteInstruction> getSource(final Method method) {
+        return getSource(method, null);
+    }
+    
     public static List<WriteInstruction> getSource(final Method method, final RewriteController controller) {
         final ClassReader reader = new ClassReader(getSource(method.getDeclaringClass()));
         final List<WriteInstruction> instructions = new ArrayList<>();
@@ -25,8 +29,8 @@ public class SourceReader {
         return instructions;
     }
     
-    public static List<WriteInstruction> getSource(final Method method) {
-        return getSource(method, null);
+    public static byte[] getSource(final Class<?> cls) {
+        return getSource(new Type(cls));
     }
     
     public static byte[] getSource(final Type type) {
@@ -36,10 +40,6 @@ public class SourceReader {
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-    }
-    
-    public static byte[] getSource(final Class<?> cls) {
-        return getSource(new Type(cls));
     }
     
     public static class MethodFinder extends ClassVisitor {

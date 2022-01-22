@@ -7,7 +7,8 @@ import org.junit.Test;
 
 import java.io.PrintStream;
 
-import static java.lang.reflect.Modifier.*;
+import static java.lang.reflect.Modifier.FINAL;
+import static java.lang.reflect.Modifier.PUBLIC;
 import static mx.kenzie.foundation.WriteInstruction.*;
 
 public class SimpleClassBuilderTest {
@@ -19,51 +20,51 @@ public class SimpleClassBuilderTest {
             .addModifiers(PUBLIC, FINAL)
             .addInterfaces(Runnable.class)
             .addField("box")
-                .setType(int.class)
-                .addModifiers(PUBLIC)
-                .finish()
+            .setType(int.class)
+            .addModifiers(PUBLIC)
+            .finish()
             .addConstructor()
-                .writeCode(
-                    loadThis(),
-                    invokeSpecial(Object.class.getConstructor()),
-                    returnEmpty()
-                )
-                .finish()
+            .writeCode(
+                loadThis(),
+                invokeSpecial(Object.class.getConstructor()),
+                returnEmpty()
+            )
+            .finish()
             .addMethod("run")
-                .setReturnType(void.class)
-                .addModifiers(PUBLIC)
-                .writeCode(
-                    push("Hello there !"),
-                    getField(System.class.getField("out")),
-                    duplicate(),
-                    storeObject(1),
-                    swap(),
-                    invoke(PrintStream.class.getMethod("println", String.class)),
-                    jump("test"),
-                    loadObject(1),
-                    push("this never runs"),
-                    invoke(PrintStream.class.getMethod("println", String.class)),
-                    label("test"),
-                    loadObject(1),
-                    push(10),
-                    invoke(PrintStream.class.getMethod("println", int.class)),
-                    push(true),
-                    jumpIfFalse("first"),
-                    jump("second"),
-                    label("first"),
-                    loadObject(1),
-                    push("this never prints"),
-                    invoke(PrintStream.class.getMethod("println", String.class)),
-                    label("second"),
-                    push(true),
-                    jumpIfTrue("third"),
-                    loadObject(1),
-                    push("this never prints"),
-                    invoke(PrintStream.class.getMethod("println", String.class)),
-                    label("third"),
-                    returnEmpty()
-                )
-                .finish()
+            .setReturnType(void.class)
+            .addModifiers(PUBLIC)
+            .writeCode(
+                push("Hello there !"),
+                getField(System.class.getField("out")),
+                duplicate(),
+                storeObject(1),
+                swap(),
+                invoke(PrintStream.class.getMethod("println", String.class)),
+                jump("test"),
+                loadObject(1),
+                push("this never runs"),
+                invoke(PrintStream.class.getMethod("println", String.class)),
+                label("test"),
+                loadObject(1),
+                push(10),
+                invoke(PrintStream.class.getMethod("println", int.class)),
+                push(true),
+                jumpIfFalse("first"),
+                jump("second"),
+                label("first"),
+                loadObject(1),
+                push("this never prints"),
+                invoke(PrintStream.class.getMethod("println", String.class)),
+                label("second"),
+                push(true),
+                jumpIfTrue("third"),
+                loadObject(1),
+                push("this never prints"),
+                invoke(PrintStream.class.getMethod("println", String.class)),
+                label("third"),
+                returnEmpty()
+            )
+            .finish()
             .compileAndLoad();
         
         assert cls != null;
@@ -99,9 +100,9 @@ public class SimpleClassBuilderTest {
             )
             .finish()
             .compileAndLoad();
-    
+        
         assert cls != null;
-    
+        
         final Object object = cls.newInstance();
         assert object != null;
         assert object instanceof Runnable;

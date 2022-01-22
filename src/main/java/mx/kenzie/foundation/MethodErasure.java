@@ -8,24 +8,25 @@ import java.util.Objects;
 
 public record MethodErasure(Type returnType, String name, Type... parameterTypes) {
     
-    public MethodErasure(Class<?> returnType, String name, Class<?>... parameterTypes) {
-        this(new Type(returnType), name, Type.of(parameterTypes));
-    }
-    
     public MethodErasure(Method method) {
         this(method.getReturnType(), method.getName(), method.getParameterTypes());
     }
     
+    public MethodErasure(Class<?> returnType, String name, Class<?>... parameterTypes) {
+        this(new Type(returnType), name, Type.of(parameterTypes));
+    }
+    
+    public static MethodErasure of(String name, String descriptor) {
+        final org.objectweb.asm.Type type = org.objectweb.asm.Type.getMethodType(descriptor);
+        final List<Type> types = new ArrayList<>();
+        for (org.objectweb.asm.Type argument : type.getArgumentTypes()) {
+            types.add(Type.of(argument.getInternalName()));
+        }
+        return new MethodErasure(Type.of(type.getReturnType().getInternalName()), name, types.toArray(new Type[0]));
+    }
+    
     public boolean matches(MethodErasure erasure) {
         return this.equals(erasure);
-    }
-    
-    public boolean matches(Method method) {
-        return this.equals(new MethodErasure(method));
-    }
-    
-    public String getDescriptor() {
-        return AccessUtility.getDescriptor(returnType, parameterTypes);
     }
     
     @Override
@@ -42,12 +43,11 @@ public record MethodErasure(Type returnType, String name, Type... parameterTypes
         return result;
     }
     
-    public static MethodErasure of(String name, String descriptor) {
-        final org.objectweb.asm.Type type = org.objectweb.asm.Type.getMethodType(descriptor);
-        final List<Type> types = new ArrayList<>();
-        for (org.objectweb.asm.Type argument : type.getArgumentTypes()) {
-            types.add(Type.of(argument.getInternalName()));
-        }
-        return new MethodErasure(Type.of(type.getReturnType().getInternalName()), name, types.toArray(new Type[0]));
+    public boolean matches(Method method) {
+        return this.equals(new MethodErasure(method));
+    }
+    
+    public String getDescriptor() {
+        return AccessUtility.getDescriptor(returnType, parameterTypes);
     }
 }

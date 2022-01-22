@@ -52,6 +52,12 @@ public class FieldBuilder implements SubBuilder {
     }
     //endregion
     
+    //region Inherited
+    @Override
+    public ClassBuilder finish() {
+        return builder;
+    }
+    
     //region Modifiers
     @Override
     public FieldBuilder setModifiers(int modifiers) {
@@ -66,6 +72,7 @@ public class FieldBuilder implements SubBuilder {
         }
         return this;
     }
+    //endregion
     
     @Override
     public FieldBuilder removeModifiers(int... modifiers) {
@@ -73,13 +80,6 @@ public class FieldBuilder implements SubBuilder {
             this.modifiers = this.modifiers & ~modifier;
         }
         return this;
-    }
-    //endregion
-    
-    //region Inherited
-    @Override
-    public ClassBuilder finish() {
-        return builder;
     }
     //endregion
     

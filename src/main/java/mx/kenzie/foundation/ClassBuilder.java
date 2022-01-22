@@ -14,19 +14,19 @@ import static org.objectweb.asm.Opcodes.ASM9;
 public class ClassBuilder {
     
     static final RuntimeClassLoader DEFAULT_LOADER = new RuntimeClassLoader();
+    protected final Set<Type> interfaces = new HashSet<>();
+    protected final List<FieldBuilder> fields = new ArrayList<>();
+    protected final List<MethodBuilder> methods = new ArrayList<>();
+    protected final List<ClassBuilder> suppressed = new ArrayList<>();
+    protected final Map<Type, Integer> inners = new HashMap<>();
     protected JavaVersion version;
     protected Type type;
     protected Type superclass = new Type(Object.class);
-    protected final Set<Type> interfaces = new HashSet<>();
     protected int modifiers = 0;
-    protected final List<FieldBuilder> fields = new ArrayList<>();
-    protected final List<MethodBuilder> methods = new ArrayList<>();
     protected int computation = ClassWriter.COMPUTE_FRAMES;
-    protected final List<ClassBuilder> suppressed = new ArrayList<>();
     protected ClassBuilder suppressor;
     protected RuntimeClassLoader loader = DEFAULT_LOADER;
     protected List<AnnotationBuilder<ClassBuilder>> annotations = new ArrayList<>();
-    protected final Map<Type, Integer> inners = new HashMap<>();
     
     //region Create
     public ClassBuilder(PostCompileClass post) {
@@ -34,13 +34,13 @@ public class ClassBuilder {
         this.type = Type.of(post.internalName());
     }
     
+    public ClassBuilder(Type type) {
+        this(type, JavaVersion.JAVA_16);
+    }
+    
     public ClassBuilder(Type type, JavaVersion version) {
         this.version = version;
         this.type = type;
-    }
-    
-    public ClassBuilder(Type type) {
-        this(type, JavaVersion.JAVA_16);
     }
     
     public ClassBuilder(String path) {
@@ -65,6 +65,12 @@ public class ClassBuilder {
     
     public MethodBuilder addMatching(MethodErasure erasure) {
         return addMethod(erasure.name()).addParameter(erasure.parameterTypes()).setReturnType(erasure.returnType());
+    }
+    
+    public MethodBuilder addMethod(String name) {
+        final MethodBuilder builder = new MethodBuilder(this, name);
+        methods.add(builder);
+        return builder;
     }
     
     public Type getType() {
@@ -139,12 +145,12 @@ public class ClassBuilder {
         }
         return this;
     }
+    //endregion
     
     public ClassBuilder setComputation(int computation) {
         this.computation = computation;
         return this;
     }
-    //endregion
     
     //region Inheritance
     public <T extends java.lang.reflect.Type & TypeDescriptor>
@@ -160,6 +166,7 @@ public class ClassBuilder {
         }
         return this;
     }
+    //endregion
     
     public ClassBuilder addInterfaces(Type... types) {
         for (Type t : types) {
@@ -167,17 +174,10 @@ public class ClassBuilder {
         }
         return this;
     }
-    //endregion
     
     public FieldBuilder addField(String name) {
         final FieldBuilder builder = new FieldBuilder(this, name);
         fields.add(builder);
-        return builder;
-    }
-    
-    public MethodBuilder addMethod(String name) {
-        final MethodBuilder builder = new MethodBuilder(this, name);
-        methods.add(builder);
         return builder;
     }
     

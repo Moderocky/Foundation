@@ -23,10 +23,62 @@ public record Type(String dotPath, String descriptor, String internalName)
         this(type.getTypeName(), type.descriptorString(), getInternalName(type));
     }
     
+    private static String getInternalName(final java.lang.reflect.Type type) {
+        return type.getTypeName().replace('.', '/');
+    }
+    
+    public static Type[] of(Class<?>... classes) {
+        final Type[] types = new Type[classes.length];
+        for (int i = 0; i < classes.length; i++) {
+            types[i] = new Type(classes[i]);
+        }
+        return types;
+    }
+    
+    public static Type[] array(Class<?> type, int count) {
+        final Type[] types = new Type[count];
+        Arrays.fill(types, new Type(type));
+        return types;
+    }
+    
+    public static Type[] array(Type type, int count) {
+        final Type[] types = new Type[count];
+        Arrays.fill(types, type);
+        return types;
+    }
+    
+    public static Type of(final String internalName) {
+        return new Type(internalName.replace("/", "."), "L" + internalName + ";", internalName);
+    }
+    
+    private static String getInternalName(final Class<?> cls) {
+        assert !cls.isArray();
+        if (cls.isHidden()) {
+            String name = cls.getName();
+            int index = name.indexOf('/');
+            return name.substring(0, index).replace('.', '/')
+                + "." + name.substring(index + 1);
+        } else {
+            return cls.getName().replace('.', '/');
+        }
+    }
+    
     public String getSimpleName() {
         if (descriptor.startsWith("["))
             return internalName.substring(internalName.lastIndexOf('/') + 1, internalName.length() - 1) + arrayBlocks();
         else return internalName.substring(internalName.lastIndexOf('/') + 1);
+    }
+    
+    private String arrayBlocks() {
+        final StringBuilder builder = new StringBuilder();
+        String input = descriptor;
+        int x;
+        while ((x = input.indexOf("[")) > -1) {
+            input = input.substring(x + 1); // count array dimensions
+            builder.append("[]"); // stack array dimensions
+        }
+        return builder.toString();
+        
     }
     
     public boolean isPrimitiveArray() {
@@ -34,12 +86,12 @@ public record Type(String dotPath, String descriptor, String internalName)
         return descriptor.length() == 2 && !descriptor.endsWith(";");
     }
     
-    public int getDimensions() {
-        return org.objectweb.asm.Type.getType(descriptor).getDimensions();
-    }
-    
     public boolean isArray() {
         return descriptor.startsWith("[");
+    }
+    
+    public int getDimensions() {
+        return org.objectweb.asm.Type.getType(descriptor).getDimensions();
     }
     
     public Type arrayType() {
@@ -108,58 +160,6 @@ public record Type(String dotPath, String descriptor, String internalName)
         } catch (ClassNotFoundException e) {
             return null;
         }
-    }
-    
-    public static Type[] of(Class<?>... classes) {
-        final Type[] types = new Type[classes.length];
-        for (int i = 0; i < classes.length; i++) {
-            types[i] = new Type(classes[i]);
-        }
-        return types;
-    }
-    
-    public static Type[] array(Class<?> type, int count) {
-        final Type[] types = new Type[count];
-        Arrays.fill(types, new Type(type));
-        return types;
-    }
-    
-    public static Type[] array(Type type, int count) {
-        final Type[] types = new Type[count];
-        Arrays.fill(types, type);
-        return types;
-    }
-    
-    public static Type of(final String internalName) {
-        return new Type(internalName.replace("/", "."), "L" + internalName + ";", internalName);
-    }
-    
-    private static String getInternalName(final Class<?> cls) {
-        assert !cls.isArray();
-        if (cls.isHidden()) {
-            String name = cls.getName();
-            int index = name.indexOf('/');
-            return name.substring(0, index).replace('.', '/')
-                + "." + name.substring(index + 1);
-        } else {
-            return cls.getName().replace('.', '/');
-        }
-    }
-    
-    private static String getInternalName(final java.lang.reflect.Type type) {
-        return type.getTypeName().replace('.', '/');
-    }
-    
-    private String arrayBlocks() {
-        final StringBuilder builder = new StringBuilder();
-        String input = descriptor;
-        int x;
-        while ((x = input.indexOf("[")) > -1) {
-            input = input.substring(x + 1); // count array dimensions
-            builder.append("[]"); // stack array dimensions
-        }
-        return builder.toString();
-        
     }
     
 }

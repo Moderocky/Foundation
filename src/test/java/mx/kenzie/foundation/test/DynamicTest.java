@@ -1,11 +1,8 @@
 package mx.kenzie.foundation.test;
 
 import mx.kenzie.foundation.ClassBuilder;
-import mx.kenzie.foundation.CodeWriter;
-import mx.kenzie.foundation.WriteInstruction;
 import org.junit.Test;
 import org.objectweb.asm.Handle;
-import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 
 import java.lang.invoke.*;
@@ -15,10 +12,33 @@ import java.lang.reflect.Modifier;
 import static java.lang.reflect.Modifier.FINAL;
 import static java.lang.reflect.Modifier.PUBLIC;
 import static mx.kenzie.foundation.WriteInstruction.*;
-import static mx.kenzie.foundation.WriteInstruction.returnEmpty;
 import static org.objectweb.asm.Opcodes.*;
 
 public class DynamicTest {
+    
+    public static CallSite bootstrap(MethodHandles.Lookup caller, String name, MethodType type, Class<?> cls) throws Exception {
+        MethodHandle handle = MethodHandles.privateLookupIn(cls, caller).findStatic(cls, name, type);
+        return new ConstantCallSite(handle);
+    }
+    
+    public static CallSite bootstrapDyn(MethodHandles.Lookup caller, String name, MethodType type, Class<?> cls) throws Exception {
+        MethodHandle handle = MethodHandles.lookup().findVirtual(cls, name, MethodType.methodType(Void.TYPE));
+        return new ConstantCallSite(handle);
+    }
+    
+    public static CallSite bootstrapT(MethodHandles.Lookup caller, String name, MethodType type) throws NoSuchMethodException, IllegalAccessException {
+        MethodHandle mine = MethodHandles.lookup()
+            .findVirtual(DynamicTest.class, "test3", MethodType.methodType(Void.TYPE));
+        return new ConstantCallSite(mine);
+    }
+    
+    private static void test() {
+        System.out.println("Dynamic call.");
+    }
+    
+    private static void test2(String value) {
+        System.out.println("Dynamic: " + value);
+    }
     
     @Test
     public void dynamic() throws Throwable {
@@ -41,7 +61,7 @@ public class DynamicTest {
                 newInstance(new mx.kenzie.foundation.Type(DynamicTest.class), DynamicTest.class.getConstructor()),
                 println("Dynamic ins try?"),
                 (codeWriter, methodVisitor) -> {
-    
+                
                 },
                 invokeDynamic(new mx.kenzie.foundation.Type(void.class), "test3", new mx.kenzie.foundation.Type[]{new mx.kenzie.foundation.Type(this.getClass())}, getHandle(bootstrap2), Type.getType(DynamicTest.class)),
 //                invokeDynamic(test3, bootstrap2, Type.getType(DynamicTest.class)),
@@ -50,40 +70,13 @@ public class DynamicTest {
             )
             .finish()
             .compileAndLoad();
-    
+        
         assert cls != null;
-    
+        
         final Object object = cls.newInstance();
         assert object != null;
         assert object instanceof Runnable;
         ((Runnable) object).run();
-    }
-    
-    public static CallSite bootstrap(MethodHandles.Lookup caller, String name, MethodType type, Class<?> cls) throws Exception {
-        MethodHandle handle = MethodHandles.privateLookupIn(cls, caller).findStatic(cls, name, type);
-        return new ConstantCallSite(handle);
-    }
-    
-    public static CallSite bootstrapDyn(MethodHandles.Lookup caller, String name, MethodType type, Class<?> cls) throws Exception {
-        MethodHandle handle = MethodHandles.lookup().findVirtual(cls, name, MethodType.methodType(Void.TYPE));
-        return new ConstantCallSite(handle);
-    }
-    
-    public static CallSite bootstrapT(MethodHandles.Lookup caller, String name, MethodType type) throws NoSuchMethodException, IllegalAccessException {
-        MethodHandle mine = MethodHandles.lookup().findVirtual(DynamicTest.class, "test3", MethodType.methodType(Void.TYPE));
-        return new ConstantCallSite(mine);
-    }
-    
-    private void test3() {
-        System.out.println("Dynamic instance call.");
-    }
-    
-    private static void test() {
-        System.out.println("Dynamic call.");
-    }
-    
-    private static void test2(String value) {
-        System.out.println("Dynamic: " + value);
     }
     
     static Handle getHandle(final Method method) {
@@ -105,6 +98,10 @@ public class DynamicTest {
             .append(")")
             .append(ret.descriptorString());
         return builder.toString();
+    }
+    
+    private void test3() {
+        System.out.println("Dynamic instance call.");
     }
     
 }

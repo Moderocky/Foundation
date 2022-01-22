@@ -33,6 +33,11 @@ class AccessUtility {
     }
     //endregion
     
+    static Handle getHandle(final Constructor<?> constructor) {
+        return new Handle(H_INVOKESPECIAL, new Type(constructor.getDeclaringClass()).internalName(), "<init>", AccessUtility.getDescriptor(new Type(void.class), Type.of(constructor.getParameterTypes())), false);
+    }
+    //endregion
+    
     //region Name Utilities
     static String getDescriptor(final Type ret, final Type... params) {
         final StringBuilder builder = new StringBuilder();
@@ -44,11 +49,6 @@ class AccessUtility {
             .append(")")
             .append(ret.descriptorString());
         return builder.toString();
-    }
-    //endregion
-    
-    static Handle getHandle(final Constructor<?> constructor) {
-        return new Handle(H_INVOKESPECIAL, new Type(constructor.getDeclaringClass()).internalName(), "<init>", AccessUtility.getDescriptor(new Type(void.class), Type.of(constructor.getParameterTypes())), false);
     }
     
     static Handle getHandle(final Method method) {

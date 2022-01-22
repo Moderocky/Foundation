@@ -12,12 +12,12 @@ public class ConstructorBuilder extends MethodBuilder {
     }
     
     @Override
-    public MethodBuilder setReturnType(Type type) {
+    public MethodBuilder setReturnType(Class<?> type) {
         throw new IllegalStateException("Unable to alter constructor return type.");
     }
     
     @Override
-    public MethodBuilder setReturnType(Class<?> type) {
+    public MethodBuilder setReturnType(Type type) {
         throw new IllegalStateException("Unable to alter constructor return type.");
     }
     

@@ -25,10 +25,6 @@ class CloneMethodVisitor extends MethodVisitor {
         this.hasController = controller != null;
     }
     
-    private void write(String mode, int opcode, Object data) {
-        if (hasController) controller.write(mode, opcode, data);
-    }
-    
     @Override
     public void visitAttribute(Attribute attribute) {
         instructions.add((writer, visitor) -> visitor.visitAttribute(attribute));
@@ -49,6 +45,10 @@ class CloneMethodVisitor extends MethodVisitor {
         } else
             instructions.add((writer, visitor) -> visitor.visitInsn(opcode));
         write("visitInsn", opcode, null);
+    }
+    
+    private void write(String mode, int opcode, Object data) {
+        if (hasController) controller.write(mode, opcode, data);
     }
     
     @Override

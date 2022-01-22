@@ -10,14 +10,14 @@ public abstract class RewriteController {
     
     public abstract void useMethod(Type owner, String name);
     
-    public abstract int adjustVariable(int slot);
-    
     public WriteInstruction store(int opcode, int slot) {
         final int i = adjustVariable(slot);
         return (writer, visitor) -> {
             visitor.visitVarInsn(opcode, i);
         };
     }
+    
+    public abstract int adjustVariable(int slot);
     
     public WriteInstruction load(int opcode, int slot) {
         final int i = adjustVariable(slot);
@@ -39,9 +39,9 @@ public abstract class RewriteController {
     
     public abstract int returnSlot();
     
-    public abstract void write(String mode, int opcode, Object data);
-    
     public abstract WriteInstruction jumpToEnd();
+    
+    public abstract void write(String mode, int opcode, Object data);
     
     public abstract WriteInstruction end();
     
