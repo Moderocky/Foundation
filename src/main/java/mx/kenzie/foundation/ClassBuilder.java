@@ -245,4 +245,7 @@ public class ClassBuilder {
     }
     //endregion
     
+    public Type getSuperclass() {
+        return superclass;
+    }
 }

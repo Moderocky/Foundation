@@ -4,7 +4,7 @@ import org.objectweb.asm.MethodVisitor;
 
 import java.util.function.Consumer;
 
-interface SimpleWriteInstruction extends Consumer<MethodVisitor>, WriteInstruction {
+public interface SimpleWriteInstruction extends Consumer<MethodVisitor>, WriteInstruction {
     
     @Override
     default void accept(CodeWriter codeWriter, MethodVisitor methodVisitor) {

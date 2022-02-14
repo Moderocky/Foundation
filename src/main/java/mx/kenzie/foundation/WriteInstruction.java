@@ -121,6 +121,16 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
     //endregion
     
     //region Exceptions
+    static WriteInstruction tryCatch(final Type exception, final Label tryStart, final Label tryEnd, final Label catchStart) {
+        return (writer, method) -> method.visitTryCatchBlock(tryStart, tryEnd, catchStart, exception.internalName());
+    }
+    
+    static WriteInstruction tryFinally(final Label tryStart, final Label tryEnd, final Label finallyStart) {
+        return (writer, method) -> {
+            method.visitTryCatchBlock(tryStart, tryEnd, finallyStart, null);
+        };
+    }
+    
     static WriteInstruction tryCatch(final Type exception, final String tryStart, final String tryEnd, final String catchStart) {
         return (writer, method) -> {
             writer.labels.putIfAbsent(tryStart, new Label());
@@ -358,12 +368,20 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
     }
     
     //region Jumps
+    static WriteInstruction label(final Label label) {
+        return (writer, method) -> method.visitLabel(label);
+    }
+    
     static WriteInstruction label(final String label) {
         return (writer, method) -> {
             writer.labels.putIfAbsent(label, new Label());
             final Label to = writer.labels.get(label);
             method.visitLabel(to);
         };
+    }
+    
+    static WriteInstruction jump(final Label label) {
+        return (writer, method) -> method.visitJumpInsn(GOTO, label);
     }
     
     static WriteInstruction jump(final String label) {
@@ -391,12 +409,20 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
         };
     }
     
+    static WriteInstruction jumpIfNotEquals(final Label label) {
+        return (writer, method) -> method.visitJumpInsn(IF_ACMPNE, label);
+    }
+    
     static WriteInstruction jumpIfNotEquals(final String label) {
         return (writer, method) -> {
             writer.labels.putIfAbsent(label, new Label());
             final Label to = writer.labels.get(label);
             method.visitJumpInsn(IF_ACMPNE, to);
         };
+    }
+    
+    static WriteInstruction jumpIfNull(final Label label) {
+        return (writer, method) -> method.visitJumpInsn(IFNULL, label);
     }
     
     static WriteInstruction jumpIfNull(final String label) {
@@ -407,6 +433,13 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
         };
     }
     
+    static WriteInstruction jumpIfInstanceOf(final Type type, final Label label) {
+        return (writer, method) -> {
+            method.visitTypeInsn(INSTANCEOF, type.internalName());
+            method.visitJumpInsn(IFNE, label);
+        };
+    }
+    
     static WriteInstruction jumpIfInstanceOf(final Type type, final String label) {
         return (writer, method) -> {
             writer.labels.putIfAbsent(label, new Label());
@@ -414,6 +447,10 @@ public interface WriteInstruction extends BiConsumer<CodeWriter, MethodVisitor> 
             method.visitTypeInsn(INSTANCEOF, type.internalName());
             method.visitJumpInsn(IFNE, to);
         };
+    }
+    
+    static WriteInstruction jumpIfNotNull(final Label label) {
+        return (writer, method) -> method.visitJumpInsn(IFNONNULL, label);
     }
     
     static WriteInstruction jumpIfNotNull(final String label) {
