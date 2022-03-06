@@ -12,7 +12,7 @@ public record Type(String dotPath, String descriptor, String internalName)
     implements java.lang.reflect.Type, TypeDescriptor {
     
     public Type(String dotPath) {
-        this(dotPath, "L" + dotPath.replace(".", "/") + ";", dotPath.replace(".", "/"));
+        this(dotPath, getDescriptor(dotPath), dotPath.replace(".", "/"));
     }
     
     public Type(Class<?> cls) {
@@ -25,6 +25,21 @@ public record Type(String dotPath, String descriptor, String internalName)
     
     private static String getInternalName(final java.lang.reflect.Type type) {
         return type.getTypeName().replace('.', '/');
+    }
+
+    private static String getDescriptor(final String dotPath) {
+        return (switch (dotPath) {
+            case "byte" -> org.objectweb.asm.Type.BYTE_TYPE;
+            case "short" -> org.objectweb.asm.Type.SHORT_TYPE;
+            case "int" -> org.objectweb.asm.Type.INT_TYPE;
+            case "char" -> org.objectweb.asm.Type.CHAR_TYPE;
+            case "boolean" -> org.objectweb.asm.Type.BOOLEAN_TYPE;
+            case "double" -> org.objectweb.asm.Type.DOUBLE_TYPE;
+            case "float" -> org.objectweb.asm.Type.FLOAT_TYPE;
+            case "long" -> org.objectweb.asm.Type.LONG_TYPE;
+            case "void" -> org.objectweb.asm.Type.VOID_TYPE;
+            default -> org.objectweb.asm.Type.getType("L" + dotPath.replace('.', '/') + ";");
+        }).getDescriptor();
     }
     
     public static Type[] of(Class<?>... classes) {
