@@ -12,7 +12,7 @@ public record Type(String dotPath, String descriptor, String internalName)
     implements java.lang.reflect.Type, TypeDescriptor {
     
     public Type(String dotPath) {
-        this(dotPath, "L" + dotPath.replace(".", "/") + ";", dotPath.replace(".", "/"));
+        this(dotPath, getDescriptor(dotPath), dotPath.replace(".", "/"));
     }
     
     public Type(Class<?> cls) {
