@@ -26,6 +26,13 @@ public record Type(String dotPath, String descriptor, String internalName)
     private static String getInternalName(final java.lang.reflect.Type type) {
         return type.getTypeName().replace('.', '/');
     }
+
+    private static String getDescriptor(final String dotPath) {
+        return org.objectweb.asm.Type.getType(switch (dotPath) {
+            case "byte", "short", "int", "char", "boolean", "double", "float", "long", "void" -> dotPath;
+            default -> "L" + dotPath.replace('.', '/') + ";";
+        }).getDescriptor();
+    }
     
     public static Type[] of(Class<?>... classes) {
         final Type[] types = new Type[classes.length];
