@@ -30,15 +30,30 @@ public class SourceReader {
     }
     
     public static byte[] getSource(final Class<?> cls) {
-        return getSource(new Type(cls));
-    }
-    
-    public static byte[] getSource(final Type type) {
-        try (final InputStream stream = ClassLoader.getSystemResourceAsStream(type.internalName() + ".class")) {
+        try (final InputStream stream = cls.getClassLoader().getResourceAsStream(new Type(cls).internalName() + ".class")) {
             assert stream != null;
             return stream.readAllBytes();
         } catch (IOException ex) {
             throw new RuntimeException(ex);
+        }
+    }
+    
+    public static byte[] getSource(final Type type) {
+        try (final InputStream stream = getSource0(type)) {
+            assert stream != null;
+            return stream.readAllBytes();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    private static InputStream getSource0(final Type type) {
+        try {
+            final InputStream stream = Class.forName(type.getTypeName()).getClassLoader().getResourceAsStream(type.internalName() + ".class");
+            if (stream == null) throw new NullPointerException();
+            return stream;
+        } catch (Throwable ex) {
+            return ClassLoader.getSystemResourceAsStream(type.internalName() + ".class");
         }
     }
     
