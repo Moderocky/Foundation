@@ -93,6 +93,16 @@ public class MethodBuilder implements SubBuilder {
         this.parameters.addAll(Arrays.asList(types));
         return this;
     }
+    
+    public MethodBuilder setParameter(int index, Type type) {
+        this.parameters.set(index, type);
+        return this;
+    }
+    
+    public MethodBuilder setParameter(int index, Class<?> type) {
+        this.parameters.set(index, new Type(type));
+        return this;
+    }
     //endregion
     
     //region Thrown Exceptions
