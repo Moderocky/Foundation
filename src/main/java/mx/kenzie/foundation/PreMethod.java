@@ -102,14 +102,15 @@ public class PreMethod extends BuildElement implements CodeBody {
     @Override
     public int hashCode() {
         return super.hashCode();
-    }    protected String makeDescriptor() {
+    }
+    
+    protected String makeDescriptor() {
         final StringBuilder builder = new StringBuilder("(");
         for (Type parameter : parameters) builder.append(parameter.descriptorString());
         builder.append(')').append(returnType.descriptorString());
         return builder.toString();
     }
     
-
     
     @Override
     protected int modifierCode() {

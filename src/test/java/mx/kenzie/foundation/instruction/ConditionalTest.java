@@ -4,6 +4,7 @@ import mx.kenzie.foundation.Block;
 import mx.kenzie.foundation.FoundationTest;
 import mx.kenzie.foundation.Loader;
 import mx.kenzie.foundation.PreMethod;
+import org.junit.Test;
 
 import java.lang.reflect.Method;
 
@@ -14,6 +15,7 @@ import static mx.kenzie.foundation.instruction.Instruction.*;
 
 public class ConditionalTest extends FoundationTest {
     
+    @Test
     public void testSimple() throws Throwable {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, BOOLEAN, "testSimple");
         method.line(STORE_VAR.booleanValue(0, FALSE));

@@ -4,7 +4,7 @@ import static org.objectweb.asm.Opcodes.*;
 
 public class Return extends MultiTypeInstruction {
     
-    public Return() {
+    Return() {
     }
     
     @Override

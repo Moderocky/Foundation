@@ -16,6 +16,7 @@ public interface Instruction {
     CallConstructor NEW = new CallConstructor();
     ThrowError THROW = new ThrowError();
     Conditional IF = new Conditional();
+    Equals EQUALS = new Equals();
     Instruction.Input NULL = visitor -> visitor.visitInsn(Opcodes.ACONST_NULL);
     Instruction.Input ZERO = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
         FALSE = visitor -> visitor.visitInsn(Opcodes.ICONST_0),

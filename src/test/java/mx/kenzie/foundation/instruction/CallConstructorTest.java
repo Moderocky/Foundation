@@ -3,6 +3,7 @@ package mx.kenzie.foundation.instruction;
 import mx.kenzie.foundation.FoundationTest;
 import mx.kenzie.foundation.Loader;
 import mx.kenzie.foundation.PreMethod;
+import org.junit.Test;
 
 import java.io.PrintStream;
 import java.lang.reflect.Method;
@@ -14,6 +15,7 @@ import static mx.kenzie.foundation.instruction.Instruction.*;
 
 public class CallConstructorTest extends FoundationTest {
     
+    @Test
     public void test() throws Throwable {
         final PreMethod main = new PreMethod(PUBLIC, STATIC, OBJECT, "main");
         main.line(STORE_VAR.object(0, NEW.of(thing).make()));
