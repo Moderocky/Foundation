@@ -6,7 +6,7 @@ public class PushShort {
     PushShort() {
     }
     
-    public Instruction.Input of(short s) {
+    public Instruction.Input of(int s) {
         return visitor -> visitor.visitIntInsn(Opcodes.SIPUSH, s);
     }
 }

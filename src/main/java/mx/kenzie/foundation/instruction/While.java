@@ -24,4 +24,17 @@ public class While extends Conditional {
         };
     }
     
+    public Block doWhile(Instruction.Input condition) {
+        return new Block() {
+            @Override
+            public void write(MethodVisitor visitor) {
+                visitor.visitLabel(start);
+                for (Instruction instruction : instructions) instruction.write(visitor);
+                condition.write(visitor);
+                visitor.visitJumpInsn(Opcodes.IFNE, start);
+                visitor.visitLabel(end);
+            }
+        };
+    }
+    
 }

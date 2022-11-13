@@ -10,8 +10,7 @@ import static mx.kenzie.foundation.Modifier.STATIC;
 import static mx.kenzie.foundation.Type.BOOLEAN;
 import static mx.kenzie.foundation.instruction.Instruction.*;
 import static mx.kenzie.foundation.instruction.Instruction.Math.PLUS;
-import static mx.kenzie.foundation.instruction.Instruction.Operator.EQ;
-import static mx.kenzie.foundation.instruction.Instruction.Operator.LESS;
+import static mx.kenzie.foundation.instruction.Instruction.Operator.*;
 
 public class WhileTest extends FoundationTest {
     
@@ -26,4 +25,14 @@ public class WhileTest extends FoundationTest {
         this.thing.add(method);
     }
     
+    @Test
+    public void testDoWhile() {
+        final PreMethod method = new PreMethod(PUBLIC, STATIC, BOOLEAN, "testDoWhile");
+        method.line(STORE_VAR.intValue(0, ZERO));
+        final Block check;
+        method.line(check = WHILE.doWhile(COMPARE.ints(LOAD_VAR.intValue(0), GREATER, CONSTANT.of(10))));
+        check.line(STORE_VAR.intValue(0, SUM.ints(LOAD_VAR.intValue(0), PLUS, ONE)));
+        method.line(RETURN.intValue(COMPARE.ints(LOAD_VAR.intValue(0), EQ, ONE)));
+        this.thing.add(method);
+    }
 }

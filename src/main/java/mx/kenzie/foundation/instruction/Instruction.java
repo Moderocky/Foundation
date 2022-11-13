@@ -15,11 +15,13 @@ public interface Instruction {
     CallSuper SUPER = new CallSuper();
     CallConstructor NEW = new CallConstructor();
     ThrowError THROW = new ThrowError();
-    Conditional IF = new Conditional(),
-        WHILE = new While();
+    Conditional IF = new Conditional();
+    While WHILE = new While();
+    ForEach FOR = new ForEach();
     Equals EQUALS = new Equals();
     Binary COMPARE = new Binary();
     Sum SUM = new Sum();
+    Increment INCREMENT = new Increment();
     Instruction.Input NULL = visitor -> visitor.visitInsn(Opcodes.ACONST_NULL);
     Instruction.Input ZERO = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
         FALSE = visitor -> visitor.visitInsn(Opcodes.ICONST_0),

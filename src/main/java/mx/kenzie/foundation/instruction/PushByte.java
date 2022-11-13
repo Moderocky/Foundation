@@ -6,7 +6,7 @@ public class PushByte {
     PushByte() {
     }
     
-    public Instruction.Input of(byte b) {
-        return visitor -> visitor.visitIntInsn(Opcodes.SIPUSH, b);
+    public Instruction.Input of(int b) {
+        return visitor -> visitor.visitIntInsn(Opcodes.BIPUSH, b);
     }
 }
