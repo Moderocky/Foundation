@@ -15,8 +15,11 @@ public interface Instruction {
     CallSuper SUPER = new CallSuper();
     CallConstructor NEW = new CallConstructor();
     ThrowError THROW = new ThrowError();
-    Conditional IF = new Conditional();
+    Conditional IF = new Conditional(),
+        WHILE = new While();
     Equals EQUALS = new Equals();
+    Binary COMPARE = new Binary();
+    Sum SUM = new Sum();
     Instruction.Input NULL = visitor -> visitor.visitInsn(Opcodes.ACONST_NULL);
     Instruction.Input ZERO = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
         FALSE = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
@@ -27,6 +30,25 @@ public interface Instruction {
     Instruction.Block BREAK = (visitor, block) -> {visitor.visitJumpInsn(Opcodes.GOTO, block.end);};
     
     void write(MethodVisitor visitor);
+    
+    enum Operator {
+        EQ,
+        LESS,
+        GREATER,
+        LESS_EQ,
+        GREATER_EQ,
+        NOT_EQ,
+        AND,
+        OR,
+        XOR,
+    }
+    
+    enum Math {
+        PLUS,
+        MINUS,
+        TIMES,
+        DIVIDED
+    }
     
     interface Base extends Instruction {
     

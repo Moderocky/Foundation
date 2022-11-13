@@ -2,11 +2,8 @@ package mx.kenzie.foundation.instruction;
 
 import mx.kenzie.foundation.Block;
 import mx.kenzie.foundation.FoundationTest;
-import mx.kenzie.foundation.Loader;
 import mx.kenzie.foundation.PreMethod;
 import org.junit.Test;
-
-import java.lang.reflect.Method;
 
 import static mx.kenzie.foundation.Modifier.PUBLIC;
 import static mx.kenzie.foundation.Modifier.STATIC;
@@ -16,17 +13,13 @@ import static mx.kenzie.foundation.instruction.Instruction.*;
 public class ConditionalTest extends FoundationTest {
     
     @Test
-    public void testSimple() throws Throwable {
-        final PreMethod method = new PreMethod(PUBLIC, STATIC, BOOLEAN, "testSimple");
+    public void testCheck() {
+        final PreMethod method = new PreMethod(PUBLIC, STATIC, BOOLEAN, "testCheck");
         method.line(STORE_VAR.booleanValue(0, FALSE));
         final Block check;
         method.line(check = IF.check(TRUE));
         check.line(STORE_VAR.booleanValue(0, TRUE));
         method.line(RETURN.intValue(LOAD_VAR.booleanValue(0)));
         this.thing.add(method);
-        final Class<?> loaded = thing.load(Loader.DEFAULT);
-        final Method entry = loaded.getDeclaredMethod("testSimple");
-        final boolean result = (boolean) entry.invoke(null);
-        assert result;
     }
 }

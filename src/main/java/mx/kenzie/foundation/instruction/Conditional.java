@@ -5,6 +5,9 @@ import org.objectweb.asm.Opcodes;
 
 public class Conditional {
     
+    Conditional() {
+    }
+    
     public Block check(Instruction.Input condition) {
         final Block block = new Block();
         block.line(((visitor, section) -> {

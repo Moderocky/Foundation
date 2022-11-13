@@ -7,14 +7,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
-import java.util.LinkedList;
-import java.util.List;
+import java.lang.reflect.Modifier;
 
 public abstract class FoundationTest {
     static FoundationTest test;
     protected final PreClass thing;
-    protected final List<String> tests = new LinkedList<>();
-
+    
     {
         test = this;
     }
@@ -42,13 +40,14 @@ public abstract class FoundationTest {
     
     @AfterClass
     public static void finish() throws Exception {
-        if (test.tests.size() > 0) {
-            final Class<?> loaded = test.thing.load(Loader.DEFAULT);
-            for (String test : test.tests) {
-                final Method method = loaded.getDeclaredMethod(test);
-                final boolean result = (boolean) method.invoke(null);
-                assert result : test;
-            }
+        final Class<?> loaded = test.thing.load(Loader.DEFAULT);
+        for (Method method : loaded.getDeclaredMethods()) {
+            if (method.getReturnType() != boolean.class) continue;
+            if (!Modifier.isStatic(method.getModifiers())) continue;
+            if (!Modifier.isPublic(method.getModifiers())) continue;
+            if (method.getParameterCount() > 0) continue;
+            final boolean result = (boolean) method.invoke(null);
+            assert result : method.getName();
         }
     }
     
