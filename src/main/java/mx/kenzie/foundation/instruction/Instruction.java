@@ -23,6 +23,7 @@ public interface Instruction {
     Sum SUM = new Sum();
     Increment INCREMENT = new Increment();
     Negate NOT = new Negate();
+    Cast CAST = new Cast();
     Instruction.Input NULL = visitor -> visitor.visitInsn(Opcodes.ACONST_NULL);
     Instruction.Input ZERO = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
         FALSE = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
@@ -50,6 +51,28 @@ public interface Instruction {
         MINUS,
         TIMES,
         DIVIDED
+    }
+    
+    enum Convert {
+        INT_TO_BYTE(Opcodes.I2B),
+        INT_TO_SHORT(Opcodes.I2S),
+        INT_TO_LONG(Opcodes.I2L),
+        INT_TO_FLOAT(Opcodes.I2F),
+        INT_TO_DOUBLE(Opcodes.I2D),
+        LONG_TO_INT(Opcodes.L2I),
+        LONG_TO_FLOAT(Opcodes.L2F),
+        LONG_TO_DOUBLE(Opcodes.L2D),
+        FLOAT_TO_INT(Opcodes.F2I),
+        FLOAT_TO_LONG(Opcodes.F2L),
+        FLOAT_TO_DOUBLE(Opcodes.F2D),
+        DOUBLE_TO_INT(Opcodes.D2I),
+        DOUBLE_TO_LONG(Opcodes.D2L),
+        DOUBLE_TO_FLOAT(Opcodes.D2F);
+        public final int opcode;
+        
+        Convert(int opcode) {
+            this.opcode = opcode;
+        }
     }
     
     interface Base extends Instruction {
