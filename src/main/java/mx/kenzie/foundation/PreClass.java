@@ -45,6 +45,36 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
         return method;
     }
     
+    @Override
+    public void addModifiers(Modifier... modifiers) {
+        this.modifiers.addAll(Arrays.asList(modifiers));
+    }
+    
+    @Override
+    public void removeModifiers(Modifier... modifiers) {
+        for (Modifier modifier : modifiers) this.modifiers.remove(modifier);
+    }
+    
+    @Override
+    public boolean hasModifier(Modifier modifier) {
+        return modifiers.contains(modifier);
+    }
+    
+    @Override
+    protected int modifierCode() {
+        int modifiers = 0;
+        for (Modifier modifier : this.modifiers) modifiers |= modifier.code;
+        return modifiers;
+    }
+    
+    @Override
+    protected void build(ClassWriter writer) {
+        writer.visit(version, this.modifierCode(), type.internalName(), null, parent.internalName(), null);
+        // todo annotations
+        for (PreField field : fields) field.build(writer);
+        for (PreMethod method : methods) method.build(writer);
+    }
+    
     public void setAbstract(boolean isAbstract) {
         if (isAbstract) modifiers.add(Modifier.ABSTRACT);
         else {
@@ -101,21 +131,6 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
         final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         this.build(writer);
         return writer.toByteArray();
-    }
-    
-    @Override
-    protected int modifierCode() {
-        int modifiers = 0;
-        for (Modifier modifier : this.modifiers) modifiers |= modifier.code;
-        return modifiers;
-    }
-    
-    @Override
-    protected void build(ClassWriter writer) {
-        writer.visit(version, this.modifierCode(), type.internalName(), null, parent.internalName(), null);
-        // todo annotations
-        for (PreField field : fields) field.build(writer);
-        for (PreMethod method : methods) method.build(writer);
     }
     
     @Override

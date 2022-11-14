@@ -20,7 +20,7 @@ This was changed to make it easier and more intuitive to write code.
 
 Foundation 2 aims to reflect Java code line structure, so that users do not need to worry about managing the stack.
 
-```java
+```kt
 // Object var1 = "hello there"
 method.line(STORE_VAR.object(1, CONSTANT.of("hello there"));
 // return var1
@@ -56,84 +56,56 @@ Foundation also supports the subroutine jump/return instructions which were remo
 ### Examples
 
 Generate and load a very simple class.
-```java 
-final Class<?> cls = new ClassBuilder("org.example.Simple")
-    .addField("box")
-        .setType(int.class)
-        .finish()
-    .addConstructor()
-        .finish()
-    .compileAndLoad();
+
+```java
+class MyClass {
+    Class<?> test() {
+        final PreClass builder = new PreClass("org.example", "Thing");
+        final PreMethod method = new PreMethod(PUBLIC, STATIC, VOID, "main", String[].class);
+        method.line(RETURN.none());
+        builder.add(method);
+        return builder.load(Loader.DEFAULT); // built-in basic class loader
+    }
+}
  ```
 
-As Java adds an implicit constructor to all classes, this would be the equivalent of:
+This would generate the code:
 ```java
-public class Simple {
-    public int box;
+public class Thing {
+    public static void main(String[] args) {
+        return;
+    }
 }
 ```
 
 Generate a runnable class.
 
-```java 
-final Class<?> cls = new ClassBuilder("org.example.Runner")
-    .addInterfaces(Runnable.class)
-    .addConstructor().finish()
-    .addMethod("run")
-        .setReturnType(void.class)
-        .addModifiers(PUBLIC)
-        .writeCode(
-            loadConstant("Hello there."), // LDC
-            getField(System.class.getField("out")), // GETSTATIC
-            swap(), // SWAP
-            invoke(PrintStream.class.getMethod("println", String.class)), // INVOKEVIRTUAL
-            returnEmpty() // RETURN
-        )
-        .finish()
-    .compileAndLoad();
+```java
+class MyClass {
+    Class<?> test() {
+        // references to System.out and out.println(..)
+        final CallMethod.Stub target = METHOD.of(PrintStream.class, "println", String.class);
+        final AccessField.Stub field = FIELD.of(System.class, "out", PrintStream.class);
+        
+        final PreClass builder = new PreClass("org.example", "Thing");
+        builder.addInterfaces(Runnable.class);
+        final PreMethod method = new PreMethod(PUBLIC, VOID, "run");
+        method.line(target.call(field.get(), CONSTANT.of("hello there!")));
+        method.line(RETURN.none());
+        builder.add(method);
+        return builder.load(Loader.DEFAULT); // built-in basic class loader
+    }
+}
 ```
 
 This would be the equivalent of:
 ```java
-class Runner implements Runnable {
+class Thing implements Runnable {
     
     @Override // Overrides are implicit.
     public void run() {
-        System.out.println("Hello there.");
+        System.out.println("hello there!");
     }
 }
 ```
 
-Create simple try/catch sections with ease.
-The `throwErrorMessage` and `println` instructions are "helper" methods with pre-defined instructions in to make common or simple tasks easier. Other helper methods exist for creating instances, calling super-constructors, boolean assertions, etc.
-
-```java 
-final Class<?> cls = new ClassBuilder("org.example.Thing")
-    .addConstructor().finish()
-    .addMethod("myMethod")
-        .setReturnType(void.class)
-        .addModifiers(PUBLIC)
-        .writeCode(
-            trySection(
-                throwErrorMessage("Error is caught!")
-            ).catchSection(
-                println("Catch section was run.")
-            ),
-            returnEmpty()
-        )
-        .finish()
-    .compileAndLoad();
-```
-
-This would be the equivalent of:
-```java
-class Thing {
-    public void myMethod() {
-        try {
-            throw new RuntimeException("Error is caught!");
-        } catch (Throwable ex) {
-            System.out.println("Catch section was run.");
-        }
-    }
-}
-```

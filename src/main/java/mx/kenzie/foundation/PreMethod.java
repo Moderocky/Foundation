@@ -73,6 +73,28 @@ public class PreMethod extends BuildElement implements CodeBody {
         return modifiers.contains(modifier);
     }
     
+    @Override
+    protected int modifierCode() {
+        int modifiers = 0;
+        for (Modifier modifier : this.modifiers) modifiers |= modifier.code;
+        return modifiers;
+    }
+    
+    @Override
+    protected void build(ClassWriter writer) {
+        final MethodVisitor visitor = writer.visitMethod(this.modifierCode(), name, this.makeDescriptor(), null, null);
+        for (Instruction instruction : instructions) instruction.write(visitor);
+        visitor.visitMaxs(stack, locals);
+        visitor.visitEnd();
+    }
+    
+    protected String makeDescriptor() {
+        final StringBuilder builder = new StringBuilder("(");
+        for (Type parameter : parameters) builder.append(parameter.descriptorString());
+        builder.append(')').append(returnType.descriptorString());
+        return builder.toString();
+    }
+    
     public void addParameters(Type... parameters) {
         this.parameters.addAll(Arrays.asList(parameters));
     }
@@ -102,29 +124,6 @@ public class PreMethod extends BuildElement implements CodeBody {
     @Override
     public int hashCode() {
         return super.hashCode();
-    }
-    
-    protected String makeDescriptor() {
-        final StringBuilder builder = new StringBuilder("(");
-        for (Type parameter : parameters) builder.append(parameter.descriptorString());
-        builder.append(')').append(returnType.descriptorString());
-        return builder.toString();
-    }
-    
-    
-    @Override
-    protected int modifierCode() {
-        int modifiers = 0;
-        for (Modifier modifier : this.modifiers) modifiers |= modifier.code;
-        return modifiers;
-    }
-    
-    @Override
-    protected void build(ClassWriter writer) {
-        final MethodVisitor visitor = writer.visitMethod(this.modifierCode(), name, this.makeDescriptor(), null, null);
-        for (Instruction instruction : instructions) instruction.write(visitor);
-        visitor.visitMaxs(stack, locals);
-        visitor.visitEnd();
     }
     
     
