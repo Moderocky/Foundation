@@ -10,16 +10,29 @@ This over-complication makes writing simple bytecode-generating utilities more d
 
 While such tools are undoubtedly useful (and appropriate in many situations) users can develop an unnecessary dependency on them and find themselves incapable of designing the bytecode without the tool to do it for them.
 
-Foundation is designed to set a balance between doing too much and too little, while also providing a builder method to make the process cleaner.
+Foundation is designed to set a balance between doing too much and too little, while also matching the line format and structure of Java code.
 Foundation uses [ASM](https://asm.ow2.io) internally to create the bytecode and automatically calculate stack map frames and sizes.
+
+
+## Foundation 2
+From Foundation 2, instructions do **not** directly correspond to JVM 'opcodes'.
+This was changed to make it easier and more intuitive to write code.
+
+Foundation 2 aims to reflect Java code line structure, so that users do not need to worry about managing the stack.
+
+```java
+// Object var1 = "hello there"
+method.line(STORE_VAR.object(1, CONSTANT.of("hello there"));
+// return var1
+method.line(RETURN.object(LOAD_VAR.object(1))));
+```
 
 ### Maven Information
 
 ```xml
 <repository>
-    <id>pan-repo</id>
-    <name>Pandaemonium Repository</name>
-    <url>https://gitlab.com/api/v4/projects/18568066/packages/maven</url>
+    <id>kenzie</id>
+    <url>https://repo.kenzie.mx/releases</url>
 </repository>
 ``` 
 
@@ -27,7 +40,7 @@ Foundation uses [ASM](https://asm.ow2.io) internally to create the bytecode and 
 <dependency>
     <groupId>mx.kenzie</groupId>
     <artifactId>foundation</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
     <scope>compile</scope>
 </dependency>
 ```

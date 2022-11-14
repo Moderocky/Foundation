@@ -4,10 +4,20 @@ import mx.kenzie.foundation.Type;
 import org.objectweb.asm.Opcodes;
 
 import java.lang.invoke.TypeDescriptor;
+import java.lang.reflect.Method;
 
 public class CallMethod {
     
     CallMethod() {
+    }
+    
+    public Stub of(Class<?> owner, String name, Class<?>... parameters) {
+        try {
+            final Method method = owner.getMethod(name, parameters);
+            return of(owner, method.getReturnType(), name, parameters);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
     
     @SafeVarargs

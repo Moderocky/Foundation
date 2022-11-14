@@ -22,6 +22,7 @@ public interface Instruction {
     Binary COMPARE = new Binary();
     Sum SUM = new Sum();
     Increment INCREMENT = new Increment();
+    Negate NOT = new Negate();
     Instruction.Input NULL = visitor -> visitor.visitInsn(Opcodes.ACONST_NULL);
     Instruction.Input ZERO = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
         FALSE = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
