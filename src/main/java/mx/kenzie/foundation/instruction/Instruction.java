@@ -28,8 +28,7 @@ public interface Instruction {
         FALSE = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
         ONE = visitor -> visitor.visitInsn(Opcodes.ICONST_1),
         TRUE = visitor -> visitor.visitInsn(Opcodes.ICONST_1);
-    PushByte BYTE = new PushByte();
-    PushShort SHORT = new PushShort();
+    Push PUSH = new Push();
     Instruction.Block BREAK = (visitor, block) -> {visitor.visitJumpInsn(Opcodes.GOTO, block.end);};
     
     void write(MethodVisitor visitor);

@@ -1,6 +1,7 @@
 package mx.kenzie.foundation;
 
 import mx.kenzie.foundation.instruction.CallMethod;
+import org.junit.Test;
 
 import java.lang.reflect.Method;
 
@@ -10,6 +11,7 @@ import static mx.kenzie.foundation.instruction.Instruction.*;
 
 public class PreMethodTest extends FoundationTest {
     
+    @Test
     public void testSetReturnType() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, STRING, "testSetReturnType");
         method.line(RETURN.none());
@@ -20,6 +22,7 @@ public class PreMethodTest extends FoundationTest {
         assert method.returnType.toClass() == void.class;
     }
     
+    @Test
     public void testLine() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, STRING, "testLine");
         method.line(STORE_VAR.object(0, CONSTANT.of("hello")));
@@ -29,6 +32,7 @@ public class PreMethodTest extends FoundationTest {
         assert method.returnType.toClass() == String.class;
     }
     
+    @Test
     public void testCallMethod() throws Throwable {
         final PreClass blob = new PreClass("org.example", "Thing2");
         final PreMethod getter = new PreMethod(PUBLIC, STATIC, STRING, "testCallMethodGet");
@@ -48,18 +52,18 @@ public class PreMethodTest extends FoundationTest {
         this.dump(blob);
     }
     
+    @Test
     public void testAddModifiers() {
         final PreMethod method = new PreMethod(PUBLIC, STRING, "testAddModifiers");
-        thing.add(method);
         assert !java.lang.reflect.Modifier.isStatic(method.modifierCode());
         method.addModifiers(STATIC);
         assert java.lang.reflect.Modifier.isPublic(method.modifierCode());
         assert java.lang.reflect.Modifier.isStatic(method.modifierCode());
     }
     
+    @Test
     public void testRemoveModifiers() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, STRING, "testRemoveModifiers");
-        thing.add(method);
         assert java.lang.reflect.Modifier.isPublic(method.modifierCode());
         assert java.lang.reflect.Modifier.isStatic(method.modifierCode());
         method.removeModifiers(STATIC);
@@ -69,9 +73,9 @@ public class PreMethodTest extends FoundationTest {
         assert java.lang.reflect.Modifier.isAbstract(method.modifierCode());
     }
     
+    @Test
     public void testHasModifier() {
         final PreMethod method = new PreMethod(PRIVATE, STATIC, STRING, "testHasModifier");
-        thing.add(method);
         assert !java.lang.reflect.Modifier.isPublic(method.modifierCode());
         assert java.lang.reflect.Modifier.isPrivate(method.modifierCode());
         assert java.lang.reflect.Modifier.isStatic(method.modifierCode());
@@ -81,18 +85,18 @@ public class PreMethodTest extends FoundationTest {
         assert !method.hasModifier(ABSTRACT);
     }
     
+    @Test
     public void testAddParameters() {
         final PreMethod method = new PreMethod("testAddParameters");
-        thing.add(method);
         assert method.getParameters().length == 0;
         method.addParameters(STRING, BOOLEAN);
         assert method.getParameters().length == 2;
         assert method.getParameters()[1] == BOOLEAN;
     }
     
+    @Test
     public void testRemoveParameters() {
         final PreMethod method = new PreMethod("testRemoveParameters", INT, LONG, INT);
-        thing.add(method);
         assert method.getParameters().length == 3;
         method.removeParameters(INT);
         final Type[] types = method.getParameters();
@@ -101,9 +105,9 @@ public class PreMethodTest extends FoundationTest {
         assert types[1] == INT;
     }
     
+    @Test
     public void testRemoveParameter() {
         final PreMethod method = new PreMethod("testRemoveParameter", INT, LONG, INT);
-        thing.add(method);
         assert method.getParameters().length == 3;
         method.removeParameter(1);
         final Type[] types = method.getParameters();
@@ -112,9 +116,9 @@ public class PreMethodTest extends FoundationTest {
         assert types[1] == INT;
     }
     
+    @Test
     public void testGetParameters() {
         final PreMethod method = new PreMethod("testGetParameters", INT, LONG, INT);
-        thing.add(method);
         final Type[] types = method.getParameters();
         assert types.length == 3;
         assert types[0] == INT;

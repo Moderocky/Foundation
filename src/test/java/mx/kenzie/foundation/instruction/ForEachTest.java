@@ -19,11 +19,11 @@ public class ForEachTest extends FoundationTest {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, BOOLEAN, "testLoop");
         final Block check = FOR.loop(
             STORE_VAR.intValue(0, ZERO),
-            COMPARE.ints(LOAD_VAR.intValue(0), LESS, BYTE.of(10)),
+            COMPARE.ints(LOAD_VAR.intValue(0), LESS, PUSH.byteValue(10)),
             INCREMENT.var(0, 1)
         );
         method.line(check);
-        method.line(RETURN.intValue(COMPARE.ints(LOAD_VAR.intValue(0), EQ, BYTE.of(10))));
+        method.line(RETURN.intValue(COMPARE.ints(LOAD_VAR.intValue(0), EQ, PUSH.byteValue(10))));
         this.thing.add(method);
     }
     

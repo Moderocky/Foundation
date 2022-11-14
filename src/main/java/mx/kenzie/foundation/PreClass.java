@@ -11,12 +11,13 @@ import java.util.Set;
 
 public class PreClass extends BuildElement implements TypeDescriptor, java.lang.reflect.Type {
     
+    protected final Set<Type> interfaces = new HashSet<>();
+    protected final Set<Modifier> modifiers = new HashSet<>();
+    protected final Set<PreMethod> methods = new HashSet<>();
+    protected final Set<PreField> fields = new HashSet<>();
     protected int version;
     protected String path, name;
     protected Type type, parent;
-    protected Set<Type> interfaces;
-    protected Set<Modifier> modifiers;
-    protected Set<PreMethod> methods;
     
     public PreClass(String path, String name) {
         this(Opcodes.V17, path, name);
@@ -24,15 +25,18 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
     
     public PreClass(int version, String path, String name) {
         this.version = version;
-        this.methods = new HashSet<>();
         this.parent = Type.OBJECT;
-        this.interfaces = new HashSet<>();
-        this.modifiers = new HashSet<>();
         this.modifiers.add(Modifier.PUBLIC);
         this.path = path;
         this.name = name;
         final String internal = path.replace('.', '/') + '/' + name;
         this.type = new Type(path + '.' + name, 'L' + internal + ';', internal);
+    }
+    
+    public PreField add(PreField field) {
+        this.fields.add(field);
+        field.owner = this;
+        return field;
     }
     
     public PreMethod add(PreMethod method) {
@@ -110,7 +114,7 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
     protected void build(ClassWriter writer) {
         writer.visit(version, this.modifierCode(), type.internalName(), null, parent.internalName(), null);
         // todo annotations
-        // todo fields
+        for (PreField field : fields) field.build(writer);
         for (PreMethod method : methods) method.build(writer);
     }
     
