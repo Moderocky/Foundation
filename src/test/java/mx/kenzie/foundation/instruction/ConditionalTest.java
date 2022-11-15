@@ -22,4 +22,20 @@ public class ConditionalTest extends FoundationTest {
         method.line(RETURN.intValue(LOAD_VAR.booleanValue(0)));
         this.thing.add(method);
     }
+    
+    @Test
+    public void testElse() {
+        final PreMethod method = new PreMethod(PUBLIC, STATIC, BOOLEAN, "testElse");
+        method.line(STORE_VAR.booleanValue(0, FALSE));
+        final Block.If check;
+        method.line(check = IF.check(FALSE));
+        check.line(STORE_VAR.booleanValue(0, FALSE));
+        final Block otherwise = check.elseBlock();
+        otherwise.line(STORE_VAR.booleanValue(0, TRUE));
+        final Block.If next;
+        method.line(next = IF.check(LOAD_VAR.intValue(0)));
+        next.line(RETURN.intValue(TRUE));
+        next.elseBlock().line(RETURN.intValue(FALSE));
+        this.thing.add(method);
+    }
 }

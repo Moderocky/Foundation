@@ -4,12 +4,11 @@ import mx.kenzie.foundation.Block;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-public class While extends Conditional {
+public class While {
     
     While() {
     }
     
-    @Override
     public Block check(Instruction.Input condition) {
         return new Block() {
             @Override

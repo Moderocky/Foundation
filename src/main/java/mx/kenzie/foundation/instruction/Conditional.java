@@ -2,7 +2,6 @@ package mx.kenzie.foundation.instruction;
 
 import mx.kenzie.foundation.Block;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -11,13 +10,8 @@ public class Conditional {
     Conditional() {
     }
     
-    public Block check(Instruction.Input condition) {
-        final Block block = new Block();
-        block.line(((visitor, section) -> {
-            condition.write(visitor);
-            visitor.visitJumpInsn(Opcodes.IFEQ, section.end);
-        }));
-        return block;
+    public Block.If check(Instruction.Input condition) {
+        return new Block.If(condition);
     }
     
     public Block compareInts(Instruction.Input a, Instruction.Operator operator, Instruction.Input b) {
