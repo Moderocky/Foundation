@@ -70,7 +70,7 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
     @Override
     protected void build(ClassWriter writer) {
         writer.visit(version, this.modifierCode(), type.internalName(), null, parent.internalName(), null);
-        // todo annotations
+        for (PreAnnotation annotation : annotations) annotation.write(writer);
         for (PreField field : fields) field.build(writer);
         for (PreMethod method : methods) method.build(writer);
     }

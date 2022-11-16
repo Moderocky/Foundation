@@ -69,6 +69,7 @@ public class PreField extends BuildElement {
     @Override
     protected void build(ClassWriter writer) {
         final FieldVisitor visitor = writer.visitField(this.modifierCode(), name, type.descriptorString(), null, value);
+        for (PreAnnotation annotation : annotations) annotation.write(visitor);
         visitor.visitEnd();
     }
     

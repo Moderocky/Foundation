@@ -83,6 +83,7 @@ public class PreMethod extends BuildElement implements CodeBody {
     @Override
     protected void build(ClassWriter writer) {
         final MethodVisitor visitor = writer.visitMethod(this.modifierCode(), name, this.makeDescriptor(), null, null);
+        for (PreAnnotation annotation : annotations) annotation.write(visitor);
         for (Instruction instruction : instructions) instruction.write(visitor);
         visitor.visitMaxs(stack, locals);
         visitor.visitEnd();
