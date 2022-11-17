@@ -110,7 +110,7 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
         assert this.type.equals(type);
         for (PreMethod method : methods) {
             final Class<?>[] parameters = Type.classArray(method.parameters.toArray(new Type[0]));
-            Method found;
+            final Method found;
             try {
                 found = loaded.getDeclaredMethod(method.name, parameters);
             } catch (NoSuchMethodException ex) {
@@ -131,6 +131,10 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
         final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         this.build(writer);
         return writer.toByteArray();
+    }
+    
+    public UnloadedClass compile() {
+        return new UnloadedClass(type, this.bytecode());
     }
     
     @Override
