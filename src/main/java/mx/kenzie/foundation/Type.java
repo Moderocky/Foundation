@@ -21,6 +21,11 @@ public record Type(String getTypeName, String descriptorString, String internalN
         OBJECT = Type.of(Object.class),
         STRING = Type.of(String.class);
     
+    public static Type of(String path, String name) {
+        final String internal = path.replace('.', '/') + '/' + name;
+        return new Type(path + '.' + name, 'L' + internal + ';', internal);
+    }
+    
     @SafeVarargs
     public static <Klass extends java.lang.reflect.Type & TypeDescriptor> Type[] array(Klass... values) {
         final Type[] types = new Type[values.length];
