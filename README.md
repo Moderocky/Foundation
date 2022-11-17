@@ -20,12 +20,11 @@ This was changed to make it easier and more intuitive to write code.
 
 Foundation 2 aims to reflect Java code line structure, so that users do not need to worry about managing the stack.
 
-```kt
-// Object var1 = "hello there"
-method.line(STORE_VAR.object(1, CONSTANT.of("hello there"));
-// return var1
-method.line(RETURN.object(LOAD_VAR.object(1))));
-```
+`Object var1 = "hello there"` \
+`method.line(STORE_VAR.object(1, CONSTANT.of("hello there"));` \
+`return var1` \
+`method.line(RETURN.object(LOAD_VAR.object(1))));`
+
 
 ### Maven Information
 
@@ -47,11 +46,9 @@ method.line(RETURN.object(LOAD_VAR.object(1))));
 
 ### Supported Functionality
 
-Foundation has instructions for almost all of the basic operation codes, a list of which can be found [here](https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html).
+Foundation supports almost all basic instructions from Java, including variable and field access, method calls, branches, arithmetic and instantiation.
 
-Many of these have been wrapped in simplified helper methods for utility (and to make their purpose clearer.)
-
-Foundation also supports the subroutine jump/return instructions which were removed in Java 6 (sadly) - to use these, the compilation target must be set to `JAVA_5` and computation must be set to `1`. Subroutines were re-usable code sections that could be jumped to and would return to the pre-jump position upon completion.
+Foundation 2 has dropped support for individual bytecode instructions to provide more safety for beginners handling stack operations.
 
 ### Examples
 
@@ -101,7 +98,6 @@ class MyClass {
 This would be the equivalent of:
 ```java
 class Thing implements Runnable {
-    
     @Override // Overrides are implicit.
     public void run() {
         System.out.println("hello there!");
