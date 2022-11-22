@@ -6,6 +6,10 @@ public interface CodeBody {
     
     void line(Instruction.Base instruction);
     
+    default Instruction getLine(int line) {
+        return this.lines()[line];
+    }
+    
     Instruction[] lines();
     
 }
