@@ -12,7 +12,7 @@ import java.util.Arrays;
 import static mx.kenzie.foundation.instruction.Instruction.RETURN;
 
 public class PreAnnotationTest extends FoundationTest {
-    
+
     @Test
     public void testSetVisible() throws Throwable {
         final PreClass test = new PreClass("org.example", "testSetVisible");
@@ -36,7 +36,7 @@ public class PreAnnotationTest extends FoundationTest {
         assert yes.isAnnotationPresent(First.class);
         assert !no.isAnnotationPresent(First.class);
     }
-    
+
     @Test
     public void testSetType() throws Throwable {
         final PreClass test = new PreClass("org.example", "testSetType");
@@ -63,7 +63,7 @@ public class PreAnnotationTest extends FoundationTest {
         assert no.isAnnotationPresent(Second.class);
         assert yes.getAnnotation(First.class).value().equals("hello");
     }
-    
+
     @Test
     public void testGetValues() throws Throwable {
         final PreClass test = new PreClass("org.example", "testGetValues");
@@ -72,7 +72,7 @@ public class PreAnnotationTest extends FoundationTest {
         annotation.addValue("value", "there");
         annotation.addValue("valueInt", 6);
         annotation.addValue("valueClass", String[].class);
-        annotation.addValue("array", new String[] {"hello", "there"});
+        annotation.addValue("array", new String[]{"hello", "there"});
         method.addAnnotation(annotation);
         method.addAnnotation(new PreAnnotation(Second.class));
         method.line(RETURN.none());
@@ -86,9 +86,9 @@ public class PreAnnotationTest extends FoundationTest {
         assert result.getAnnotation(First.class).valueInt() == 6;
         assert result.getAnnotation(First.class).valueClass() == String[].class;
         final String[] array = result.getAnnotation(First.class).array();
-        assert Arrays.equals(array, new String[] {"hello", "there"});
+        assert Arrays.equals(array, new String[]{"hello", "there"});
     }
-    
+
     @Test
     public void testAddValueAnnotation() throws Throwable {
         final PreClass test = new PreClass("org.example", "testAddValueAnnotation");
@@ -104,7 +104,7 @@ public class PreAnnotationTest extends FoundationTest {
         assert third.blob() != null;
         assert third.blob().value() == 2;
     }
-    
+
     @Test
     public void testWrite() {
         final PreAnnotation third = new PreAnnotation(Third.class);
@@ -116,46 +116,46 @@ public class PreAnnotationTest extends FoundationTest {
         annotation.addValue("value", "there");
         annotation.addValue("valueInt", 6);
         annotation.addValue("valueClass", String[].class);
-        annotation.addValue("array", new String[] {"hello", "there"});
+        annotation.addValue("array", new String[]{"hello", "there"});
         method.addAnnotation(annotation);
         method.addAnnotation(new PreAnnotation(Second.class));
         method.line(RETURN.none());
         this.thing.addAnnotation(third);
         this.thing.add(method);
     }
-    
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD, ElementType.TYPE, ElementType.FIELD})
     public @interface First {
         String value() default "hello";
-        
+
         Class<?> valueClass() default void.class;
-        
+
         int valueInt() default 0;
-        
+
         String[] array() default {};
     }
-    
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD, ElementType.TYPE, ElementType.FIELD})
     public @interface Second {
         String value() default "bean";
-        
+
         int valueInt() default 0;
-        
+
         Class<?> valueClass() default void.class;
     }
-    
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD, ElementType.TYPE, ElementType.FIELD})
     public @interface Third {
         String value() default "test";
-        
+
         Fourth blob();
     }
-    
+
     public @interface Fourth {
         int value() default 0;
     }
-    
+
 }

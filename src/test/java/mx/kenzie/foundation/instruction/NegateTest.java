@@ -10,7 +10,7 @@ import static mx.kenzie.foundation.Type.BOOLEAN;
 import static mx.kenzie.foundation.instruction.Instruction.*;
 
 public class NegateTest extends FoundationTest {
-    
+
     @Test
     public void testInvert() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, BOOLEAN, "testInvert");

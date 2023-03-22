@@ -5,7 +5,7 @@ import org.objectweb.asm.Opcodes;
 
 @FunctionalInterface
 public interface Instruction {
-    
+
     LoadVariable LOAD_VAR = new LoadVariable();
     StoreVariable STORE_VAR = new StoreVariable();
     Return RETURN = new Return();
@@ -24,16 +24,16 @@ public interface Instruction {
     Increment INCREMENT = new Increment();
     Negate NOT = new Negate();
     Cast CAST = new Cast();
-    Instruction.Input NULL = visitor -> visitor.visitInsn(Opcodes.ACONST_NULL);
-    Instruction.Input ZERO = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
+    Instruction.Input<Void> NULL = visitor -> visitor.visitInsn(Opcodes.ACONST_NULL);
+    Instruction.Input<Integer> ZERO = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
         FALSE = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
         ONE = visitor -> visitor.visitInsn(Opcodes.ICONST_1),
         TRUE = visitor -> visitor.visitInsn(Opcodes.ICONST_1);
     Push PUSH = new Push();
-    Instruction.Block BREAK = (visitor, block) -> {visitor.visitJumpInsn(Opcodes.GOTO, block.end);};
-    
+    Instruction.Block BREAK = (visitor, block) -> visitor.visitJumpInsn(Opcodes.GOTO, block.end);
+
     void write(MethodVisitor visitor);
-    
+
     enum Operator {
         EQ,
         LESS,
@@ -45,14 +45,14 @@ public interface Instruction {
         OR,
         XOR,
     }
-    
+
     enum Math {
         PLUS,
         MINUS,
         TIMES,
         DIVIDED
     }
-    
+
     enum Convert {
         INT_TO_BYTE(Opcodes.I2B),
         INT_TO_SHORT(Opcodes.I2S),
@@ -69,22 +69,22 @@ public interface Instruction {
         DOUBLE_TO_LONG(Opcodes.D2L),
         DOUBLE_TO_FLOAT(Opcodes.D2F);
         public final int opcode;
-        
+
         Convert(int opcode) {
             this.opcode = opcode;
         }
     }
-    
+
     interface Base extends Instruction {
-    
+
     }
-    
-    interface Input extends Instruction {
-    
+
+    interface Input<Type> extends Instruction {
+
     }
-    
+
     interface Block {
         void write(MethodVisitor visitor, mx.kenzie.foundation.Block block);
     }
-    
+
 }

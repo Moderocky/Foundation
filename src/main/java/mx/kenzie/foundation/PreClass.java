@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PreClass extends BuildElement implements TypeDescriptor, java.lang.reflect.Type {
-    
+
     protected final Set<Type> interfaces = new HashSet<>();
     protected final Set<Modifier> modifiers = new HashSet<>();
     protected final Set<PreMethod> methods = new HashSet<>();
@@ -18,11 +18,11 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
     protected int version;
     protected String path, name;
     protected Type type, parent;
-    
+
     public PreClass(String path, String name) {
         this(Opcodes.V17, path, name);
     }
-    
+
     public PreClass(int version, String path, String name) {
         this.version = version;
         this.parent = Type.OBJECT;
@@ -32,41 +32,41 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
         final String internal = path.replace('.', '/') + '/' + name;
         this.type = new Type(path + '.' + name, 'L' + internal + ';', internal);
     }
-    
+
     public PreField add(PreField field) {
         this.fields.add(field);
         field.owner = this;
         return field;
     }
-    
+
     public PreMethod add(PreMethod method) {
         this.methods.add(method);
         method.owner = this;
         return method;
     }
-    
+
     @Override
     public void addModifiers(Modifier... modifiers) {
         this.modifiers.addAll(Arrays.asList(modifiers));
     }
-    
+
     @Override
     public void removeModifiers(Modifier... modifiers) {
         for (Modifier modifier : modifiers) this.modifiers.remove(modifier);
     }
-    
+
     @Override
     public boolean hasModifier(Modifier modifier) {
         return modifiers.contains(modifier);
     }
-    
+
     @Override
     protected int modifierCode() {
         int modifiers = 0;
         for (Modifier modifier : this.modifiers) modifiers |= modifier.code;
         return modifiers;
     }
-    
+
     @Override
     protected void build(ClassWriter writer) {
         writer.visit(version, this.modifierCode(), type.internalName(), null, parent.internalName(), null);
@@ -74,7 +74,7 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
         for (PreField field : fields) field.build(writer);
         for (PreMethod method : methods) method.build(writer);
     }
-    
+
     public void setAbstract(boolean isAbstract) {
         if (isAbstract) modifiers.add(Modifier.ABSTRACT);
         else {
@@ -82,27 +82,27 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
             modifiers.remove(Modifier.ABSTRACT);
         }
     }
-    
+
     public void setInterface(boolean anInterface) {
         if (anInterface) {
             modifiers.add(Modifier.ABSTRACT);
             modifiers.add(Modifier.INTERFACE);
         } else modifiers.remove(Modifier.INTERFACE);
     }
-    
+
     public void setParent(Type parent) {
         this.parent = parent;
     }
-    
+
     public void addInterfaces(Type... interfaces) {
         this.interfaces.addAll(Arrays.asList(interfaces));
     }
-    
+
     public void remove(PreMethod method) {
         this.methods.remove(method);
         if (method.owner == this) method.owner = null;
     }
-    
+
     public boolean verify() {
         final Loader loader = new SimpleClassLoader(ClassLoader.getSystemClassLoader());
         final Class<?> loaded = this.load(loader);
@@ -121,27 +121,27 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
         }
         return true;
     }
-    
+
     public Class<?> load(Loader loader) {
         final byte[] bytes = this.bytecode();
         return loader.loadClass(type.getTypeName(), bytes);
     }
-    
+
     public byte[] bytecode() {
         final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         this.build(writer);
         return writer.toByteArray();
     }
-    
+
     public UnloadedClass compile() {
         return new UnloadedClass(type, this.bytecode());
     }
-    
+
     @Override
     public String descriptorString() {
         return type.descriptorString();
     }
-    
+
     @Override
     public String getTypeName() {
         return type.getTypeName();

@@ -6,15 +6,15 @@ import org.objectweb.asm.MethodVisitor;
 import static org.objectweb.asm.Opcodes.*;
 
 public class Conditional {
-    
+
     Conditional() {
     }
-    
-    public Block.If check(Instruction.Input condition) {
+
+    public Block.If check(Instruction.Input<Integer> condition) {
         return new Block.If(condition);
     }
-    
-    public Block compareInts(Instruction.Input a, Instruction.Operator operator, Instruction.Input b) {
+
+    public Block compareInts(Instruction.Input<Integer> a, Instruction.Operator operator, Instruction.Input<Integer> b) {
         return new Block() {
             @Override
             public void write(MethodVisitor visitor) {
@@ -40,5 +40,5 @@ public class Conditional {
             }
         };
     }
-    
+
 }

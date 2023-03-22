@@ -13,7 +13,7 @@ import static mx.kenzie.foundation.instruction.Instruction.Operator.EQ;
 import static mx.kenzie.foundation.instruction.Instruction.Operator.LESS;
 
 public class ForEachTest extends FoundationTest {
-    
+
     @Test
     public void testLoop() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, BOOLEAN, "testLoop");
@@ -26,5 +26,5 @@ public class ForEachTest extends FoundationTest {
         method.line(RETURN.intValue(COMPARE.ints(LOAD_VAR.intValue(0), EQ, PUSH.byteValue(10))));
         this.thing.add(method);
     }
-    
+
 }

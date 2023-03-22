@@ -11,11 +11,10 @@ import java.lang.reflect.InvocationTargetException;
 import static mx.kenzie.foundation.Modifier.PUBLIC;
 import static mx.kenzie.foundation.Modifier.STATIC;
 import static mx.kenzie.foundation.Type.VOID;
-import static mx.kenzie.foundation.instruction.Instruction.NEW;
-import static mx.kenzie.foundation.instruction.Instruction.THROW;
+import static mx.kenzie.foundation.instruction.Instruction.*;
 
 public class ThrowErrorTest extends FoundationTest {
-    
+
     @Test(expected = InvocationTargetException.class)
     public void testError() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         final PreClass thing = new PreClass("err", "ThrowError");
@@ -25,4 +24,15 @@ public class ThrowErrorTest extends FoundationTest {
         final Class<?> loaded = thing.load(Loader.DEFAULT);
         loaded.getDeclaredMethod("testError").invoke(null);
     }
+
+    @Test(expected = InvocationTargetException.class)
+    public void testErrorMessage() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final PreClass thing = new PreClass("err", "ThrowErrorMessage");
+        final PreMethod method = new PreMethod(PUBLIC, STATIC, VOID, "testError");
+        method.line(THROW.error(NEW.of(Error.class, String.class).make(CONSTANT.of("hello"))));
+        thing.add(method);
+        final Class<?> loaded = thing.load(Loader.DEFAULT);
+        loaded.getDeclaredMethod("testError").invoke(null);
+    }
+
 }

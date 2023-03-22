@@ -1,12 +1,16 @@
 package mx.kenzie.foundation.instruction;
 
 public class LoadConstant {
-    
+
     LoadConstant() {
     }
-    
-    public Instruction.Input of(Object value) {
+
+    public <Result extends Number> Instruction.Input<Result> of(Result value) {
         return visitor -> visitor.visitLdcInsn(value);
     }
-    
+
+    public Instruction.Input<Object> of(Object value) {
+        return visitor -> visitor.visitLdcInsn(value);
+    }
+
 }

@@ -7,11 +7,11 @@ import static mx.kenzie.foundation.instruction.Instruction.Operator.EQ;
 import static org.objectweb.asm.Opcodes.*;
 
 public class Binary {
-    
+
     Binary() {
     }
-    
-    public Instruction.Input objects(Instruction.Input a, Instruction.Operator operator, Instruction.Input b) {
+
+    public Instruction.Input<Integer> objects(Instruction.Input<Object> a, Instruction.Operator operator, Instruction.Input<Object> b) {
         final int instruction = operator == EQ ? IF_ACMPNE : IF_ACMPEQ;
         return visitor -> {
             final Label fail = new Label(), end = new Label();
@@ -25,8 +25,8 @@ public class Binary {
             visitor.visitLabel(end);
         };
     }
-    
-    public Instruction.Input ints(Instruction.Input a, Instruction.Operator operator, Instruction.Input b) {
+
+    public Instruction.Input<Integer> ints(Instruction.Input<Integer> a, Instruction.Operator operator, Instruction.Input<Integer> b) {
         return switch (operator) {
             case OR -> visitor -> {
                 a.write(visitor);
@@ -51,8 +51,8 @@ public class Binary {
             case NOT_EQ -> equality(a, b, IF_ICMPEQ);
         };
     }
-    
-    private Instruction.Input equality(Instruction.Input a, Instruction.Input b, int instruction) {
+
+    private Instruction.Input<Integer> equality(Instruction.Input<?> a, Instruction.Input<?> b, int instruction) {
         return visitor -> {
             final Label fail = new Label(), end = new Label();
             a.write(visitor);
@@ -65,8 +65,8 @@ public class Binary {
             visitor.visitLabel(end);
         };
     }
-    
-    public Instruction.Input longs(Instruction.Input a, Instruction.Operator operator, Instruction.Input b) {
+
+    public Instruction.Input<Integer> longs(Instruction.Input<Long> a, Instruction.Operator operator, Instruction.Input<Long> b) {
         return switch (operator) {
             case OR -> visitor -> {
                 a.write(visitor);
@@ -91,8 +91,8 @@ public class Binary {
             case NOT_EQ -> equality(a, b, IFEQ, LCMP);
         };
     }
-    
-    private Instruction.Input equality(Instruction.Input a, Instruction.Input b, int instruction, int comparison) {
+
+    private Instruction.Input<Integer> equality(Instruction.Input<?> a, Instruction.Input<?> b, int instruction, int comparison) {
         return visitor -> {
             final Label fail = new Label(), end = new Label();
             a.write(visitor);
@@ -106,13 +106,13 @@ public class Binary {
             visitor.visitLabel(end);
         };
     }
-    
-    public Instruction.Input floats(Instruction.Input a, Instruction.Operator operator, Instruction.Input b) {
+
+    public Instruction.Input<Integer> floats(Instruction.Input<Number> a, Instruction.Operator operator, Instruction.Input<Number> b) {
         return this.compareFloating(a, operator, b, FCMPL);
     }
-    
+
     @NotNull
-    private Instruction.Input compareFloating(Instruction.Input a, Instruction.Operator operator, Instruction.Input b, int comparator) {
+    private Instruction.Input<Integer> compareFloating(Instruction.Input<Number> a, Instruction.Operator operator, Instruction.Input<Number> b, int comparator) {
         return switch (operator) {
             case LESS -> equality(a, b, IFGE, comparator);
             case GREATER -> equality(a, b, IFLE, comparator);
@@ -123,9 +123,9 @@ public class Binary {
             default -> throw new RuntimeException("Unable to compare this number type in this way.");
         };
     }
-    
-    public Instruction.Input doubles(Instruction.Input a, Instruction.Operator operator, Instruction.Input b) {
+
+    public Instruction.Input<Integer> doubles(Instruction.Input<Number> a, Instruction.Operator operator, Instruction.Input<Number> b) {
         return this.compareFloating(a, operator, b, DCMPL);
     }
-    
+
 }

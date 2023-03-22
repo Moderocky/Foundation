@@ -10,7 +10,7 @@ import static mx.kenzie.foundation.Type.BOOLEAN;
 import static mx.kenzie.foundation.instruction.Instruction.*;
 
 public class CastTest extends FoundationTest {
-    
+
     @Test
     public void testNumber() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, BOOLEAN, "testNumber");
@@ -22,7 +22,7 @@ public class CastTest extends FoundationTest {
         method.line(RETURN.intValue(EQUALS.ints(LOAD_VAR.intValue(0), PUSH.byteValue(10))));
         this.thing.add(method);
     }
-    
+
     @Test
     public void testObject() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, BOOLEAN, "testObject");

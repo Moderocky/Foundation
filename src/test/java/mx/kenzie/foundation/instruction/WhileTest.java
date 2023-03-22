@@ -13,7 +13,7 @@ import static mx.kenzie.foundation.instruction.Instruction.Math.PLUS;
 import static mx.kenzie.foundation.instruction.Instruction.Operator.*;
 
 public class WhileTest extends FoundationTest {
-    
+
     @Test
     public void testCheck() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, BOOLEAN, "testCheck");
@@ -24,7 +24,7 @@ public class WhileTest extends FoundationTest {
         method.line(RETURN.intValue(COMPARE.ints(LOAD_VAR.intValue(0), EQ, CONSTANT.of(10))));
         this.thing.add(method);
     }
-    
+
     @Test
     public void testDoWhile() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, BOOLEAN, "testDoWhile");

@@ -27,9 +27,9 @@ public enum Modifier {
     ENUM(Opcodes.ACC_ENUM),
     MANDATED(Opcodes.ACC_MANDATED),
     MODULE(Opcodes.ACC_MODULE);
-    
+
     public final int code;
-    
+
     Modifier(int code) {
         this.code = code;
     }

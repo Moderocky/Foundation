@@ -13,7 +13,7 @@ import static mx.kenzie.foundation.Type.OBJECT;
 import static mx.kenzie.foundation.instruction.Instruction.*;
 
 public class CallConstructorTest extends FoundationTest {
-    
+
     @Test
     public void test() {
         final PreMethod main = new PreMethod(PUBLIC, STATIC, BOOLEAN, "main");
@@ -30,5 +30,5 @@ public class CallConstructorTest extends FoundationTest {
         thing.add(constructor);
         thing.add(test);
     }
-    
+
 }

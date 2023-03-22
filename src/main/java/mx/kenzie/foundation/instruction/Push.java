@@ -5,12 +5,12 @@ import org.objectweb.asm.Opcodes;
 public class Push {
     Push() {
     }
-    
-    public Instruction.Input byteValue(int b) {
+
+    public Instruction.Input<Integer> byteValue(int b) {
         return visitor -> visitor.visitIntInsn(Opcodes.BIPUSH, b);
     }
-    
-    public Instruction.Input shortValue(int s) {
+
+    public Instruction.Input<Integer> shortValue(int s) {
         return visitor -> visitor.visitIntInsn(Opcodes.SIPUSH, s);
     }
 }

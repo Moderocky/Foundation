@@ -11,7 +11,7 @@ import static mx.kenzie.foundation.instruction.Instruction.*;
 import static mx.kenzie.foundation.instruction.Instruction.Operator.*;
 
 public class BinaryTest extends FoundationTest {
-    
+
     @Test
     public void testObjects() {
         {
@@ -25,7 +25,7 @@ public class BinaryTest extends FoundationTest {
             this.thing.add(method);
         }
     }
-    
+
     @Test
     public void testInts() {
         {
@@ -79,7 +79,7 @@ public class BinaryTest extends FoundationTest {
             this.thing.add(method);
         }
     }
-    
+
     @Test
     public void testLongs() {
         {
@@ -133,7 +133,7 @@ public class BinaryTest extends FoundationTest {
             this.thing.add(method);
         }
     }
-    
+
     @Test
     public void testFloats() {
         {
@@ -167,7 +167,7 @@ public class BinaryTest extends FoundationTest {
             this.thing.add(method);
         }
     }
-    
+
     @Test
     public void testDoubles() {
         {

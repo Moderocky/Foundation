@@ -8,7 +8,7 @@ import static mx.kenzie.foundation.Type.BOOLEAN;
 import static mx.kenzie.foundation.instruction.Instruction.*;
 
 public class PreFieldTest extends FoundationTest {
-    
+
     @Test
     public void testSetType() {
         final PreField field = new PreField(Object.class, "blob");
@@ -16,7 +16,7 @@ public class PreFieldTest extends FoundationTest {
         field.setType(boolean.class);
         assert field.type == Type.BOOLEAN;
     }
-    
+
     @Test
     public void testSetValue() {
         final PreField field = new PreField(PUBLIC, STATIC, FINAL, int.class, "testSetValue");
@@ -27,7 +27,7 @@ public class PreFieldTest extends FoundationTest {
         this.thing.add(field);
         this.thing.add(method);
     }
-    
+
     @Test
     public void testAddModifiers() {
         final PreField field = new PreField(PUBLIC, STATIC, int.class, "blob");
@@ -35,7 +35,7 @@ public class PreFieldTest extends FoundationTest {
         field.addModifiers(FINAL);
         assert field.hasModifier(FINAL);
     }
-    
+
     @Test
     public void testRemoveModifiers() {
         final PreField field = new PreField(PUBLIC, STATIC, FINAL, int.class, "blob");
@@ -43,7 +43,7 @@ public class PreFieldTest extends FoundationTest {
         field.removeModifiers(FINAL);
         assert !field.hasModifier(FINAL);
     }
-    
+
     @Test
     public void testHasModifier() {
         final PreField field = new PreField(PUBLIC, STATIC, int.class, "blob");
@@ -56,7 +56,7 @@ public class PreFieldTest extends FoundationTest {
         assert field.hasModifier(STATIC);
         assert !field.hasModifier(PUBLIC);
     }
-    
+
     @Test
     public void testModifierCode() {
         final PreField field = new PreField(PUBLIC, STATIC, FINAL, int.class, "blob");
@@ -65,7 +65,7 @@ public class PreFieldTest extends FoundationTest {
         assert java.lang.reflect.Modifier.isFinal(field.modifierCode());
         assert !java.lang.reflect.Modifier.isPrivate(field.modifierCode());
     }
-    
+
     @Test
     public void testBuild() {
         final PreField field = new PreField(PUBLIC, STATIC, int.class, "testBuild");

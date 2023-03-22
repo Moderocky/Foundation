@@ -6,7 +6,7 @@ import static mx.kenzie.foundation.Type.*;
 import static mx.kenzie.foundation.instruction.Instruction.RETURN;
 
 public class PreClassTest extends FoundationTest {
-    
+
     public void testAdd() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, VOID, "testAdd", BOOLEAN, INT);
         method.line(RETURN.none());
@@ -18,7 +18,7 @@ public class PreClassTest extends FoundationTest {
         assert method.parameters.contains(INT);
         assert thing.verify();
     }
-    
+
     public void testMultipleMethods() {
         final PreClass thing = new PreClass("org.example", "MultipleMethods");
         {
@@ -34,5 +34,5 @@ public class PreClassTest extends FoundationTest {
         assert thing.verify();
         this.dump(thing);
     }
-    
+
 }

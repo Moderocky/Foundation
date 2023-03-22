@@ -20,12 +20,12 @@ public record Type(String getTypeName, String descriptorString, String internalN
         VOID = Type.of(void.class),
         OBJECT = Type.of(Object.class),
         STRING = Type.of(String.class);
-    
+
     public static Type of(String path, String name) {
         final String internal = path.replace('.', '/') + '/' + name;
         return new Type(path + '.' + name, 'L' + internal + ';', internal);
     }
-    
+
     @SafeVarargs
     public static <Klass extends java.lang.reflect.Type & TypeDescriptor> Type[] array(Klass... values) {
         final Type[] types = new Type[values.length];
@@ -36,7 +36,7 @@ public record Type(String getTypeName, String descriptorString, String internalN
         }
         return types;
     }
-    
+
     public static <Klass extends java.lang.reflect.Type & TypeDescriptor> Type of(Klass value) {
         if (value instanceof Type type) return type;
         if (!(value instanceof Class<?> thing))
@@ -51,13 +51,13 @@ public record Type(String getTypeName, String descriptorString, String internalN
         CACHE.put(thing, new SoftReference<>(result));
         return result;
     }
-    
+
     public static <Klass extends java.lang.reflect.Type & TypeDescriptor> String internalName(Klass klass) {
         if (klass instanceof Class<?> thing) return thing.getName().replace('.', '/');
         if (klass instanceof Type type) return type.internalName;
         return klass.getTypeName().replace('.', '/');
     }
-    
+
     @SafeVarargs
     public static <Klass extends java.lang.reflect.Type & TypeDescriptor>
     String methodDescriptor(Klass result, Klass... parameters) {
@@ -66,13 +66,13 @@ public record Type(String getTypeName, String descriptorString, String internalN
         builder.append(')').append(result.descriptorString());
         return builder.toString();
     }
-    
+
     public static Class<?>[] classArray(Type... values) {
         final Class<?>[] classes = new Class[values.length];
         for (int i = 0; i < values.length; i++) classes[i] = values[i].toClass();
         return classes;
     }
-    
+
     public Class<?> toClass() {
         return switch (descriptorString) {
             case "B" -> byte.class;
@@ -93,7 +93,7 @@ public record Type(String getTypeName, String descriptorString, String internalN
             }
         };
     }
-    
+
     public boolean isPrimitive() {
         return switch (descriptorString) {
             case "B", "S", "I", "J", "F", "D", "C", "Z", "V" -> true;

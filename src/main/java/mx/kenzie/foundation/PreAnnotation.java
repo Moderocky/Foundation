@@ -13,51 +13,51 @@ public class PreAnnotation {
     protected final Map<String, Object> values = new HashMap<>();
     protected Type type;
     protected boolean visible;
-    
+
     public <Klass extends java.lang.reflect.Type & TypeDescriptor>
     PreAnnotation(Klass type) {
         this.type = Type.of(type);
         this.visible = true;
     }
-    
+
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
-    
+
     public <Klass extends java.lang.reflect.Type & TypeDescriptor>
     void setType(Klass type) {
         this.type = Type.of(type);
     }
-    
+
     public Map<String, Object> getValues() {
         return values;
     }
-    
+
     public void addValue(String key, Object value) {
         this.values.put(key, value);
     }
-    
+
     public <Klass extends java.lang.reflect.Type & TypeDescriptor>
     void addValueAnnotation(String name, Klass type) {
         final PreAnnotation annotation = new PreAnnotation(type);
         this.values.put(name, annotation);
     }
-    
+
     protected void write(ClassWriter writer) {
         final AnnotationVisitor visitor = writer.visitAnnotation(type.descriptorString(), visible);
         this.write(visitor);
     }
-    
+
     protected void write(MethodVisitor method) {
         final AnnotationVisitor visitor = method.visitAnnotation(type.descriptorString(), visible);
         this.write(visitor);
     }
-    
+
     protected void write(FieldVisitor field) {
         final AnnotationVisitor visitor = field.visitAnnotation(type.descriptorString(), visible);
         this.write(visitor);
     }
-    
+
     protected void write(AnnotationVisitor visitor) {
         for (Map.Entry<String, Object> entry : values.entrySet()) {
             final String key = entry.getKey();
@@ -75,11 +75,11 @@ public class PreAnnotation {
         }
         visitor.visitEnd();
     }
-    
+
     private void addValue(AnnotationVisitor visitor, String name, Object value) {
         if (value instanceof TypeDescriptor descriptor)
             visitor.visit(name, org.objectweb.asm.Type.getType(descriptor.descriptorString()));
         else visitor.visit(name, value);
     }
-    
+
 }

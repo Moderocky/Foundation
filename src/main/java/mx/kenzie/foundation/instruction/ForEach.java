@@ -8,8 +8,8 @@ import org.objectweb.asm.Opcodes;
 public class ForEach {
     ForEach() {
     }
-    
-    public Block loop(Instruction.Base before, Instruction.Input check, Instruction.Base after) {
+
+    public Block loop(Instruction.Base before, Instruction.Input<? extends Number> check, Instruction.Base after) {
         return new Block() {
             @Override
             public void write(MethodVisitor visitor) {
@@ -24,8 +24,8 @@ public class ForEach {
             }
         };
     }
-    
-    public Block forEach(int var, Instruction.Input iterator, Type expected) {
+
+    public Block forEach(int var, Instruction.Input<Object> iterator, Type expected) {
         return new Block() {
             @Override
             public void write(MethodVisitor visitor) {

@@ -10,7 +10,7 @@ import static mx.kenzie.foundation.Type.*;
 import static mx.kenzie.foundation.instruction.Instruction.*;
 
 public class PreMethodTest extends FoundationTest {
-    
+
     @Test
     public void testSetReturnType() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, STRING, "testSetReturnType");
@@ -21,7 +21,7 @@ public class PreMethodTest extends FoundationTest {
         method.setReturnType(void.class);
         assert method.returnType.toClass() == void.class;
     }
-    
+
     @Test
     public void testLine() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, STRING, "testLine");
@@ -31,7 +31,7 @@ public class PreMethodTest extends FoundationTest {
         assert method.owner == thing;
         assert method.returnType.toClass() == String.class;
     }
-    
+
     @Test
     public void testCallMethod() throws Throwable {
         final PreClass blob = new PreClass("org.example", "Thing2");
@@ -51,7 +51,7 @@ public class PreMethodTest extends FoundationTest {
         assert result.equals("beans");
         this.dump(blob);
     }
-    
+
     @Test
     public void testAddModifiers() {
         final PreMethod method = new PreMethod(PUBLIC, STRING, "testAddModifiers");
@@ -60,7 +60,7 @@ public class PreMethodTest extends FoundationTest {
         assert java.lang.reflect.Modifier.isPublic(method.modifierCode());
         assert java.lang.reflect.Modifier.isStatic(method.modifierCode());
     }
-    
+
     @Test
     public void testRemoveModifiers() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, STRING, "testRemoveModifiers");
@@ -72,7 +72,7 @@ public class PreMethodTest extends FoundationTest {
         assert java.lang.reflect.Modifier.isPublic(method.modifierCode());
         assert java.lang.reflect.Modifier.isAbstract(method.modifierCode());
     }
-    
+
     @Test
     public void testHasModifier() {
         final PreMethod method = new PreMethod(PRIVATE, STATIC, STRING, "testHasModifier");
@@ -84,7 +84,7 @@ public class PreMethodTest extends FoundationTest {
         assert !method.hasModifier(PUBLIC);
         assert !method.hasModifier(ABSTRACT);
     }
-    
+
     @Test
     public void testAddParameters() {
         final PreMethod method = new PreMethod("testAddParameters");
@@ -93,7 +93,7 @@ public class PreMethodTest extends FoundationTest {
         assert method.getParameters().length == 2;
         assert method.getParameters()[1] == BOOLEAN;
     }
-    
+
     @Test
     public void testRemoveParameters() {
         final PreMethod method = new PreMethod("testRemoveParameters", INT, LONG, INT);
@@ -104,7 +104,7 @@ public class PreMethodTest extends FoundationTest {
         assert types[0] == LONG;
         assert types[1] == INT;
     }
-    
+
     @Test
     public void testRemoveParameter() {
         final PreMethod method = new PreMethod("testRemoveParameter", INT, LONG, INT);
@@ -115,7 +115,7 @@ public class PreMethodTest extends FoundationTest {
         assert types[0] == INT;
         assert types[1] == INT;
     }
-    
+
     @Test
     public void testGetParameters() {
         final PreMethod method = new PreMethod("testGetParameters", INT, LONG, INT);
@@ -125,5 +125,5 @@ public class PreMethodTest extends FoundationTest {
         assert types[1] == LONG;
         assert types[2] == INT;
     }
-    
+
 }

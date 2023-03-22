@@ -5,11 +5,11 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 public class While {
-    
+
     While() {
     }
-    
-    public Block check(Instruction.Input condition) {
+
+    public Block check(Instruction.Input<Integer> condition) {
         return new Block() {
             @Override
             public void write(MethodVisitor visitor) {
@@ -22,8 +22,8 @@ public class While {
             }
         };
     }
-    
-    public Block doWhile(Instruction.Input condition) {
+
+    public Block doWhile(Instruction.Input<Integer> condition) {
         return new Block() {
             @Override
             public void write(MethodVisitor visitor) {
@@ -35,5 +35,5 @@ public class While {
             }
         };
     }
-    
+
 }

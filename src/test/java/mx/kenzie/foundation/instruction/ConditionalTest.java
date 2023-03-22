@@ -11,7 +11,7 @@ import static mx.kenzie.foundation.Type.BOOLEAN;
 import static mx.kenzie.foundation.instruction.Instruction.*;
 
 public class ConditionalTest extends FoundationTest {
-    
+
     @Test
     public void testCheck() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, BOOLEAN, "testCheck");
@@ -22,7 +22,7 @@ public class ConditionalTest extends FoundationTest {
         method.line(RETURN.intValue(LOAD_VAR.booleanValue(0)));
         this.thing.add(method);
     }
-    
+
     @Test
     public void testElse() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, BOOLEAN, "testElse");
