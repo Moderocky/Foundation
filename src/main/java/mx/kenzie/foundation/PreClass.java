@@ -150,4 +150,9 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
     public String getTypeName() {
         return type.getTypeName();
     }
+
+    public Type type() {
+        return type;
+    }
+
 }
