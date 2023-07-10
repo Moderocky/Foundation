@@ -7,7 +7,7 @@ public class StoreVariable {
     StoreVariable() {
     }
 
-    public Instruction.Base object(int index, Instruction.Input<Object> value) {
+    public Instruction.Base object(int index, Instruction.Input<?> value) {
         return visitor -> {
             value.write(visitor);
             visitor.visitVarInsn(ASTORE, index);
