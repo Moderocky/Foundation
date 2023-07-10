@@ -24,6 +24,7 @@ public interface Instruction {
     Increment INCREMENT = new Increment();
     Negate NOT = new Negate();
     Cast CAST = new Cast();
+    Array ARRAY = new Array();
     Instruction.Input<Void> NULL = visitor -> visitor.visitInsn(Opcodes.ACONST_NULL);
     Instruction.Input<Integer> ZERO = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
         FALSE = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
