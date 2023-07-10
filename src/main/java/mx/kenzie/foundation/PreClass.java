@@ -90,6 +90,10 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
         } else modifiers.remove(Modifier.INTERFACE);
     }
 
+    public boolean isInterface() {
+        return modifiers.contains(Modifier.INTERFACE);
+    }
+
     public void setParent(Type parent) {
         this.parent = parent;
     }

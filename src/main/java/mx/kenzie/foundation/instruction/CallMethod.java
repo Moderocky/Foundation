@@ -1,5 +1,7 @@
 package mx.kenzie.foundation.instruction;
 
+import mx.kenzie.foundation.PreClass;
+import mx.kenzie.foundation.PreMethod;
 import mx.kenzie.foundation.Type;
 import org.objectweb.asm.Opcodes;
 
@@ -9,6 +11,10 @@ import java.lang.reflect.Method;
 public class CallMethod {
 
     CallMethod() {
+    }
+
+    public Stub of(PreClass owner, PreMethod method) {
+        return new Stub(!owner.isInterface(), Type.of(owner), Type.of(method.returnType()), method.name(), Type.array(method.getParameters()));
     }
 
     public Stub of(Class<?> owner, String name, Class<?>... parameters) {

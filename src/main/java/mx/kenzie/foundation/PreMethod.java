@@ -46,14 +46,12 @@ public class PreMethod extends BuildElement implements CodeBody {
     }
 
     @SafeVarargs
-    public static <Klass extends java.lang.reflect.Type & TypeDescriptor>
-    PreMethod constructor(Klass... parameters) {
+    public static <Klass extends java.lang.reflect.Type & TypeDescriptor> PreMethod constructor(Klass... parameters) {
         return new PreMethod(Type.VOID, "<init>", parameters);
     }
 
     @SafeVarargs
-    public static <Klass extends java.lang.reflect.Type & TypeDescriptor>
-    PreMethod constructor(Modifier modifier, Klass... parameters) {
+    public static <Klass extends java.lang.reflect.Type & TypeDescriptor> PreMethod constructor(Modifier modifier, Klass... parameters) {
         return new PreMethod(modifier, Type.VOID, "<init>", parameters);
     }
 
@@ -125,6 +123,14 @@ public class PreMethod extends BuildElement implements CodeBody {
     @Override
     public int hashCode() {
         return super.hashCode();
+    }
+
+    public Type returnType() {
+        return returnType;
+    }
+
+    public String name() {
+        return name;
     }
 
 }

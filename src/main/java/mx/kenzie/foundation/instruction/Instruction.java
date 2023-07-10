@@ -27,9 +27,9 @@ public interface Instruction {
     Array ARRAY = new Array();
     Instruction.Input<Void> NULL = visitor -> visitor.visitInsn(Opcodes.ACONST_NULL);
     Instruction.Input<Integer> ZERO = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
-        FALSE = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
-        ONE = visitor -> visitor.visitInsn(Opcodes.ICONST_1),
-        TRUE = visitor -> visitor.visitInsn(Opcodes.ICONST_1);
+            FALSE = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
+            ONE = visitor -> visitor.visitInsn(Opcodes.ICONST_1),
+            TRUE = visitor -> visitor.visitInsn(Opcodes.ICONST_1);
     Push PUSH = new Push();
     Instruction.Block BREAK = (visitor, block) -> visitor.visitJumpInsn(Opcodes.GOTO, block.end);
 
