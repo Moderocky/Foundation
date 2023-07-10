@@ -121,8 +121,15 @@ public class PreMethod extends BuildElement implements CodeBody {
     }
 
     @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof PreMethod method)) return false;
+        return Objects.equals(parameters, method.parameters) && Objects.equals(returnType, method.returnType) && Objects.equals(name, method.name);
+    }
+
+    @Override
     public int hashCode() {
-        return super.hashCode();
+        return Objects.hash(parameters, returnType, name);
     }
 
     public Type returnType() {
