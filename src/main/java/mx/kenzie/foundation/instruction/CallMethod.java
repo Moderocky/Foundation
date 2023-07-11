@@ -14,7 +14,7 @@ public class CallMethod {
     }
 
     public Stub of(PreClass owner, PreMethod method) {
-        return new Stub(!owner.isInterface(), Type.of(owner), Type.of(method.returnType()), method.name(), Type.array(method.getParameters()));
+        return new Stub(owner.isInterface(), Type.of(owner), Type.of(method.returnType()), method.name(), Type.array(method.getParameters()));
     }
 
     public Stub of(Class<?> owner, String name, Class<?>... parameters) {
@@ -29,16 +29,17 @@ public class CallMethod {
     @SafeVarargs
     public final <Klass extends java.lang.reflect.Type & TypeDescriptor>
     Stub of(boolean isInterface, Klass owner, Klass returnType, String name, Klass... parameters) {
-        return new Stub(!isInterface, Type.of(owner), Type.of(returnType), name, Type.array(parameters));
+        return new Stub(isInterface, Type.of(owner), Type.of(returnType), name, Type.array(parameters));
     }
 
     @SafeVarargs
     public final <Klass extends java.lang.reflect.Type & TypeDescriptor>
     Stub of(Klass owner, Klass returnType, String name, Klass... parameters) {
-        return new Stub(Type.of(owner), Type.of(returnType), name, Type.array(parameters));
+        final boolean isInterface = owner instanceof Class<?> thing && thing.isInterface();
+        return new Stub(isInterface, Type.of(owner), Type.of(returnType), name, Type.array(parameters));
     }
 
-    public record Stub(boolean real, Type owner, Type returnType, String name, Type... parameters) {
+    public record Stub(boolean isInterface, Type owner, Type returnType, String name, Type... parameters) {
         public Stub(Type owner, Type returnType, String name, Type... parameters) {
             this(true, owner, returnType, name, parameters);
         }
@@ -46,7 +47,7 @@ public class CallMethod {
         public Instruction.Base callStatic(Instruction.Input<?>... arguments) {
             return visitor -> {
                 for (Instruction.Input argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(Opcodes.INVOKESTATIC, owner.internalName(), name, Type.methodDescriptor(returnType, parameters), false);
+                visitor.visitMethodInsn(Opcodes.INVOKESTATIC, owner.internalName(), name, Type.methodDescriptor(returnType, parameters), isInterface);
                 if (returnType != Type.VOID) visitor.visitInsn(Opcodes.POP);
             };
         }
@@ -54,27 +55,27 @@ public class CallMethod {
         public <Result> Instruction.Input<Result> getStatic(Instruction.Input<?>... arguments) {
             return visitor -> {
                 for (Instruction.Input argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(Opcodes.INVOKESTATIC, owner.internalName(), name, Type.methodDescriptor(returnType, parameters), false);
+                visitor.visitMethodInsn(Opcodes.INVOKESTATIC, owner.internalName(), name, Type.methodDescriptor(returnType, parameters), isInterface);
                 if (returnType == Type.VOID) visitor.visitInsn(Opcodes.ACONST_NULL);
             };
         }
 
         public Instruction.Base call(Instruction.Input<Object> object, Instruction.Input<?>... arguments) {
-            final int instruction = real ? Opcodes.INVOKEVIRTUAL : Opcodes.INVOKEINTERFACE;
+            final int instruction = isInterface ? Opcodes.INVOKEINTERFACE : Opcodes.INVOKEVIRTUAL;
             return visitor -> {
                 object.write(visitor);
                 for (Instruction.Input<?> argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(instruction, owner.internalName(), name, Type.methodDescriptor(returnType, parameters), !real);
+                visitor.visitMethodInsn(instruction, owner.internalName(), name, Type.methodDescriptor(returnType, parameters), isInterface);
                 if (returnType != Type.VOID) visitor.visitInsn(Opcodes.POP);
             };
         }
 
         public <Result> Instruction.Input<Result> get(Instruction.Input<Object> object, Instruction.Input<?>... arguments) {
-            final int instruction = real ? Opcodes.INVOKEVIRTUAL : Opcodes.INVOKEINTERFACE;
+            final int instruction = isInterface ? Opcodes.INVOKEINTERFACE : Opcodes.INVOKEVIRTUAL;
             return visitor -> {
                 object.write(visitor);
                 for (Instruction.Input<?> argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(instruction, owner.internalName(), name, Type.methodDescriptor(returnType, parameters), !real);
+                visitor.visitMethodInsn(instruction, owner.internalName(), name, Type.methodDescriptor(returnType, parameters), isInterface);
                 if (returnType == Type.VOID) visitor.visitInsn(Opcodes.ACONST_NULL);
             };
         }
