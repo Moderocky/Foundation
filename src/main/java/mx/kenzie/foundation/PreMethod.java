@@ -120,6 +120,14 @@ public class PreMethod extends BuildElement implements CodeBody {
         return instructions.toArray(new Instruction[0]);
     }
 
+    public int getModifiers() {
+        return this.modifierCode();
+    }
+
+    public Type getOwner() {
+        return Type.of(owner);
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
