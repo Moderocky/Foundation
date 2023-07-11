@@ -60,7 +60,7 @@ public class CallMethod {
             };
         }
 
-        public Instruction.Base call(Instruction.Input<Object> object, Instruction.Input<?>... arguments) {
+        public Instruction.Base call(Instruction.Input<?> object, Instruction.Input<?>... arguments) {
             final int instruction = isInterface ? Opcodes.INVOKEINTERFACE : Opcodes.INVOKEVIRTUAL;
             return visitor -> {
                 object.write(visitor);
@@ -70,7 +70,7 @@ public class CallMethod {
             };
         }
 
-        public <Result> Instruction.Input<Result> get(Instruction.Input<Object> object, Instruction.Input<?>... arguments) {
+        public <Result> Instruction.Input<Result> get(Instruction.Input<?> object, Instruction.Input<?>... arguments) {
             final int instruction = isInterface ? Opcodes.INVOKEINTERFACE : Opcodes.INVOKEVIRTUAL;
             return visitor -> {
                 object.write(visitor);
