@@ -4,6 +4,10 @@ public interface Loader {
     Loader DEFAULT = new SimpleClassLoader();
 
     Class<?> loadClass(String name, byte[] bytecode);
+
+    static <Maker extends ClassLoader & Loader> Maker getDefault() {
+        return (Maker) DEFAULT;
+    }
 }
 
 class SimpleClassLoader extends ClassLoader implements Loader {
