@@ -5,9 +5,7 @@ import org.objectweb.asm.Opcodes;
 
 import java.lang.invoke.TypeDescriptor;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class PreClass extends BuildElement implements TypeDescriptor, java.lang.reflect.Type {
 
@@ -69,7 +67,11 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
 
     @Override
     protected void build(ClassWriter writer) {
-        writer.visit(version, this.modifierCode(), type.internalName(), null, parent.internalName(), null);
+        final List<String> interfaces = new ArrayList<>(this.interfaces.size());
+        for (Type anInterface : this.interfaces) {
+            interfaces.add(anInterface.internalName());
+        }
+        writer.visit(version, this.modifierCode(), type.internalName(), null, parent.internalName(), interfaces.toArray(new String[0]));
         for (PreAnnotation annotation : annotations) annotation.write(writer);
         for (PreField field : fields) field.build(writer);
         for (PreMethod method : methods) method.build(writer);
