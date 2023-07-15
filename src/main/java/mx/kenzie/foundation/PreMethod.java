@@ -128,6 +128,10 @@ public class PreMethod extends BuildElement implements CodeBody {
         return Type.of(owner);
     }
 
+    public boolean isInterface() {
+        return owner.isInterface();
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
