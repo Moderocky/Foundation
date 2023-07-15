@@ -21,9 +21,9 @@ public class PreMethod extends BuildElement implements CodeBody {
     }
 
     @SafeVarargs
-    public <Klass extends java.lang.reflect.Type & TypeDescriptor> PreMethod(Type returnType, String name, Klass... parameters) {
+    public <Klass extends java.lang.reflect.Type & TypeDescriptor> PreMethod(Klass returnType, String name, Klass... parameters) {
         this.name = name;
-        this.returnType = returnType;
+        this.returnType = Type.of(returnType);
         this.parameters = new LinkedList<>(List.of(Type.array(parameters)));
         this.modifiers = new HashSet<>();
     }
@@ -34,13 +34,13 @@ public class PreMethod extends BuildElement implements CodeBody {
     }
 
     @SafeVarargs
-    public <Klass extends java.lang.reflect.Type & TypeDescriptor> PreMethod(Modifier modifier, Type returnType, String name, Klass... parameters) {
+    public <Klass extends java.lang.reflect.Type & TypeDescriptor> PreMethod(Modifier modifier, Klass returnType, String name, Klass... parameters) {
         this(returnType, name, parameters);
         this.modifiers = new HashSet<>(List.of(modifier));
     }
 
     @SafeVarargs
-    public <Klass extends java.lang.reflect.Type & TypeDescriptor> PreMethod(Modifier access, Modifier state, Type returnType, String name, Klass... parameters) {
+    public <Klass extends java.lang.reflect.Type & TypeDescriptor> PreMethod(Modifier access, Modifier state, Klass returnType, String name, Klass... parameters) {
         this(returnType, name, parameters);
         this.modifiers = new HashSet<>(List.of(access, state));
     }
