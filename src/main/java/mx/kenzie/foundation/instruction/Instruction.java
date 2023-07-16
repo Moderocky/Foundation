@@ -25,6 +25,7 @@ public interface Instruction {
     Negate NOT = new Negate();
     Cast CAST = new Cast();
     Array ARRAY = new Array();
+    Switch SWITCH = new Switch();
     Input<Object> THIS = LOAD_VAR.self();
     Instruction.Input<Void> NULL = visitor -> visitor.visitInsn(Opcodes.ACONST_NULL);
     Instruction.Input<Integer> ZERO = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
