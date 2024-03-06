@@ -1,5 +1,6 @@
 package mx.kenzie.foundation;
 
+import mx.kenzie.foundation.instruction.AccessField;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.FieldVisitor;
 
@@ -8,7 +9,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PreField extends BuildElement {
+public class PreField extends BuildElement implements AccessField.Stub {
+
     protected transient PreClass owner;
     protected Type type;
     protected String name;
@@ -71,6 +73,21 @@ public class PreField extends BuildElement {
         final FieldVisitor visitor = writer.visitField(this.modifierCode(), name, type.descriptorString(), null, value);
         for (PreAnnotation annotation : annotations) annotation.write(visitor);
         visitor.visitEnd();
+    }
+
+    @Override
+    public Type owner() {
+        return owner.type();
+    }
+
+    @Override
+    public Type type() {
+        return type;
+    }
+
+    @Override
+    public String name() {
+        return name;
     }
 
 }

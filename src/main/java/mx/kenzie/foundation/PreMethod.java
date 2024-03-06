@@ -1,5 +1,6 @@
 package mx.kenzie.foundation;
 
+import mx.kenzie.foundation.instruction.CallMethod;
 import mx.kenzie.foundation.instruction.Instruction;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
@@ -7,7 +8,8 @@ import org.objectweb.asm.MethodVisitor;
 import java.lang.invoke.TypeDescriptor;
 import java.util.*;
 
-public class PreMethod extends BuildElement implements CodeBody {
+public class PreMethod extends BuildElement implements CodeBody, CallMethod.Stub {
+
     protected transient PreClass owner;
     protected int stack, locals;
     protected List<Type> parameters;
@@ -133,6 +135,11 @@ public class PreMethod extends BuildElement implements CodeBody {
     }
 
     @Override
+    public Type owner() {
+        return owner.type();
+    }
+
+    @Override
     public boolean equals(Object object) {
         if (this == object) return true;
         if (!(object instanceof PreMethod method)) return false;
@@ -150,6 +157,11 @@ public class PreMethod extends BuildElement implements CodeBody {
 
     public String name() {
         return name;
+    }
+
+    @Override
+    public Type[] parameters() {
+        return this.getParameters();
     }
 
 }
