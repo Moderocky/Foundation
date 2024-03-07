@@ -1,5 +1,6 @@
 package mx.kenzie.foundation.instruction;
 
+import mx.kenzie.foundation.MethodErasure;
 import mx.kenzie.foundation.PreClass;
 import mx.kenzie.foundation.PreMethod;
 import mx.kenzie.foundation.Type;
@@ -89,11 +90,22 @@ public class CallMethod {
         return new ConstantStub(isInterface, Type.of(owner), Type.of(returnType), name, Type.array(parameters));
     }
 
+    public final <Klass extends java.lang.reflect.Type & TypeDescriptor>
+    Stub of(boolean isInterface, Klass owner, MethodErasure erasure) {
+        return new ConstantStub(isInterface, Type.of(owner), erasure.returnType(), erasure.name(), erasure.parameters());
+    }
+
     @SafeVarargs
     public final <Klass extends java.lang.reflect.Type & TypeDescriptor>
     ConstantStub of(Klass owner, Klass returnType, String name, Klass... parameters) {
         final boolean isInterface = owner instanceof Class<?> thing && thing.isInterface();
         return new ConstantStub(isInterface, Type.of(owner), Type.of(returnType), name, Type.array(parameters));
+    }
+
+    public final <Klass extends java.lang.reflect.Type & TypeDescriptor>
+    ConstantStub of(Klass owner, MethodErasure erasure) {
+        final boolean isInterface = owner instanceof Class<?> thing && thing.isInterface();
+        return new ConstantStub(isInterface, Type.of(owner), erasure.returnType(), erasure.name(), erasure.parameters());
     }
 
     public record VirtualStub(Instruction.Input<Object> factory) {
@@ -108,7 +120,7 @@ public class CallMethod {
 
     }
 
-    public interface Stub {
+    public interface Stub extends MethodErasure {
 
         default Instruction.Base callStatic(Instruction.Input<?>... arguments) {
             return visitor -> {
@@ -158,12 +170,11 @@ public class CallMethod {
 
     }
 
-
     public record ConstantStub(boolean isInterface, Type owner, Type returnType, String name,
                                Type... parameters) implements Stub {
 
         public ConstantStub(Type owner, Type returnType, String name, Type... parameters) {
-            this(true, owner, returnType, name, parameters);
+            this(owner.isKnownInterface(), owner, returnType, name, parameters);
         }
 
     }

@@ -12,7 +12,7 @@ public class PreFieldTest extends FoundationTest {
     @Test
     public void testSetType() {
         final PreField field = new PreField(Object.class, "blob");
-        assert field.type == Type.OBJECT;
+        assert field.type == Type.OBJECT: field.type;
         field.setType(boolean.class);
         assert field.type == Type.BOOLEAN;
     }

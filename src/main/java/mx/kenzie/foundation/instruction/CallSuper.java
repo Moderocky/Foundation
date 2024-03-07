@@ -1,5 +1,6 @@
 package mx.kenzie.foundation.instruction;
 
+import mx.kenzie.foundation.MethodErasure;
 import mx.kenzie.foundation.Type;
 import org.objectweb.asm.Opcodes;
 
@@ -22,6 +23,11 @@ public class CallSuper {
         return new Stub(Type.of(owner), Type.of(void.class), "<init>", Type.array(parameters));
     }
 
+    public final <Klass extends java.lang.reflect.Type & TypeDescriptor>
+    Stub of(Klass owner, MethodErasure erasure) {
+        return new Stub(Type.of(owner), erasure.returnType(), erasure.name(), erasure.parameters());
+    }
+
     public record Stub(Type owner, Type returnType, String name, Type... parameters) {
 
         public Instruction.Base call(Instruction.Input<Object> object, Instruction.Input<?>... arguments) {
@@ -41,6 +47,7 @@ public class CallSuper {
                 if (returnType == Type.VOID) visitor.visitInsn(Opcodes.ACONST_NULL);
             };
         }
+
     }
 
 }
