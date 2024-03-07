@@ -96,12 +96,13 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
         return modifiers.contains(Modifier.INTERFACE);
     }
 
-    public void setParent(Type parent) {
-        this.parent = parent;
+    public <Klass extends java.lang.reflect.Type & TypeDescriptor> void setParent(Klass parent) {
+        this.parent = Type.of(parent);
     }
 
-    public void addInterfaces(Type... interfaces) {
-        this.interfaces.addAll(Arrays.asList(interfaces));
+    @SafeVarargs
+    public final <Klass extends java.lang.reflect.Type & TypeDescriptor> void addInterfaces(Klass... interfaces) {
+        this.interfaces.addAll(Arrays.asList(Type.array(interfaces)));
     }
 
     public void remove(PreMethod method) {

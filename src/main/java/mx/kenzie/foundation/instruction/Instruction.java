@@ -3,6 +3,8 @@ package mx.kenzie.foundation.instruction;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
+import java.lang.invoke.TypeDescriptor;
+
 @FunctionalInterface
 public interface Instruction {
 
@@ -29,9 +31,9 @@ public interface Instruction {
     Input<Object> THIS = LOAD_VAR.self();
     Instruction.Input<Void> NULL = visitor -> visitor.visitInsn(Opcodes.ACONST_NULL);
     Instruction.Input<Integer> ZERO = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
-            FALSE = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
-            ONE = visitor -> visitor.visitInsn(Opcodes.ICONST_1),
-            TRUE = visitor -> visitor.visitInsn(Opcodes.ICONST_1);
+        FALSE = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
+        ONE = visitor -> visitor.visitInsn(Opcodes.ICONST_1),
+        TRUE = visitor -> visitor.visitInsn(Opcodes.ICONST_1);
     Push PUSH = new Push();
     Instruction.Block BREAK = (visitor, block) -> visitor.visitJumpInsn(Opcodes.GOTO, block.end);
 
@@ -84,10 +86,17 @@ public interface Instruction {
 
     interface Input<Type> extends Instruction {
 
+        @SuppressWarnings("unchecked")
+        default <Other, Klass extends java.lang.reflect.Type & TypeDescriptor> Input<Other> cast(Klass type) {
+            return (Input<Other>) CAST.object((Input<Object>) this, type);
+        }
+
     }
 
     interface Block {
+
         void write(MethodVisitor visitor, mx.kenzie.foundation.Block block);
+
     }
 
 }
