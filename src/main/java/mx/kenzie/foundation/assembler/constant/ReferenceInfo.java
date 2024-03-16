@@ -22,8 +22,8 @@ public record ReferenceInfo(ConstantType<ReferenceInfo, Member> tag, PoolReferen
 
     @Override
     public boolean is(Constable object) {
-        // TODO
-        return false;
+        return object instanceof Member member && class_index.ensure().is(member.owner())
+            && name_and_type_index.ensure().is(member.signature());
     }
 
     @Override

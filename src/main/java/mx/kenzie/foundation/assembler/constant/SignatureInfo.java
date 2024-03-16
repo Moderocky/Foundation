@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.constant.Constable;
 
-public record SignatureInfo(PoolReference name_index, PoolReference descriptor_index)
-    implements ConstantPoolInfo, Data, UVec, RecordConstant {
+public record SignatureInfo(PoolReference name_index,
+                            PoolReference descriptor_index) implements ConstantPoolInfo, Data, UVec, RecordConstant {
 
     @Override
     public ConstantType<SignatureInfo, Signature> tag() {
@@ -26,8 +26,7 @@ public record SignatureInfo(PoolReference name_index, PoolReference descriptor_i
 
     @Override
     public boolean is(Constable object) {
-        // TODO
-        return false;
+        return object instanceof Signature signature && name_index.ensure().is(signature.name()) && descriptor_index.ensure().is(signature.descriptorString());
     }
 
     @Override
