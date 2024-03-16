@@ -10,6 +10,8 @@ import java.io.OutputStream;
  */
 public record U1(short value) implements UVec, Data, RecordConstant {
 
+    private static final U1[] unsignedCache = new U1[256];
+
     public U1(byte value) {
         this((short) (((short) value) & 0xFF));
     }
@@ -18,19 +20,30 @@ public record U1(short value) implements UVec, Data, RecordConstant {
         this((byte) value);
     }
 
+    public static U1 valueOf(short s) {
+        return valueOf((int) s);
+    }
+
+    public static U1 valueOf(int i) {
+        if (i < 0 || i > unsignedCache.length) i = (short) Math.max(0, Math.min(unsignedCache.length, i));
+        final U1 current = unsignedCache[i];
+        if (current == null) return unsignedCache[i] = new U1(i);
+        return current;
+    }
+
     @Override
     public int length() {
         return 1;
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException {
-        stream.write((byte) value);
+    public byte[] binary() {
+        return new byte[] {(byte) value};
     }
 
     @Override
-    public byte[] binary() {
-        return new byte[] {(byte) value};
+    public void write(OutputStream stream) throws IOException {
+        stream.write((byte) value);
     }
 
 }

@@ -9,6 +9,7 @@ import java.io.UncheckedIOException;
 
 public interface Data {
 
+    @Contract(pure = true)
     int length();
 
     void write(OutputStream stream) throws IOException, ReflectiveOperationException;

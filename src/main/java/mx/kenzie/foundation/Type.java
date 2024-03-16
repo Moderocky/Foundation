@@ -1,29 +1,19 @@
 package mx.kenzie.foundation;
 
+import org.valross.constantine.RecordConstant;
+
+import java.lang.constant.Constable;
 import java.lang.invoke.TypeDescriptor;
-import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.lang.reflect.Parameter;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
-public record Type(String getTypeName, String descriptorString, String internalName)
-    implements java.lang.reflect.Type, TypeDescriptor {
+public record Type(String getTypeName, String descriptorString,
+                   String internalName) implements java.lang.reflect.Type, Descriptor, Constable, TypeDescriptor, RecordConstant {
 
     private static final Map<Class<?>, SoftReference<Type>> CACHE = new WeakHashMap<>();
-    public static final Type
-        BYTE = Type.of(byte.class),
-        SHORT = Type.of(short.class),
-        INT = Type.of(int.class),
-        LONG = Type.of(long.class),
-        FLOAT = Type.of(float.class),
-        DOUBLE = Type.of(double.class),
-        BOOLEAN = Type.of(boolean.class),
-        CHAR = Type.of(char.class),
-        VOID = Type.of(void.class),
-        OBJECT = Type.of(Object.class),
-        STRING = Type.of(String.class);
+    public static final Type BYTE = Type.of(byte.class), SHORT = Type.of(short.class), INT = Type.of(int.class), LONG = Type.of(long.class), FLOAT = Type.of(float.class), DOUBLE = Type.of(double.class), BOOLEAN = Type.of(boolean.class), CHAR = Type.of(char.class), VOID = Type.of(void.class), OBJECT = Type.of(Object.class), STRING = Type.of(String.class);
 
     public static Type of(String path, String name) {
         final String internal = path.replace('.', '/') + '/' + name;
@@ -106,8 +96,7 @@ public record Type(String getTypeName, String descriptorString, String internalN
     }
 
     @SafeVarargs
-    public static <Klass extends java.lang.reflect.Type & TypeDescriptor>
-    String methodDescriptor(Klass result, Klass... parameters) {
+    public static <Klass extends java.lang.reflect.Type & TypeDescriptor> String methodDescriptor(Klass result, Klass... parameters) {
         final StringBuilder builder = new StringBuilder("(");
         for (Klass parameter : parameters) builder.append(parameter.descriptorString());
         builder.append(')').append(result.descriptorString());
@@ -160,6 +149,16 @@ public record Type(String getTypeName, String descriptorString, String internalN
         final Class<?> type = this.toClass();
         if (type == null) return false;
         return type.isInterface();
+    }
+
+    @Override
+    public Constable[] serial() {
+        return new String[] {getTypeName, descriptorString, internalName};
+    }
+
+    @Override
+    public Class<?>[] canonicalParameters() {
+        return new Class[] {String.class, String.class, String.class};
     }
 
 }

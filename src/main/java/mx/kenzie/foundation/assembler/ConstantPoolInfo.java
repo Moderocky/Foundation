@@ -1,93 +1,86 @@
 package mx.kenzie.foundation.assembler;
 
-import org.valross.constantine.RecordConstant;
+import mx.kenzie.foundation.Member;
+import mx.kenzie.foundation.Signature;
+import mx.kenzie.foundation.Type;
+import mx.kenzie.foundation.assembler.constant.*;
+import mx.kenzie.foundation.assembler.tool.ClassFileBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.constant.Constable;
 
-public interface ConstantPoolInfo extends Data {
+/**
+ * An entry into the constant pool, such as a primitive (number) value, a type, field or method name.
+ * Very few data types can be entered here, but complex values can be constructed from smaller values already in
+ * the constant pool.
+ * As a result, for some cases it may be important how the pool is ordered
+ * (e.g. we want a method's name to be in the pool before the method handle) and so constant pool entries have a
+ * 'sort' code to decide where they go in. Smaller sort codes are entered before larger sort codes.
+ * For simplicity, values that depends on others ought to have higher sort codes.
+ */
+public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
 
-    U1 CONSTANT_Class = new U1(7), CONSTANT_Fieldref = new U1(9), CONSTANT_Methodref = new U1(10), CONSTANT_InterfaceMethodref = new U1(11), CONSTANT_String = new U1(8), CONSTANT_Integer = new U1(3), CONSTANT_Float = new U1(4), CONSTANT_Long = new U1(5), CONSTANT_Double = new U1(6), CONSTANT_NameAndType = new U1(12), CONSTANT_Utf8 = new U1(1);
+    ConstantType<Utf8Info, String> UTF8 = new ConstantType<>(1, Utf8Info.class, String.class, ClassFileBuilder.Helper::valueOf);
+    ConstantType<ClassInfo, Type> TYPE = new ConstantType<>(7, ClassInfo.class, Type.class, ClassFileBuilder.Helper::valueOf);    ConstantType<ReferenceInfo, Member> FIELD_REFERENCE = new ConstantType<>(9, ReferenceInfo.class, Member.class, ClassFileBuilder.Helper::valueOfField);
+    ConstantType<StringInfo, String> STRING = new ConstantType<>(8, StringInfo.class, String.class, ClassFileBuilder.Helper::valueOfString);    ConstantType<ReferenceInfo, Member> METHOD_REFERENCE = new ConstantType<>(10, ReferenceInfo.class, Member.class, ClassFileBuilder.Helper::valueOfMethod);
+    ConstantType<SignatureInfo, Signature> NAME_AND_TYPE = new ConstantType<>(12, SignatureInfo.class, Signature.class, ClassFileBuilder.Helper::valueOf);    ConstantType<ReferenceInfo, Member> INTERFACE_METHOD_REFERENCE = new ConstantType<>(11, ReferenceInfo.class, Member.class, ClassFileBuilder.Helper::valueOfInterfaceMethod);
 
     static ConstantPoolInfo of(String string) {
         return Utf8Info.of(string);
     }
 
-    U1 tag();
+    ConstantType<?, ?> tag();    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    ConstantType<NumberInfo<Integer>, Integer> INTEGER = new ConstantType<>(3, (Class<NumberInfo<Integer>>) (Class) NumberInfo.class, Integer.class, ClassFileBuilder.Helper::valueOf);
 
-    UVec info();
+    UVec info();    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    ConstantType<NumberInfo<Float>, Float> FLOAT = new ConstantType<>(4, (Class<NumberInfo<Float>>) (Class) NumberInfo.class, Float.class, ClassFileBuilder.Helper::valueOf);
+
+    /**
+     * Whether this is (probably) storing the given object.
+     * This should use a value-based equality check, since the aim is to
+     * prevent duplicates being added to the constant pool.
+     */
+    boolean is(Constable object);    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    ConstantType<LongNumberInfo<Long>, Long> LONG = new ConstantType<>(5, (Class<LongNumberInfo<Long>>) (Class) LongNumberInfo.class, Long.class, ClassFileBuilder.Helper::valueOf);
 
     @Override
     default void write(OutputStream stream) throws IOException, ReflectiveOperationException {
         this.tag().write(stream);
         this.info().write(stream);
-    }
+    }    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    ConstantType<LongNumberInfo<Double>, Double> DOUBLE = new ConstantType<>(6, (Class<LongNumberInfo<Double>>) (Class) LongNumberInfo.class, Double.class, ClassFileBuilder.Helper::valueOf);
 
     @Override
     default byte[] binary() { // inefficient but subclasses should deal with this
         return UVec.of(this.tag(), this.info()).binary();
     }
 
+    /**
+     * @return The sort code of this constant.
+     */
+    default int sort() {
+        return 99;
+    }
+
+    default @Override int compareTo(@NotNull ConstantPoolInfo o) {
+        return Integer.compare(this.sort(), o.sort());
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
-record Utf8Info(int length, byte[] data) implements ConstantPoolInfo, UVec, RecordConstant {
-
-    private static final int MAX_LENGTH = 65535;
-
-    public Utf8Info(byte[] data) {
-        this(data.length, data);
-    }
-
-    public static Utf8Info of(String string) {
-        final int length = string.length();
-        byte[] data = new byte[(length / 16 + 1) * 16];
-        int pointer = -1;
-        for (int i = 0; i < length; ++i) {
-            if (pointer >= data.length - 3) data = copy(data, (data.length / 16 + 1) * 16);
-            final char c = string.charAt(i);
-            if (c >= 0x0001 && c <= 0x007F) {
-                data[++pointer] = (byte) c;
-            } else if (c <= 0x07FF) {
-                data[++pointer] = (byte) (0xC0 | c >> 6 & 0x1F);
-                data[++pointer] = (byte) (0x80 | c & 0x3F);
-            } else {
-                data[++pointer] = (byte) (0xE0 | c >> 12 & 0xF);
-                data[++pointer] = (byte) (0x80 | c >> 6 & 0x3F);
-                data[++pointer] = (byte) (0x80 | c & 0x3F);
-            }
-        }
-        if (pointer > MAX_LENGTH) throw new IllegalArgumentException("UTF-8 string is too long.");
-        if (++pointer != data.length) data = copy(data, pointer);
-        return new Utf8Info(data);
-    }
-
-    private static byte[] copy(byte[] data, int length) {
-        final byte[] copy = new byte[length];
-        System.arraycopy(data, 0, copy, 0, Math.min(data.length, length));
-        return copy;
-    }
-
-    @Override
-    public U1 tag() {
-        return CONSTANT_Utf8;
-    }
-
-    @Override
-    public UVec info() {
-        return UVec.of(new U2(length), data);
-    }
-
-    @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
-        stream.write(CONSTANT_Utf8.value());
-        stream.write((byte) length >>> 8);
-        stream.write((byte) length);
-        stream.write(data);
-    }
-
-    @Override
-    public byte[] binary() {
-        return this.info().binary();
-    }
-
-}

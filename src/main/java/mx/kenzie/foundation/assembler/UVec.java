@@ -63,9 +63,6 @@ public interface UVec extends Data {
         stream.write(this.binary());
     }
 
-    @Override
-    byte[] binary();
-
     default void copyTo(Object array) {
         if (array instanceof byte[] data) copy(this.binary(), data);
         else ArraySegments.instance().arrayCopy(this.binary(), array);
