@@ -43,6 +43,11 @@ public class PoolReference
     }
 
     @Override
+    public U2 constant() {
+        return U2.valueOf(this.index());
+    }
+
+    @Override
     public int length() {
         return 2;
     }
@@ -54,11 +59,6 @@ public class PoolReference
             (byte) (value >>> 8),
             (byte) (value)
         };
-    }
-
-    @Override
-    public U2 constant() {
-        return U2.valueOf(this.index());
     }
 
     public ConstantPoolInfo get() {

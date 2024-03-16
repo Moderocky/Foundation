@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public interface AttributeInfo
-    extends Data {
+    extends Data, UVec {
 
-    U2 attribute_name_index();
+    UVec attribute_name_index();
 
     U4 attribute_length();
 

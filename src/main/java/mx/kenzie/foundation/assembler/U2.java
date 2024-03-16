@@ -49,4 +49,8 @@ public record U2(int value)
         stream.write(value);
     }
 
+    public short shortValue() {
+        return (short) value;
+    }
+
 }

@@ -1,5 +1,7 @@
 package mx.kenzie.foundation.assembler;
 
+import org.valross.constantine.Constant;
+import org.valross.constantine.Constantive;
 import org.valross.constantine.RecordConstant;
 
 import java.io.ByteArrayOutputStream;
@@ -14,21 +16,14 @@ import java.util.Arrays;
  * but the type isn't specified. The length is counted in (unsigned) bytes.
  * As such, the data can be interpreted as any unsigned type, by dividing the data length by the unit length.
  */
-public interface UVec extends Data {
+public interface UVec extends Data, Constantive {
 
     static UVec of(byte[] bytes) {
         return new UnsignedVector(copy(bytes));
     }
 
     static UVec of(Data... data) {
-        try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-            for (Data datum : data) datum.write(stream);
-            return of(stream.toByteArray());
-        } catch (IOException ex) {
-            throw new UncheckedIOException(ex);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
+        return new CoVec(data);
     }
 
     static UVec of(Object... objects) {
@@ -75,18 +70,37 @@ public interface UVec extends Data {
      *
      * @return The same vector, if it was already flat, or a new Unsigned Vector.
      */
-    default UVec flatten() {
-        if (this instanceof UnsignedVector) return this;
+    default ConVec flatten() {
+        if (this instanceof UnsignedVector vector) return vector;
         return new UnsignedVector(this.binary());
+    }
+
+    default @Override
+    ConVec constant() {
+        return this.flatten();
+    }
+
+    interface ConVec extends Constant, UVec {
+
+        @Override
+        default ConVec constant() {
+            return this;
+        }
+
     }
 
 }
 
-record UnsignedVector(byte[] binary) implements UVec, RecordConstant {
+record UnsignedVector(byte[] binary) implements UVec, UVec.ConVec, RecordConstant {
 
     @Override
     public int length() {
         return binary.length;
+    }
+
+    @Override
+    public UnsignedVector constant() {
+        return this;
     }
 
 }

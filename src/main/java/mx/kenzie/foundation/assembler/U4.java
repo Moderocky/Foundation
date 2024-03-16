@@ -24,6 +24,14 @@ public record U4(long value) implements UVec, Data, RecordConstant {
         return current;
     }
 
+    public static U4 lengthOf(UVec... vecs) {
+        int length = 0;
+        for (UVec vec : vecs) {
+            length += vec.length();
+        }
+        return U4.valueOf(length);
+    }
+
     public static U4 fromSigned(int i) {
         return new U4(i);
     }
