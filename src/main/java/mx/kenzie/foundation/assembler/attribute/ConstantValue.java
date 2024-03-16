@@ -6,10 +6,7 @@ import mx.kenzie.foundation.assembler.U4;
 import mx.kenzie.foundation.assembler.UVec;
 import org.valross.constantine.RecordConstant;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
-public record ConstantValueAttribute(U2 attribute_name_index, U2 constantvalue_index)
+public record ConstantValue(U2 attribute_name_index, U2 constantvalue_index)
     implements AttributeInfo, UVec, RecordConstant {
 
     @Override
@@ -20,16 +17,6 @@ public record ConstantValueAttribute(U2 attribute_name_index, U2 constantvalue_i
     @Override
     public UVec info() {
         return constantvalue_index;
-    }
-
-    @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
-        AttributeInfo.super.write(stream);
-    }
-
-    @Override
-    public byte[] binary() {
-        return AttributeInfo.super.binary();
     }
 
 }
