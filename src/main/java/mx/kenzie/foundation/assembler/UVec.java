@@ -75,11 +75,6 @@ public interface UVec extends Data, Constantive {
         return new UnsignedVector(this.binary());
     }
 
-    default @Override
-    ConVec constant() {
-        return this.flatten();
-    }
-
     interface ConVec extends Constant, UVec {
 
         @Override
@@ -151,6 +146,11 @@ class GrowingVector implements UVec {
     public byte[] binary() {
         if (pointer == buffer.length) return buffer;
         return Arrays.copyOf(buffer, pointer);
+    }
+
+    @Override
+    public ConVec constant() {
+        return new UnsignedVector(this.binary());
     }
 
 }

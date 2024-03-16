@@ -25,4 +25,9 @@ public record CoVec(Data... data) implements UVec, Constantive {
         return length;
     }
 
+    @Override
+    public ConVec constant() {
+        return new UnsignedVector(this.binary());
+    }
+
 }

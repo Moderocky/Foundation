@@ -25,7 +25,7 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
     ConstantType<Utf8Info, String> UTF8 = new ConstantType<>(1, Utf8Info.class, String.class, ClassFileBuilder.Helper::valueOf);
     ConstantType<ClassInfo, Type> TYPE = new ConstantType<>(7, ClassInfo.class, Type.class, ClassFileBuilder.Helper::valueOf);
     ConstantType<StringInfo, String> STRING = new ConstantType<>(8, StringInfo.class, String.class, ClassFileBuilder.Helper::valueOfString);
-    ConstantType<SignatureInfo, Signature> NAME_AND_TYPE = new ConstantType<>(12, SignatureInfo.class, Signature.class, ClassFileBuilder.Helper::valueOf);    ConstantType<ReferenceInfo, Member> FIELD_REFERENCE = new ConstantType<>(9, ReferenceInfo.class, Member.class, ClassFileBuilder.Helper::valueOfField);
+    ConstantType<SignatureInfo, Signature> NAME_AND_TYPE = new ConstantType<>(12, SignatureInfo.class, Signature.class, ClassFileBuilder.Helper::valueOf);
 
     static ConstantPoolInfo of(String string) {
         return Utf8Info.of(string);
@@ -33,7 +33,9 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
 
     ConstantType<?, ?> tag();
 
-    UVec info();    ConstantType<ReferenceInfo, Member> METHOD_REFERENCE = new ConstantType<>(10, ReferenceInfo.class, Member.class, ClassFileBuilder.Helper::valueOfMethod);
+    ConstantType<ReferenceInfo, Member> FIELD_REFERENCE = new ConstantType<>(9, ReferenceInfo.class, Member.class, ClassFileBuilder.Helper::valueOfField);
+
+    UVec info();
 
     /**
      * Whether this is (probably) storing the given object.
@@ -51,7 +53,7 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
     @Override
     default byte[] binary() { // inefficient but subclasses should deal with this
         return UVec.of(this.tag(), this.info()).binary();
-    }    ConstantType<ReferenceInfo, Member> INTERFACE_METHOD_REFERENCE = new ConstantType<>(11, ReferenceInfo.class, Member.class, ClassFileBuilder.Helper::valueOfInterfaceMethod);
+    }
 
     /**
      * @return The sort code of this constant.
@@ -60,17 +62,18 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
         return 99;
     }
 
+    ConstantType<ReferenceInfo, Member> METHOD_REFERENCE = new ConstantType<>(10, ReferenceInfo.class, Member.class, ClassFileBuilder.Helper::valueOfMethod);
+
     default @Override int compareTo(@NotNull ConstantPoolInfo o) {
         return Integer.compare(this.sort(), o.sort());
     }
 
 
+    ConstantType<ReferenceInfo, Member> INTERFACE_METHOD_REFERENCE = new ConstantType<>(11, ReferenceInfo.class, Member.class, ClassFileBuilder.Helper::valueOfInterfaceMethod);
+
 
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
     ConstantType<NumberInfo<Integer>, Integer> INTEGER = new ConstantType<>(3, (Class<NumberInfo<Integer>>) (Class) NumberInfo.class, Integer.class, ClassFileBuilder.Helper::valueOf);
-
-
-
 
 
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})

@@ -24,10 +24,5 @@ public interface AttributeInfo
         this.info().write(stream);
     }
 
-    @Override
-    default byte[] binary() { // inefficient but subclasses should deal with this
-        return UVec.of(this.attribute_name_index(), this.attribute_length(), this.info()).binary();
-    }
-
 }
 
