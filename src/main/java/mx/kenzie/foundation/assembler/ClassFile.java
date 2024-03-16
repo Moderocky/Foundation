@@ -9,18 +9,18 @@ public class ClassFile implements Data {
     U2 minor_version;
     U2 major_version;
     U2 constant_pool_count;
-    cp_info[] constant_pool;  //constant_pool_count-1
+    ConstantPoolInfo[] constant_pool;  //constant_pool_count-1
     U2 access_flags;
     U2 this_class;
     U2 super_class;
     U2 interfaces_count;
     U2[] interfaces; //interfaces_count
     U2 fields_count;
-    field_info[] fields; //fields_count
+    FieldInfo[] fields; //fields_count
     U2 methods_count;
-    method_info[] methods; //methods_count
+    MethodInfo[] methods; //methods_count
     U2 attributes_count;
-    attribute_info[] attributes; //attributes_count
+    AttributeInfo[] attributes; //attributes_count
 
     @Override
     public int length() {

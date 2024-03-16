@@ -5,12 +5,12 @@ import org.valross.constantine.RecordConstant;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public interface cp_info extends Data {
+public interface ConstantPoolInfo extends Data {
 
     U1 CONSTANT_Class = new U1(7), CONSTANT_Fieldref = new U1(9), CONSTANT_Methodref = new U1(10), CONSTANT_InterfaceMethodref = new U1(11), CONSTANT_String = new U1(8), CONSTANT_Integer = new U1(3), CONSTANT_Float = new U1(4), CONSTANT_Long = new U1(5), CONSTANT_Double = new U1(6), CONSTANT_NameAndType = new U1(12), CONSTANT_Utf8 = new U1(1);
 
-    static cp_info of(String string) {
-        return utf8_info.of(string);
+    static ConstantPoolInfo of(String string) {
+        return Utf8Info.of(string);
     }
 
     U1 tag();
@@ -30,15 +30,15 @@ public interface cp_info extends Data {
 
 }
 
-record utf8_info(int length, byte[] data) implements cp_info, UVec, RecordConstant {
+record Utf8Info(int length, byte[] data) implements ConstantPoolInfo, UVec, RecordConstant {
 
     private static final int MAX_LENGTH = 65535;
 
-    public utf8_info(byte[] data) {
+    public Utf8Info(byte[] data) {
         this(data.length, data);
     }
 
-    public static utf8_info of(String string) {
+    public static Utf8Info of(String string) {
         final int length = string.length();
         byte[] data = new byte[(length / 16 + 1) * 16];
         int pointer = -1;
@@ -58,7 +58,7 @@ record utf8_info(int length, byte[] data) implements cp_info, UVec, RecordConsta
         }
         if (pointer > MAX_LENGTH) throw new IllegalArgumentException("UTF-8 string is too long.");
         if (++pointer != data.length) data = copy(data, pointer);
-        return new utf8_info(data);
+        return new Utf8Info(data);
     }
 
     private static byte[] copy(byte[] data, int length) {

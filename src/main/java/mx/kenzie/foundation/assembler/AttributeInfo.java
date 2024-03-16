@@ -3,7 +3,7 @@ package mx.kenzie.foundation.assembler;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public interface attribute_info
+public interface AttributeInfo
     extends Data {
 
     U2 attribute_name_index();

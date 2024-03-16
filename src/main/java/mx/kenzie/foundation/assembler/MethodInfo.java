@@ -5,7 +5,7 @@ import org.valross.constantine.RecordConstant;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public record method_info()
+public record MethodInfo()
     implements Data, RecordConstant {
 
     @Override
