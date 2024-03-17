@@ -1,6 +1,9 @@
 package mx.kenzie.foundation.assembler.attribute;
 
-import mx.kenzie.foundation.assembler.*;
+import mx.kenzie.foundation.assembler.Data;
+import mx.kenzie.foundation.assembler.U2;
+import mx.kenzie.foundation.assembler.U4;
+import mx.kenzie.foundation.assembler.UVec;
 import mx.kenzie.foundation.assembler.tool.ClassFileBuilder;
 import mx.kenzie.foundation.assembler.tool.PoolReference;
 import org.valross.constantine.RecordConstant;
@@ -8,15 +11,15 @@ import org.valross.constantine.RecordConstant;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static mx.kenzie.foundation.assembler.ConstantPoolInfo.UTF8;
+import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.UTF8;
 
 public record Code(PoolReference attribute_name_index, U4 attribute_length, U2 max_stack, U2 max_locals, U4 code_length,
                    UVec code, U2 exception_table_length,
 
                    Exception[] exception_table, U2 attributes_count,
-                   AttributeInfo... attributes) implements AttributeInfo, Data, UVec, RecordConstant {
+                   CodeAttributeInfo... attributes) implements AttributeInfo, Data, UVec, RecordConstant {
 
-    public static Code of(ClassFileBuilder.Helper helper, U2 max_stack, U2 max_locals, UVec code, Exception[] exception_table, AttributeInfo... attributes) {
+    public static Code of(ClassFileBuilder.Helper helper, U2 max_stack, U2 max_locals, UVec code, Exception[] exception_table, CodeAttributeInfo... attributes) {
         final U4 codeLength = U4.valueOf(code.length());
         final U2 exceptionsLength = U2.valueOf(exception_table.length), attributeCount = U2.valueOf(attributes.length);
         final U4 length = new U4(2L + 2 + 4 + codeLength.intValue() + 2 + exceptionsLength.shortValue() + (exception_table.length * 8L) + 2 + U4.lengthOf(attributes).intValue());

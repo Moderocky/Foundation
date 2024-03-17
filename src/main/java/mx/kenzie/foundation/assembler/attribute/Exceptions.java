@@ -1,6 +1,5 @@
 package mx.kenzie.foundation.assembler.attribute;
 
-import mx.kenzie.foundation.assembler.AttributeInfo;
 import mx.kenzie.foundation.assembler.U2;
 import mx.kenzie.foundation.assembler.U4;
 import mx.kenzie.foundation.assembler.UVec;
@@ -13,7 +12,7 @@ import java.io.OutputStream;
 public record Exceptions(PoolReference attribute_name_index,
                          U4 attribute_length,
                          PoolReference[] exception_index_table)
-    implements AttributeInfo, UVec, RecordConstant {
+    implements CodeAttributeInfo, AttributeInfo, UVec, RecordConstant {
 
     @Override
     public U4 attribute_length() {

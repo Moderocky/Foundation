@@ -1,6 +1,5 @@
 package mx.kenzie.foundation.assembler.constant;
 
-import mx.kenzie.foundation.assembler.ConstantPoolInfo;
 import mx.kenzie.foundation.assembler.Data;
 import mx.kenzie.foundation.assembler.U4;
 import mx.kenzie.foundation.assembler.UVec;

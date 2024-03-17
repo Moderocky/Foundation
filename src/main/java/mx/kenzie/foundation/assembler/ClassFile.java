@@ -1,5 +1,7 @@
 package mx.kenzie.foundation.assembler;
 
+import mx.kenzie.foundation.assembler.attribute.AttributeInfo;
+import mx.kenzie.foundation.assembler.constant.ConstantPoolInfo;
 import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;

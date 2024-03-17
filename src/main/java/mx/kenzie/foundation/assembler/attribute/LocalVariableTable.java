@@ -7,8 +7,8 @@ import org.valross.constantine.RecordConstant;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public record LineNumberTable(PoolReference attribute_name_index, U2 line_number_table_length,
-                              LineNumber... line_number_table) implements CodeAttributeInfo, AttributeInfo, UVec, RecordConstant {
+public record LocalVariableTable(PoolReference attribute_name_index, U2 line_number_table_length,
+                                 LineNumber... line_number_table) implements CodeAttributeInfo, AttributeInfo, UVec, RecordConstant {
 
     @Override
     public U4 attribute_length() {

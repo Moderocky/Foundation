@@ -1,6 +1,5 @@
 package mx.kenzie.foundation.assembler.constant;
 
-import mx.kenzie.foundation.assembler.ConstantPoolInfo;
 import mx.kenzie.foundation.assembler.U2;
 import mx.kenzie.foundation.assembler.UVec;
 import org.valross.constantine.RecordConstant;

@@ -1,9 +1,10 @@
-package mx.kenzie.foundation.assembler;
+package mx.kenzie.foundation.assembler.constant;
 
 import mx.kenzie.foundation.Member;
 import mx.kenzie.foundation.Signature;
 import mx.kenzie.foundation.Type;
-import mx.kenzie.foundation.assembler.constant.*;
+import mx.kenzie.foundation.assembler.Data;
+import mx.kenzie.foundation.assembler.UVec;
 import mx.kenzie.foundation.assembler.tool.ClassFileBuilder;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,6 +1,5 @@
 package mx.kenzie.foundation.assembler.attribute;
 
-import mx.kenzie.foundation.assembler.AttributeInfo;
 import mx.kenzie.foundation.assembler.U4;
 import mx.kenzie.foundation.assembler.UVec;
 import mx.kenzie.foundation.assembler.tool.PoolReference;

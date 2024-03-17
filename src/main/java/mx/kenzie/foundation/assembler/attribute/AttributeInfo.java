@@ -1,12 +1,15 @@
-package mx.kenzie.foundation.assembler;
+package mx.kenzie.foundation.assembler.attribute;
 
+import mx.kenzie.foundation.assembler.Data;
+import mx.kenzie.foundation.assembler.U4;
+import mx.kenzie.foundation.assembler.UVec;
 import mx.kenzie.foundation.assembler.tool.ClassFileBuilder;
 import mx.kenzie.foundation.assembler.tool.PoolReference;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static mx.kenzie.foundation.assembler.ConstantPoolInfo.UTF8;
+import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.UTF8;
 
 public interface AttributeInfo
     extends Data, UVec {

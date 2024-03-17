@@ -4,6 +4,7 @@ import mx.kenzie.foundation.Member;
 import mx.kenzie.foundation.Signature;
 import mx.kenzie.foundation.Type;
 import mx.kenzie.foundation.assembler.*;
+import mx.kenzie.foundation.assembler.attribute.AttributeInfo;
 import mx.kenzie.foundation.assembler.constant.*;
 import org.intellij.lang.annotations.MagicConstant;
 import org.valross.constantine.Constantive;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static mx.kenzie.foundation.assembler.ConstantPoolInfo.*;
+import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.*;
 
 public class ClassFileBuilder implements Constantive {
 
