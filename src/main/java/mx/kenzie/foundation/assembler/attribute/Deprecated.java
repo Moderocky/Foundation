@@ -4,7 +4,7 @@ import mx.kenzie.foundation.assembler.U2;
 import mx.kenzie.foundation.assembler.UVec;
 import org.valross.constantine.RecordConstant;
 
-public record Synthetic(
-    U2 attribute_name_index) implements ZeroAttribute, CodeAttributeInfo, AttributeInfo, UVec, RecordConstant {
+public record Deprecated(U2 attribute_name_index)
+    implements ZeroAttribute, CodeAttributeInfo, AttributeInfo, UVec, RecordConstant {
 
 }
