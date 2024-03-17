@@ -14,6 +14,10 @@ import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.UTF8;
 public interface AttributeInfo
     extends Data, UVec {
 
+    static PoolReference name(AttributeInfo info, ClassFileBuilder.Helper helper) {
+        return helper.constant(UTF8, info.attributeName());
+    }
+
     UVec attribute_name_index();
 
     U4 attribute_length();
@@ -34,10 +38,6 @@ public interface AttributeInfo
 
     default String attributeName() {
         return this.getClass().getSimpleName();
-    }
-
-    static PoolReference name(AttributeInfo info, ClassFileBuilder.Helper helper) {
-        return helper.constant(UTF8, info.attributeName());
     }
 
 }

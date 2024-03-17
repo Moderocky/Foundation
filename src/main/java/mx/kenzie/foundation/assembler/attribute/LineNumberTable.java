@@ -1,6 +1,9 @@
 package mx.kenzie.foundation.assembler.attribute;
 
-import mx.kenzie.foundation.assembler.*;
+import mx.kenzie.foundation.assembler.Data;
+import mx.kenzie.foundation.assembler.U2;
+import mx.kenzie.foundation.assembler.U4;
+import mx.kenzie.foundation.assembler.UVec;
 import mx.kenzie.foundation.assembler.tool.PoolReference;
 import org.valross.constantine.RecordConstant;
 
