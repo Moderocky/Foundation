@@ -10,7 +10,7 @@ import org.valross.constantine.RecordConstant;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public record Exceptions(U2 attribute_name_index,
+public record Exceptions(PoolReference attribute_name_index,
                          U4 attribute_length,
                          PoolReference[] exception_index_table)
     implements AttributeInfo, UVec, RecordConstant {

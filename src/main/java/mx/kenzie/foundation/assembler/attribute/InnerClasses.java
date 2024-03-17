@@ -7,7 +7,7 @@ import org.valross.constantine.RecordConstant;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public record InnerClasses(U2 attribute_name_index,
+public record InnerClasses(PoolReference attribute_name_index,
                            U4 attribute_length,
                            Classes[] classes)
     implements AttributeInfo, UVec, RecordConstant {
