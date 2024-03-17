@@ -2,6 +2,7 @@ package mx.kenzie.foundation.assembler;
 
 import mx.kenzie.foundation.assembler.attribute.AttributeInfo;
 import mx.kenzie.foundation.assembler.constant.ConstantPoolInfo;
+import mx.kenzie.foundation.assembler.tool.PoolReference;
 import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;
@@ -9,7 +10,8 @@ import java.io.OutputStream;
 
 public record ClassFile(U4 magic, U2 minor_version, U2 major_version, U2 constant_pool_count,
                         ConstantPoolInfo[] constant_pool,  //constant_pool_count-1
-                        U2 access_flags, U2 this_class, U2 super_class, U2 interfaces_count, U2[] interfaces,
+                        U2 access_flags, PoolReference this_class, PoolReference super_class, U2 interfaces_count,
+                        PoolReference[] interfaces,
                         //interfaces_count
                         U2 fields_count, FieldInfo[] fields, //fields_count
                         U2 methods_count, MethodInfo[] methods, //methods_count

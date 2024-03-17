@@ -28,6 +28,8 @@ public record U2(int value)
         return current;
     }
 
+    public static final U2 ZERO = U2.valueOf(0);
+
     @Override
     public int length() {
         return 2;

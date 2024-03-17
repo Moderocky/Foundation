@@ -20,19 +20,17 @@ import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.*;
 public class ClassFileBuilder implements Constantive {
 
     protected U4 magic;
-    protected U2 minor_version, major_version, access_flags = U2.valueOf(0);
+    protected U2 minor_version, major_version, access_flags = U2.ZERO;
     protected List<ConstantPoolInfo> constantPool;
-    U2 this_class;
-    U2 super_class;
-    U2 interfaces_count;
-    U2[] interfaces;
-    //interfaces_count
-    U2 fields_count;
-    FieldInfo[] fields; //fields_count
-    U2 methods_count;
-    MethodInfo[] methods; //methods_count
-    U2 attributes_count;
-    AttributeInfo[] attributes; //attributes_count
+    protected PoolReference this_class, super_class;
+    protected U2 interfaces_count;
+    protected PoolReference[] interfaces; //interfaces_count
+    protected U2 fields_count;
+    protected FieldInfo[] fields; //fields_count
+    protected U2 methods_count;
+    protected MethodInfo[] methods; //methods_count
+    protected U2 attributes_count;
+    protected AttributeInfo[] attributes; //attributes_count
 
     public ClassFileBuilder(int magic, int majorVersion, int minorVersion) {
         this.magic = U4.valueOf(magic);
