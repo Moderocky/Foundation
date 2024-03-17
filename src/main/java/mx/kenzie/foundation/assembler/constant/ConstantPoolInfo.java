@@ -27,14 +27,22 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
     ConstantType<ClassInfo, Type> TYPE = new ConstantType<>(7, ClassInfo.class, Type.class, ClassFileBuilder.Helper::valueOf);
     ConstantType<StringInfo, String> STRING = new ConstantType<>(8, StringInfo.class, String.class, ClassFileBuilder.Helper::valueOfString);
     ConstantType<SignatureInfo, Signature> NAME_AND_TYPE = new ConstantType<>(12, SignatureInfo.class, Signature.class, ClassFileBuilder.Helper::valueOf);
+    ConstantType<ReferenceInfo, Member> METHOD_REFERENCE = new ConstantType<>(10, ReferenceInfo.class, Member.class, ClassFileBuilder.Helper::valueOfMethod);
+    ConstantType<ReferenceInfo, Member> INTERFACE_METHOD_REFERENCE = new ConstantType<>(11, ReferenceInfo.class, Member.class, ClassFileBuilder.Helper::valueOfInterfaceMethod);
+    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    ConstantType<NumberInfo<Integer>, Integer> INTEGER = new ConstantType<>(3, (Class<NumberInfo<Integer>>) (Class) NumberInfo.class, Integer.class, ClassFileBuilder.Helper::valueOf);
+    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    ConstantType<NumberInfo<Float>, Float> FLOAT = new ConstantType<>(4, (Class<NumberInfo<Float>>) (Class) NumberInfo.class, Float.class, ClassFileBuilder.Helper::valueOf);
+    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    ConstantType<LongNumberInfo<Long>, Long> LONG = new ConstantType<>(5, (Class<LongNumberInfo<Long>>) (Class) LongNumberInfo.class, Long.class, ClassFileBuilder.Helper::valueOf);
+    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    ConstantType<LongNumberInfo<Double>, Double> DOUBLE = new ConstantType<>(6, (Class<LongNumberInfo<Double>>) (Class) LongNumberInfo.class, Double.class, ClassFileBuilder.Helper::valueOf);
 
     static ConstantPoolInfo of(String string) {
         return Utf8Info.of(string);
     }
 
     ConstantType<?, ?> tag();
-
-    ConstantType<ReferenceInfo, Member> FIELD_REFERENCE = new ConstantType<>(9, ReferenceInfo.class, Member.class, ClassFileBuilder.Helper::valueOfField);
 
     UVec info();
 
@@ -44,6 +52,8 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
      * prevent duplicates being added to the constant pool.
      */
     boolean is(Constable object);
+
+    ConstantType<ReferenceInfo, Member> FIELD_REFERENCE = new ConstantType<>(9, ReferenceInfo.class, Member.class, ClassFileBuilder.Helper::valueOfField);
 
     @Override
     default void write(OutputStream stream) throws IOException, ReflectiveOperationException {
@@ -63,31 +73,9 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
         return 99;
     }
 
-    ConstantType<ReferenceInfo, Member> METHOD_REFERENCE = new ConstantType<>(10, ReferenceInfo.class, Member.class, ClassFileBuilder.Helper::valueOfMethod);
-
     default @Override int compareTo(@NotNull ConstantPoolInfo o) {
         return Integer.compare(this.sort(), o.sort());
     }
-
-
-    ConstantType<ReferenceInfo, Member> INTERFACE_METHOD_REFERENCE = new ConstantType<>(11, ReferenceInfo.class, Member.class, ClassFileBuilder.Helper::valueOfInterfaceMethod);
-
-
-    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
-    ConstantType<NumberInfo<Integer>, Integer> INTEGER = new ConstantType<>(3, (Class<NumberInfo<Integer>>) (Class) NumberInfo.class, Integer.class, ClassFileBuilder.Helper::valueOf);
-
-
-    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
-    ConstantType<NumberInfo<Float>, Float> FLOAT = new ConstantType<>(4, (Class<NumberInfo<Float>>) (Class) NumberInfo.class, Float.class, ClassFileBuilder.Helper::valueOf);
-
-
-    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
-    ConstantType<LongNumberInfo<Long>, Long> LONG = new ConstantType<>(5, (Class<LongNumberInfo<Long>>) (Class) LongNumberInfo.class, Long.class, ClassFileBuilder.Helper::valueOf);
-
-
-    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
-    ConstantType<LongNumberInfo<Double>, Double> DOUBLE = new ConstantType<>(6, (Class<LongNumberInfo<Double>>) (Class) LongNumberInfo.class, Double.class, ClassFileBuilder.Helper::valueOf);
-
 
 }
 

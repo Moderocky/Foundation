@@ -12,6 +12,7 @@ public record U2(int value)
     implements UVec, Data, RecordConstant {
 
     private static final U2[] unsignedCache = new U2[128];
+    public static final U2 ZERO = U2.valueOf(0);
 
     public U2(short value) {
         this(Short.toUnsignedInt(value));
@@ -27,8 +28,6 @@ public record U2(int value)
         if (current == null) return unsignedCache[i] = new U2(i);
         return current;
     }
-
-    public static final U2 ZERO = U2.valueOf(0);
 
     @Override
     public int length() {
