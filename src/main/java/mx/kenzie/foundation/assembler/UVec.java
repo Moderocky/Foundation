@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /**
@@ -73,6 +74,42 @@ public interface UVec extends Data, Constantive {
     default ConVec flatten() {
         if (this instanceof UnsignedVector vector) return vector;
         return new UnsignedVector(this.binary());
+    }
+
+    default byte byteValue() {
+        final byte[] bytes = new byte[Byte.BYTES];
+        this.copyTo(bytes);
+        return bytes[0];
+    }
+
+    default short shortValue() {
+        final byte[] bytes = new byte[Short.BYTES];
+        this.copyTo(bytes);
+        return ByteBuffer.wrap(bytes).getShort(0);
+    }
+
+    default int intValue() {
+        final byte[] bytes = new byte[Integer.BYTES];
+        this.copyTo(bytes);
+        return ByteBuffer.wrap(bytes).getInt(0);
+    }
+
+    default float floatValue() {
+        final byte[] bytes = new byte[Float.BYTES];
+        this.copyTo(bytes);
+        return ByteBuffer.wrap(bytes).getFloat(0);
+    }
+
+    default long longValue() {
+        final byte[] bytes = new byte[Long.BYTES];
+        this.copyTo(bytes);
+        return ByteBuffer.wrap(bytes).getLong(0);
+    }
+
+    default double doubleValue() {
+        final byte[] bytes = new byte[Double.BYTES];
+        this.copyTo(bytes);
+        return ByteBuffer.wrap(bytes).getDouble(0);
     }
 
     interface ConVec extends Constant, UVec {
