@@ -4,6 +4,7 @@ import mx.kenzie.foundation.assembler.Data;
 import mx.kenzie.foundation.assembler.U2;
 import mx.kenzie.foundation.assembler.UVec;
 import mx.kenzie.foundation.assembler.constant.ConstantPoolInfo;
+import mx.kenzie.foundation.assembler.constant.DeadSpaceInfo;
 import org.jetbrains.annotations.NotNull;
 import org.valross.constantine.Constantive;
 
@@ -13,8 +14,9 @@ import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 
-public class PoolReference
-    implements UVec, Data, Constantive {
+public class PoolReference implements UVec, Data, Constantive {
+
+    public static final PoolReference ZERO = new Zero();
 
     private final Iterable<ConstantPoolInfo> pool;
     private final Reference<ConstantPoolInfo> reference;
@@ -55,10 +57,7 @@ public class PoolReference
     @Override
     public byte[] binary() {
         final short value = (short) this.index();
-        return new byte[] {
-            (byte) (value >>> 8),
-            (byte) (value)
-        };
+        return new byte[] {(byte) (value >>> 8), (byte) (value)};
     }
 
     public ConstantPoolInfo get() {
@@ -67,6 +66,29 @@ public class PoolReference
 
     public @NotNull ConstantPoolInfo ensure() {
         return Objects.requireNonNull(this.get());
+    }
+
+    static final class Zero extends PoolReference {
+
+        public Zero() {
+            super(null, null);
+        }
+
+        @Override
+        public int index() {
+            return 0;
+        }
+
+        @Override
+        public ConstantPoolInfo get() {
+            return new DeadSpaceInfo();
+        }
+
+        @Override
+        public @NotNull ConstantPoolInfo ensure() {
+            return new DeadSpaceInfo();
+        }
+
     }
 
 }

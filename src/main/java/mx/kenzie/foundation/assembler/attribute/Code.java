@@ -19,16 +19,20 @@ public record Code(PoolReference attribute_name_index, U4 attribute_length, U2 m
                    Exception[] exception_table, U2 attributes_count,
                    CodeAttributeInfo... attributes) implements AttributeInfo, Data, UVec, RecordConstant {
 
-    public static Code of(ClassFileBuilder.Helper helper, U2 max_stack, U2 max_locals, UVec code, Exception[] exception_table, CodeAttributeInfo... attributes) {
+    public static Code of(ClassFileBuilder.Helper helper, U2 max_stack, U2 max_locals, UVec code,
+                          Exception[] exception_table, CodeAttributeInfo... attributes) {
         final U4 codeLength = U4.valueOf(code.length());
         final U2 exceptionsLength = U2.valueOf(exception_table.length), attributeCount = U2.valueOf(attributes.length);
-        final U4 length = new U4(2L + 2 + 4 + codeLength.intValue() + 2 + exceptionsLength.shortValue() + (exception_table.length * 8L) + 2 + U4.lengthOf(attributes).intValue());
-        return new Code(helper.constant(UTF8, "Code"), length, max_stack, max_locals, codeLength, code, exceptionsLength, exception_table, attributeCount, attributes);
+        final U4 length =
+            new U4(2L + 2 + 4 + codeLength.intValue() + 2 + exceptionsLength.shortValue() + (exception_table.length * 8L) + 2 + U4.lengthOf(attributes).intValue());
+        return new Code(helper.constant(UTF8, "Code"), length, max_stack, max_locals, codeLength, code,
+            exceptionsLength, exception_table, attributeCount, attributes);
     }
 
     @Override
     public UVec info() {
-        return UVec.of(max_stack, max_locals, code_length, code, exception_table_length, UVec.of(exception_table), attributes_count, UVec.of(attributes));
+        return UVec.of(max_stack, max_locals, code_length, code, exception_table_length, UVec.of(exception_table),
+            attributes_count, UVec.of(attributes));
     }
 
     @Override

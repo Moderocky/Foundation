@@ -12,10 +12,12 @@ import java.util.function.BiFunction;
 
 public record ConstantType<Info extends ConstantPoolInfo, Value extends Constable>(U1 value, Class<Info> infoType,
                                                                                    Class<Value> valueType,
-                                                                                   BiFunction<ClassFileBuilder.Helper, Value, Info> creator)
+                                                                                   BiFunction<ClassFileBuilder.Helper
+                                                                                       , Value, Info> creator)
     implements UVec, RecordConstant {
 
-    public ConstantType(int value, Class<Info> infoType, Class<Value> valueType, BiFunction<ClassFileBuilder.Helper, Value, Info> creator) {
+    public ConstantType(int value, Class<Info> infoType, Class<Value> valueType, BiFunction<ClassFileBuilder.Helper,
+        Value, Info> creator) {
         this(U1.valueOf(value), infoType, valueType, creator);
     }
 

@@ -6,10 +6,11 @@ import mx.kenzie.foundation.Type;
 import mx.kenzie.foundation.assembler.*;
 import mx.kenzie.foundation.assembler.attribute.AttributeInfo;
 import mx.kenzie.foundation.assembler.constant.*;
-import org.intellij.lang.annotations.MagicConstant;
+import mx.kenzie.foundation.assembler.error.ClassBuilderException;
 import org.valross.constantine.Constantive;
 
 import java.lang.constant.Constable;
+import java.lang.invoke.TypeDescriptor;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -19,33 +20,52 @@ import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.*;
 
 public class ClassFileBuilder implements Constantive {
 
-    protected U4 magic;
-    protected U2 minor_version, major_version, access_flags = U2.ZERO;
+    private static final U4 MAGIC = U4.valueOf(0xCAFEBABE);
+    protected final U4 magic;
+    protected final U2 minor_version, major_version;
+    protected U2 access_flags = U2.ZERO;
     protected List<ConstantPoolInfo> constantPool;
-    protected PoolReference this_class, super_class;
-    protected U2 interfaces_count;
-    protected PoolReference[] interfaces; //interfaces_count
-    protected U2 fields_count;
-    protected FieldInfo[] fields; //fields_count
-    protected U2 methods_count;
-    protected MethodInfo[] methods; //methods_count
-    protected U2 attributes_count;
-    protected AttributeInfo[] attributes; //attributes_count
+    protected PoolReference this_class, super_class = PoolReference.ZERO;
+    protected List<PoolReference> interfaces; //interfaces_count
+    protected List<FieldInfo> fields; //fields_count
+    protected List<MethodInfo> methods; //methods_count
+    protected List<AttributeInfo> attributes; //attributes_count
 
-    public ClassFileBuilder(int magic, int majorVersion, int minorVersion) {
-        this.magic = U4.valueOf(magic);
+    public ClassFileBuilder(int majorVersion, int minorVersion) {
+        this.magic = MAGIC;
         this.major_version = U2.valueOf(majorVersion);
         this.minor_version = U2.valueOf(minorVersion);
         this.constantPool = new LinkedList<>();
+        this.interfaces = new ArrayList<>();
+        this.fields = new ArrayList<>();
+        this.methods = new ArrayList<>();
+        this.attributes = new ArrayList<>();
+        this.helper().setSuperType(Type.OBJECT);
     }
 
-    public ClassFileBuilder setAccessFlags(@MagicConstant(valuesFromClass = Access.class) int flags) {
-        this.access_flags = U2.valueOf(flags);
+    protected U2 interfacesCount() {
+        return U2.valueOf(interfaces.size());
+    }
+
+    protected U2 fieldsCount() {
+        return U2.valueOf(fields.size());
+    }
+
+    protected U2 methodsCount() {
+        return U2.valueOf(methods.size());
+    }
+
+    protected U2 attributesCount() {
+        return U2.valueOf(attributes.size());
+    }
+
+    public ClassFileBuilder setAccessFlags(Access.Type... flags) {
+        this.access_flags = Access.of(flags).constant();
         return this;
     }
 
-    public ClassFileBuilder addAccessFlags(@MagicConstant(valuesFromClass = Access.class) int flags) {
-        this.access_flags = U2.valueOf(this.access_flags.value() | flags);
+    public ClassFileBuilder addAccessFlags(Access.Type... flags) {
+        this.access_flags = U2.valueOf(this.access_flags.value() | Access.of(flags).value());
         return this;
     }
 
@@ -65,8 +85,17 @@ public class ClassFileBuilder implements Constantive {
         return list.toArray(new ConstantPoolInfo[0]);
     }
 
-    public ClassFile build() {
-        return new ClassFile(magic, minor_version, major_version, constantPoolCount(), constantPool(), access_flags, this_class, super_class, interfaces_count, interfaces, fields_count, fields, methods_count, methods, attributes_count, attributes);
+    public ClassFile build() throws ClassBuilderException {
+        if (this_class == null) throw new ClassBuilderException("Type was null.");
+        if (super_class == null) throw new ClassBuilderException("Supertype was null.");
+        return new ClassFile(magic, minor_version, major_version, constantPoolCount(), constantPool(), access_flags,
+            this_class, super_class, interfacesCount(), interfaces.toArray(new PoolReference[0]), fieldsCount(),
+            fields.toArray(new FieldInfo[0]), methodsCount(), methods.toArray(new MethodInfo[0]), attributesCount(),
+            attributes.toArray(new AttributeInfo[0]));
+    }
+
+    public Helper helper() {
+        return this.new Helper();
     }
 
     @Override
@@ -115,7 +144,8 @@ public class ClassFileBuilder implements Constantive {
         }
 
         public ReferenceInfo valueOf(ConstantType<ReferenceInfo, Member> tag, Member member) {
-            return new ReferenceInfo(tag, this.constant(TYPE, member.owner()), this.constant(NAME_AND_TYPE, member.signature()));
+            return new ReferenceInfo(tag, this.constant(TYPE, member.owner()), this.constant(NAME_AND_TYPE,
+                member.signature()));
         }
 
         public NumberInfo<Integer> valueOf(Integer i) {
@@ -134,6 +164,23 @@ public class ClassFileBuilder implements Constantive {
         public LongNumberInfo<Double> valueOf(Double d) {
             final ByteBuffer buffer = ByteBuffer.allocate(Double.BYTES).putDouble(d);
             return new LongNumberInfo<>(DOUBLE, U4.fromSigned(buffer.getInt(0)), U4.fromSigned(buffer.getInt(4)));
+        }
+
+        public <Klass extends java.lang.reflect.Type & TypeDescriptor> void setType(Klass type) {
+            this_class = this.constant(TYPE, Type.of(type));
+        }
+
+        public <Klass extends java.lang.reflect.Type & TypeDescriptor> void setSuperType(Klass type) {
+            super_class = this.constant(TYPE, Type.of(type));
+        }
+
+        public void removeSuperType() {
+            super_class = this.constant(TYPE, Type.OBJECT);
+        }
+
+        @SafeVarargs
+        public final <Klass extends java.lang.reflect.Type & TypeDescriptor> void addInterfaces(Klass... interfaces) {
+            for (Klass klass : interfaces) ClassFileBuilder.this.interfaces.add(this.constant(TYPE, Type.of(klass)));
         }
 
     }

@@ -10,7 +10,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public record LocalVariableTable(PoolReference attribute_name_index, U2 local_variable_table_length,
-                                 LocalVariable... local_variable_table) implements CodeAttributeInfo, AttributeInfo, UVec, RecordConstant {
+                                 LocalVariable... local_variable_table)
+    implements CodeAttributeInfo, AttributeInfo, UVec, RecordConstant {
 
     @Override
     public U4 attribute_length() {
