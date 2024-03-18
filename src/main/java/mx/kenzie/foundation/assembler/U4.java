@@ -19,7 +19,7 @@ public record U4(long value) implements UVec, Data, RecordConstant {
     }
 
     public static U4 valueOf(int i) {
-        if (i > 127) return new U4(i);
+        if (i > 127 || i < 0) return new U4(i);
         final U4 current = unsignedCache[i];
         if (current == null) return unsignedCache[i] = new U4(i);
         return current;
