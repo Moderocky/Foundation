@@ -23,7 +23,8 @@ public class PreMethod extends BuildElement implements CodeBody, CallMethod.Stub
     }
 
     @SafeVarargs
-    public <Klass extends java.lang.reflect.Type & TypeDescriptor> PreMethod(Klass returnType, String name, Klass... parameters) {
+    public <Klass extends java.lang.reflect.Type & TypeDescriptor> PreMethod(Klass returnType, String name,
+                                                                             Klass... parameters) {
         this.name = name;
         this.returnType = Type.of(returnType);
         this.parameters = new LinkedList<>(List.of(Type.array(parameters)));
@@ -36,13 +37,16 @@ public class PreMethod extends BuildElement implements CodeBody, CallMethod.Stub
     }
 
     @SafeVarargs
-    public <Klass extends java.lang.reflect.Type & TypeDescriptor> PreMethod(Modifier modifier, Klass returnType, String name, Klass... parameters) {
+    public <Klass extends java.lang.reflect.Type & TypeDescriptor> PreMethod(Modifier modifier, Klass returnType,
+                                                                             String name, Klass... parameters) {
         this(returnType, name, parameters);
         this.modifiers = new HashSet<>(List.of(modifier));
     }
 
     @SafeVarargs
-    public <Klass extends java.lang.reflect.Type & TypeDescriptor> PreMethod(Modifier access, Modifier state, Klass returnType, String name, Klass... parameters) {
+    public <Klass extends java.lang.reflect.Type & TypeDescriptor> PreMethod(Modifier access, Modifier state,
+                                                                             Klass returnType, String name,
+                                                                             Klass... parameters) {
         this(returnType, name, parameters);
         this.modifiers = new HashSet<>(List.of(access, state));
     }
@@ -53,7 +57,8 @@ public class PreMethod extends BuildElement implements CodeBody, CallMethod.Stub
     }
 
     @SafeVarargs
-    public static <Klass extends java.lang.reflect.Type & TypeDescriptor> PreMethod constructor(Modifier modifier, Klass... parameters) {
+    public static <Klass extends java.lang.reflect.Type & TypeDescriptor> PreMethod constructor(Modifier modifier,
+                                                                                                Klass... parameters) {
         return new PreMethod(modifier, Type.VOID, "<init>", parameters);
     }
 
@@ -139,18 +144,6 @@ public class PreMethod extends BuildElement implements CodeBody, CallMethod.Stub
         return owner.type();
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (!(object instanceof PreMethod method)) return false;
-        return Objects.equals(parameters, method.parameters) && Objects.equals(returnType, method.returnType) && Objects.equals(name, method.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(parameters, returnType, name);
-    }
-
     public Type returnType() {
         return returnType;
     }
@@ -162,6 +155,18 @@ public class PreMethod extends BuildElement implements CodeBody, CallMethod.Stub
     @Override
     public Type[] parameters() {
         return this.getParameters();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(parameters, returnType, name);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof PreMethod method)) return false;
+        return Objects.equals(parameters, method.parameters) && Objects.equals(returnType, method.returnType) && Objects.equals(name, method.name);
     }
 
 }

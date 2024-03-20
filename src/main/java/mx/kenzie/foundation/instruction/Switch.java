@@ -13,6 +13,7 @@ public class Switch {
     }
 
     public class Lookup {
+
         protected final Instruction.Input<?> source;
         protected final HashSet<Case> cases;
         protected Label alternative = new Label();
@@ -57,18 +58,21 @@ public class Switch {
         }
 
         public record Case(int match, Label label, SwitchBlock block) {
-            @Override
-            public int hashCode() {
-                return match;
-            }
 
             @Override
             public boolean equals(Object obj) {
                 return this == obj || (obj instanceof Case other && other.match == match);
             }
+
+            @Override
+            public int hashCode() {
+                return match;
+            }
+
         }
 
         public class SwitchBlock extends Block {
+
             protected Lookup.Case handle;
 
             @Override
@@ -80,10 +84,13 @@ public class Switch {
             public Lookup close() {
                 return Lookup.this;
             }
+
         }
+
     }
 
     public class Table {
+
         protected final Instruction.Input<?> source;
 
         public Table(Instruction.Input<?> source) {

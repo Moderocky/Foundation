@@ -34,16 +34,19 @@ public class CallSuper {
             return visitor -> {
                 object.write(visitor);
                 for (Instruction.Input<?> argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(Opcodes.INVOKESPECIAL, owner.internalName(), name, Type.methodDescriptor(returnType, parameters), false);
+                visitor.visitMethodInsn(Opcodes.INVOKESPECIAL, owner.internalName(), name,
+                    Type.methodDescriptor(returnType, parameters), false);
                 if (returnType != Type.VOID) visitor.visitInsn(Opcodes.POP);
             };
         }
 
-        public <Result> Instruction.Input<Result> get(Instruction.Input<Object> object, Instruction.Input<?>... arguments) {
+        public <Result> Instruction.Input<Result> get(Instruction.Input<Object> object,
+                                                      Instruction.Input<?>... arguments) {
             return visitor -> {
                 object.write(visitor);
                 for (Instruction.Input<?> argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(Opcodes.INVOKESPECIAL, owner.internalName(), name, Type.methodDescriptor(returnType, parameters), false);
+                visitor.visitMethodInsn(Opcodes.INVOKESPECIAL, owner.internalName(), name,
+                    Type.methodDescriptor(returnType, parameters), false);
                 if (returnType == Type.VOID) visitor.visitInsn(Opcodes.ACONST_NULL);
             };
         }

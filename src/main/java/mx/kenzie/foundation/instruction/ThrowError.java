@@ -3,6 +3,7 @@ package mx.kenzie.foundation.instruction;
 import org.objectweb.asm.Opcodes;
 
 public class ThrowError {
+
     ThrowError() {
     }
 
@@ -12,4 +13,5 @@ public class ThrowError {
             visitor.visitInsn(Opcodes.ATHROW);
         };
     }
+
 }

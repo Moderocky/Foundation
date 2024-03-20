@@ -6,6 +6,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 public class ForEach {
+
     ForEach() {
     }
 
@@ -36,7 +37,8 @@ public class ForEach {
                 visitor.visitInsn(Opcodes.DUP);
                 visitor.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Iterator", "hasNext", "()Z", true);
                 visitor.visitJumpInsn(Opcodes.IFEQ, end);
-                visitor.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Iterator", "next", "()Ljava/lang/Object;", true);
+                visitor.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Iterator", "next", "()Ljava/lang/Object;"
+                    , true);
                 visitor.visitTypeInsn(Opcodes.CHECKCAST, expected.internalName());
                 visitor.visitVarInsn(Opcodes.ASTORE, var);
                 for (Instruction instruction : instructions) instruction.write(visitor);
@@ -45,4 +47,5 @@ public class ForEach {
             }
         };
     }
+
 }

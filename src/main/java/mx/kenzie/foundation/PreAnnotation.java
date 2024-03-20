@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PreAnnotation {
+
     protected final Map<String, Object> values = new HashMap<>();
     protected Type type;
     protected boolean visible;

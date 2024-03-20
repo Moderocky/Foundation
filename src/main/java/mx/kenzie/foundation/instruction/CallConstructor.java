@@ -23,7 +23,8 @@ public class CallConstructor {
                 visitor.visitTypeInsn(Opcodes.NEW, owner.internalName());
                 visitor.visitInsn(Opcodes.DUP);
                 for (Instruction.Input<?> argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(Opcodes.INVOKESPECIAL, owner.internalName(), "<init>", Type.methodDescriptor(Type.VOID, parameters), false);
+                visitor.visitMethodInsn(Opcodes.INVOKESPECIAL, owner.internalName(), "<init>",
+                    Type.methodDescriptor(Type.VOID, parameters), false);
             };
 
         }

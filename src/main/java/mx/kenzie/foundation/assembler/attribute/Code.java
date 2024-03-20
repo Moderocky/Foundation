@@ -17,15 +17,15 @@ public record Code(PoolReference attribute_name_index, U4 attribute_length, U2 m
                    UVec code, U2 exception_table_length,
 
                    Exception[] exception_table, U2 attributes_count,
-                   CodeAttributeInfo... attributes) implements AttributeInfo, Data, UVec, RecordConstant {
+                   CodeAttribute... attributes) implements AttributeInfo, Data, UVec, RecordConstant {
 
-    public static Code of(ClassFileBuilder.Helper helper, U2 max_stack, U2 max_locals, UVec code,
-                          Exception[] exception_table, CodeAttributeInfo... attributes) {
+    public static Code of(ClassFileBuilder.Storage storage, U2 max_stack, U2 max_locals, UVec code,
+                          Exception[] exception_table, CodeAttribute... attributes) {
         final U4 codeLength = U4.valueOf(code.length());
         final U2 exceptionsLength = U2.valueOf(exception_table.length), attributeCount = U2.valueOf(attributes.length);
         final U4 length =
             new U4(2L + 2 + 4 + codeLength.intValue() + 2 + exceptionsLength.shortValue() + (exception_table.length * 8L) + 2 + U4.lengthOf(attributes).intValue());
-        return new Code(helper.constant(UTF8, "Code"), length, max_stack, max_locals, codeLength, code,
+        return new Code(storage.constant(UTF8, "Code"), length, max_stack, max_locals, codeLength, code,
             exceptionsLength, exception_table, attributeCount, attributes);
     }
 

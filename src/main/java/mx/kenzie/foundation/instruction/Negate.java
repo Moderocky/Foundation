@@ -3,6 +3,7 @@ package mx.kenzie.foundation.instruction;
 import org.objectweb.asm.Opcodes;
 
 public class Negate {
+
     Negate() {
     }
 

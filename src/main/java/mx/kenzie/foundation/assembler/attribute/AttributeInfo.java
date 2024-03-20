@@ -14,8 +14,8 @@ import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.UTF8;
 public interface AttributeInfo
     extends Data, UVec {
 
-    static PoolReference name(AttributeInfo info, ClassFileBuilder.Helper helper) {
-        return helper.constant(UTF8, info.attributeName());
+    static PoolReference name(AttributeInfo info, ClassFileBuilder.Storage storage) {
+        return storage.constant(UTF8, info.attributeName());
     }
 
     UVec attribute_name_index();
@@ -38,6 +38,24 @@ public interface AttributeInfo
 
     default String attributeName() {
         return this.getClass().getSimpleName();
+    }
+
+    /**
+     * An attribute that can be placed on a code block.
+     * Note that this is for ANYTHING that can be a code attribute (even if it can also be a file attribute, etc.)
+     * and is used simply to prevent non-code attributes from being accidentally listed.
+     */
+    interface CodeAttribute extends AttributeInfo {
+
+    }
+
+    /**
+     * An attribute that can be placed on a field.
+     * Note that this is for ANYTHING that can be a field attribute (even if it can also be a file attribute, etc.)
+     * and is used simply to prevent non-field attributes from being accidentally listed.
+     */
+    interface FieldAttribute extends AttributeInfo {
+
     }
 
 }

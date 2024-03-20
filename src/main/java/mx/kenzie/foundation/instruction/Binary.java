@@ -11,12 +11,46 @@ public class Binary {
     Binary() {
     }
 
-    public Instruction.Input<Integer> objects(Instruction.Input<Object> a, Instruction.Operator operator, Instruction.Input<Object> b) {
+    @NotNull
+    static Instruction.Input<Integer> getIntegerInput(Instruction.Input<?> a, Instruction.Input<?> b, int instruction) {
+        return visitor -> {
+            final Label fail = new Label(), end = new Label();
+            a.write(visitor);
+            b.write(visitor);
+            visitor.visitJumpInsn(instruction, fail);
+            visitor.visitInsn(ICONST_1);
+            visitor.visitJumpInsn(GOTO, end);
+            visitor.visitLabel(fail);
+            visitor.visitInsn(ICONST_0);
+            visitor.visitLabel(end);
+        };
+    }
+
+    @NotNull
+    static Instruction.Input<Integer> getIntegerInput(Instruction.Input<?> a, Instruction.Input<?> b, int instruction
+        , int comparison) {
+        return visitor -> {
+            final Label fail = new Label(), end = new Label();
+            a.write(visitor);
+            b.write(visitor);
+            visitor.visitInsn(comparison);
+            visitor.visitJumpInsn(instruction, fail);
+            visitor.visitInsn(ICONST_1);
+            visitor.visitJumpInsn(GOTO, end);
+            visitor.visitLabel(fail);
+            visitor.visitInsn(ICONST_0);
+            visitor.visitLabel(end);
+        };
+    }
+
+    public Instruction.Input<Integer> objects(Instruction.Input<Object> a, Instruction.Operator operator,
+                                              Instruction.Input<Object> b) {
         final int instruction = operator == EQ ? IF_ACMPNE : IF_ACMPEQ;
         return getIntegerInput(a, b, instruction);
     }
 
-    public Instruction.Input<Integer> ints(Instruction.Input<Integer> a, Instruction.Operator operator, Instruction.Input<Integer> b) {
+    public Instruction.Input<Integer> ints(Instruction.Input<Integer> a, Instruction.Operator operator,
+                                           Instruction.Input<Integer> b) {
         return switch (operator) {
             case OR -> visitor -> {
                 a.write(visitor);
@@ -46,22 +80,8 @@ public class Binary {
         return getIntegerInput(a, b, instruction);
     }
 
-    @NotNull
-    static Instruction.Input<Integer> getIntegerInput(Instruction.Input<?> a, Instruction.Input<?> b, int instruction) {
-        return visitor -> {
-            final Label fail = new Label(), end = new Label();
-            a.write(visitor);
-            b.write(visitor);
-            visitor.visitJumpInsn(instruction, fail);
-            visitor.visitInsn(ICONST_1);
-            visitor.visitJumpInsn(GOTO, end);
-            visitor.visitLabel(fail);
-            visitor.visitInsn(ICONST_0);
-            visitor.visitLabel(end);
-        };
-    }
-
-    public Instruction.Input<Integer> longs(Instruction.Input<Long> a, Instruction.Operator operator, Instruction.Input<Long> b) {
+    public Instruction.Input<Integer> longs(Instruction.Input<Long> a, Instruction.Operator operator,
+                                            Instruction.Input<Long> b) {
         return switch (operator) {
             case OR -> visitor -> {
                 a.write(visitor);
@@ -87,32 +107,19 @@ public class Binary {
         };
     }
 
-    private Instruction.Input<Integer> equality(Instruction.Input<?> a, Instruction.Input<?> b, int instruction, int comparison) {
+    private Instruction.Input<Integer> equality(Instruction.Input<?> a, Instruction.Input<?> b, int instruction,
+                                                int comparison) {
         return getIntegerInput(a, b, instruction, comparison);
     }
 
-    @NotNull
-    static Instruction.Input<Integer> getIntegerInput(Instruction.Input<?> a, Instruction.Input<?> b, int instruction, int comparison) {
-        return visitor -> {
-            final Label fail = new Label(), end = new Label();
-            a.write(visitor);
-            b.write(visitor);
-            visitor.visitInsn(comparison);
-            visitor.visitJumpInsn(instruction, fail);
-            visitor.visitInsn(ICONST_1);
-            visitor.visitJumpInsn(GOTO, end);
-            visitor.visitLabel(fail);
-            visitor.visitInsn(ICONST_0);
-            visitor.visitLabel(end);
-        };
-    }
-
-    public Instruction.Input<Integer> floats(Instruction.Input<Number> a, Instruction.Operator operator, Instruction.Input<Number> b) {
+    public Instruction.Input<Integer> floats(Instruction.Input<Number> a, Instruction.Operator operator,
+                                             Instruction.Input<Number> b) {
         return this.compareFloating(a, operator, b, FCMPL);
     }
 
     @NotNull
-    private Instruction.Input<Integer> compareFloating(Instruction.Input<Number> a, Instruction.Operator operator, Instruction.Input<Number> b, int comparator) {
+    private Instruction.Input<Integer> compareFloating(Instruction.Input<Number> a, Instruction.Operator operator,
+                                                       Instruction.Input<Number> b, int comparator) {
         return switch (operator) {
             case LESS -> equality(a, b, IFGE, comparator);
             case GREATER -> equality(a, b, IFLE, comparator);
@@ -124,7 +131,8 @@ public class Binary {
         };
     }
 
-    public Instruction.Input<Integer> doubles(Instruction.Input<Number> a, Instruction.Operator operator, Instruction.Input<Number> b) {
+    public Instruction.Input<Integer> doubles(Instruction.Input<Number> a, Instruction.Operator operator,
+                                              Instruction.Input<Number> b) {
         return this.compareFloating(a, operator, b, DCMPL);
     }
 

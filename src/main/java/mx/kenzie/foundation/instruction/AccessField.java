@@ -19,20 +19,23 @@ public class AccessField {
     public interface Stub {
 
         default <Result> Instruction.Input<Result> get() {
-            return visitor -> visitor.visitFieldInsn(GETSTATIC, this.owner().internalName(), this.name(), this.type().descriptorString());
+            return visitor -> visitor.visitFieldInsn(GETSTATIC, this.owner().internalName(), this.name(),
+                this.type().descriptorString());
         }
 
         default <Result> Instruction.Input<Result> get(Instruction.Input<Object> object) {
             return visitor -> {
                 object.write(visitor);
-                visitor.visitFieldInsn(GETFIELD, this.owner().internalName(), this.name(), this.type().descriptorString());
+                visitor.visitFieldInsn(GETFIELD, this.owner().internalName(), this.name(),
+                    this.type().descriptorString());
             };
         }
 
         default Instruction.Base set(Instruction.Input<?> value) {
             return visitor -> {
                 value.write(visitor);
-                visitor.visitFieldInsn(PUTSTATIC, this.owner().internalName(), this.name(), this.type().descriptorString());
+                visitor.visitFieldInsn(PUTSTATIC, this.owner().internalName(), this.name(),
+                    this.type().descriptorString());
             };
         }
 
@@ -40,7 +43,8 @@ public class AccessField {
             return visitor -> {
                 object.write(visitor);
                 value.write(visitor);
-                visitor.visitFieldInsn(PUTFIELD, this.owner().internalName(), this.name(), this.type().descriptorString());
+                visitor.visitFieldInsn(PUTFIELD, this.owner().internalName(), this.name(),
+                    this.type().descriptorString());
             };
         }
 

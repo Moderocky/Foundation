@@ -1,6 +1,7 @@
 package mx.kenzie.foundation.instruction;
 
 public abstract class MultiTypeInstruction {
+
     public abstract Instruction object(Instruction.Input<Object> instruction);
 
     public Instruction byteValue(Instruction.Input<Integer> instruction) {
@@ -24,4 +25,5 @@ public abstract class MultiTypeInstruction {
     }
 
     public abstract Instruction none();
+
 }

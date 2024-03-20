@@ -24,6 +24,7 @@ public interface Access extends UVec {
     All SYNTHETIC = () -> 0x1000; // This wasn't in the source code
     Type ANNOTATION = () -> 0x2000; // This is an annotation (@interface)
     All MANDATED = () -> 0x8000; // This wasn't in the source code but the spec said I had to
+    Type RECORD = () -> 0x10000; // For a Record (type)
 
     static boolean is(UVec flags, Access check) {
         return (flags.intValue() & check.value()) != 0;

@@ -23,7 +23,8 @@ public record Member(Type owner, Signature signature) implements Descriptor, Rec
     }
 
     @SafeVarargs
-    public <Klass extends java.lang.reflect.Type & TypeDescriptor> Member(Klass owner, Klass returnType, String name, Klass... parameters) {
+    public <Klass extends java.lang.reflect.Type & TypeDescriptor> Member(Klass owner, Klass returnType, String name,
+                                                                          Klass... parameters) {
         this(Type.of(owner), new Signature(returnType, name, parameters));
     }
 

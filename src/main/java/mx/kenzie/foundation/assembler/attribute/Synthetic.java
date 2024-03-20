@@ -5,6 +5,8 @@ import mx.kenzie.foundation.assembler.UVec;
 import org.valross.constantine.RecordConstant;
 
 public record Synthetic(
-    U2 attribute_name_index) implements ZeroAttribute, CodeAttributeInfo, AttributeInfo, UVec, RecordConstant {
+    U2 attribute_name_index)
+    implements AttributeInfo.FieldAttribute, ZeroAttribute, AttributeInfo.CodeAttribute, AttributeInfo, UVec,
+    RecordConstant {
 
 }

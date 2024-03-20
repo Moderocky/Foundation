@@ -1,7 +1,5 @@
 package mx.kenzie.foundation.instruction;
 
-import org.objectweb.asm.Label;
-
 import static mx.kenzie.foundation.instruction.Binary.getIntegerInput;
 import static org.objectweb.asm.Opcodes.*;
 

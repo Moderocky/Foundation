@@ -1,6 +1,7 @@
 package mx.kenzie.foundation.instruction;
 
 public class Increment {
+
     Increment() {
     }
 

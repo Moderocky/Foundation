@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 abstract class BuildElement {
+
     protected final Set<PreAnnotation> annotations = new HashSet<>();
 
     public abstract void addModifiers(Modifier... modifiers);

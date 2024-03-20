@@ -7,7 +7,8 @@ public class Sum {
     Sum() {
     }
 
-    public Instruction.Input<Integer> ints(Instruction.Input<Integer> a, Instruction.Math operator, Instruction.Input<Integer> b) {
+    public Instruction.Input<Integer> ints(Instruction.Input<Integer> a, Instruction.Math operator,
+                                           Instruction.Input<Integer> b) {
         return switch (operator) {
             case PLUS -> visitor -> {
                 a.write(visitor);
@@ -32,7 +33,8 @@ public class Sum {
         };
     }
 
-    public Instruction.Input<Long> longs(Instruction.Input<Long> a, Instruction.Math operator, Instruction.Input<Long> b) {
+    public Instruction.Input<Long> longs(Instruction.Input<Long> a, Instruction.Math operator,
+                                         Instruction.Input<Long> b) {
         return switch (operator) {
             case PLUS -> visitor -> {
                 a.write(visitor);
@@ -57,7 +59,8 @@ public class Sum {
         };
     }
 
-    public Instruction.Input<Float> floats(Instruction.Input<Float> a, Instruction.Math operator, Instruction.Input<Float> b) {
+    public Instruction.Input<Float> floats(Instruction.Input<Float> a, Instruction.Math operator,
+                                           Instruction.Input<Float> b) {
         return switch (operator) {
             case PLUS -> visitor -> {
                 a.write(visitor);
@@ -82,7 +85,8 @@ public class Sum {
         };
     }
 
-    public Instruction.Input<Double> doubles(Instruction.Input<Double> a, Instruction.Math operator, Instruction.Input<Double> b) {
+    public Instruction.Input<Double> doubles(Instruction.Input<Double> a, Instruction.Math operator,
+                                             Instruction.Input<Double> b) {
         return switch (operator) {
             case PLUS -> visitor -> {
                 a.write(visitor);

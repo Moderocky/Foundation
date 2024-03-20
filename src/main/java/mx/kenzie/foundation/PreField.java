@@ -17,7 +17,8 @@ public class PreField extends BuildElement implements AccessField.Stub {
     protected Set<Modifier> modifiers;
     protected Object value;
 
-    public <Klass extends java.lang.reflect.Type & TypeDescriptor> PreField(Modifier access, Modifier state, Modifier change, Klass type, String name) {
+    public <Klass extends java.lang.reflect.Type & TypeDescriptor> PreField(Modifier access, Modifier state,
+                                                                            Modifier change, Klass type, String name) {
         this(type, name);
         this.modifiers.add(access);
         this.modifiers.add(state);
@@ -30,7 +31,8 @@ public class PreField extends BuildElement implements AccessField.Stub {
         this.modifiers = new HashSet<>();
     }
 
-    public <Klass extends java.lang.reflect.Type & TypeDescriptor> PreField(Modifier access, Modifier state, Klass type, String name) {
+    public <Klass extends java.lang.reflect.Type & TypeDescriptor> PreField(Modifier access, Modifier state,
+                                                                            Klass type, String name) {
         this(type, name);
         this.modifiers.add(access);
         this.modifiers.add(state);

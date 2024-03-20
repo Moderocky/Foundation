@@ -16,7 +16,8 @@ import java.lang.reflect.Field;
 public record Signature(String name, Descriptor descriptor) implements RecordConstant, Descriptor {
 
     @SafeVarargs
-    public <Klass extends java.lang.reflect.Type & TypeDescriptor> Signature(Klass returnType, String name, Klass... parameters) {
+    public <Klass extends java.lang.reflect.Type & TypeDescriptor> Signature(Klass returnType, String name,
+                                                                             Klass... parameters) {
         this(name, Descriptor.of(returnType, parameters));
     }
 

@@ -15,7 +15,8 @@ public interface Descriptor extends TypeDescriptor, Constant {
     }
 
     @SafeVarargs
-    static <Klass extends java.lang.reflect.Type & TypeDescriptor> Descriptor of(Klass returnType, Klass... parameters) {
+    static <Klass extends java.lang.reflect.Type & TypeDescriptor> Descriptor of(Klass returnType,
+                                                                                 Klass... parameters) {
         return new Method(Type.methodDescriptor(returnType, parameters));
     }
 

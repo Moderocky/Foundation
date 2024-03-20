@@ -19,7 +19,7 @@ import java.util.Arrays;
  */
 public interface UVec extends Data, Constantive {
 
-    static UVec of(byte[] bytes) {
+    static ConVec of(byte[] bytes) {
         return new UnsignedVector(copy(bytes));
     }
 

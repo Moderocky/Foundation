@@ -29,7 +29,7 @@ public class PoolReference implements UVec, Data, Constantive {
     public int index() {
         final ConstantPoolInfo info = reference.get();
         if (info == null) return -1; // it was discarded :(
-        int index = 0;
+        int index = 1;
         for (ConstantPoolInfo value : pool) {
             if (info == value) return index; // we want to know if it's EXACTLY our reference
             index += value.tag().indices();

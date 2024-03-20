@@ -1,16 +1,23 @@
 package mx.kenzie.foundation;
 
 public interface Loader {
-    Loader DEFAULT = new SimpleClassLoader();
 
-    Class<?> loadClass(String name, byte[] bytecode);
+    Loader DEFAULT = new SimpleClassLoader();
 
     static <Maker extends ClassLoader & Loader> Maker getDefault() {
         return (Maker) DEFAULT;
     }
+
+    static SimpleClassLoader createDefault() {
+        return new SimpleClassLoader();
+    }
+
+    Class<?> loadClass(String name, byte[] bytecode);
+
 }
 
 class SimpleClassLoader extends ClassLoader implements Loader {
+
     protected SimpleClassLoader() {
         this(Loader.class.getClassLoader());
     }

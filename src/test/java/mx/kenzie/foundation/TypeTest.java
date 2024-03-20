@@ -88,4 +88,26 @@ public class TypeTest {
         return new ArrayList<>();
     }
 
+    @Test
+    public void fromDescriptor() {
+        assert Type.fromDescriptor(Object.class).equals(Type.OBJECT);
+        assert Type.fromDescriptor(int.class).equals(Type.INT);
+        assert Type.fromDescriptor(String.class).equals(Type.STRING);
+        assert Type.fromDescriptor(Object[].class).equals(Type.OBJECT.arrayType());
+        assert Type.fromDescriptor(int[].class).equals(Type.INT.arrayType());
+        assert Type.fromDescriptor(int[][].class).equals(Type.INT.arrayType().arrayType());
+    }
+
+    @Test
+    public void parameters() {
+        assert Type.parameters(Descriptor.of(void.class)).length == 0;
+        assert Type.parameters(Descriptor.of(void.class, String.class)).length == 1;
+        assert Type.parameters(Descriptor.of(void.class, int.class, String.class)).length == 2;
+        assert Type.parameters(Descriptor.of(void.class, int.class, String.class))[0].equals(Type.INT);
+        assert Type.parameters(Descriptor.of(void.class, int.class, String.class))[1].equals(Type.STRING);
+        assert Type.parameters(Descriptor.of(Object.class, String.class))[0].equals(Type.STRING);
+        assert Type.parameters(Descriptor.of(Object.class, String[].class))[0].equals(Type.STRING.arrayType());
+        assert Type.parameters(Descriptor.of(Object.class, String[].class))[0].equals(Type.of(String[].class));
+    }
+
 }

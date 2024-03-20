@@ -24,14 +24,16 @@ public class CallMethod {
     public final <Klass extends java.lang.reflect.Type & TypeDescriptor>
     VirtualStub virtual(Handle maker, Handle lambda, Klass result, String name, Klass... parameters) {
         final String dummy = Type.methodDescriptor(result, parameters);
-        return new VirtualStub(visitor -> visitor.visitInvokeDynamicInsn(name, dummy, maker, this.type(lambda), lambda, this.type(lambda)));
+        return new VirtualStub(visitor -> visitor.visitInvokeDynamicInsn(name, dummy, maker, this.type(lambda),
+            lambda, this.type(lambda)));
     }
 
     @SafeVarargs
     public final <Klass extends java.lang.reflect.Type & TypeDescriptor>
     VirtualStub metafactory(PreMethod method, Klass functionType, String name, Klass... parameters) {
         final ConstantStub stub = this.of(Object.class, functionType, name, parameters);
-        return this.metafactory(stub, method.getModifiers(), method.isInterface(), method.getOwner(), method.returnType(), method.name(), method.getParameters());
+        return this.metafactory(stub, method.getModifiers(), method.isInterface(), method.getOwner(),
+            method.returnType(), method.name(), method.getParameters());
     }
 
     @SafeVarargs
@@ -39,16 +41,22 @@ public class CallMethod {
     VirtualStub metafactory(Method method, Klass functionType, String name, Klass... parameters) {
         final boolean isInterface = method.getDeclaringClass().isInterface();
         final ConstantStub stub = this.of(Object.class, functionType, name, parameters);
-        return this.metafactory(stub, method.getModifiers(), isInterface, Type.of(method.getDeclaringClass()), Type.of(method.getReturnType()), method.getName(), Type.array(method.getParameterTypes()));
+        return this.metafactory(stub, method.getModifiers(), isInterface, Type.of(method.getDeclaringClass()),
+            Type.of(method.getReturnType()), method.getName(), Type.array(method.getParameterTypes()));
     }
 
     @SafeVarargs
     public final <Klass extends java.lang.reflect.Type & TypeDescriptor>
-    VirtualStub metafactory(ConstantStub dummy, int modifiers, boolean isInterface, Klass owner, Klass result, String name, Klass... parameters) {
-        final Handle maker = this.handle(Modifier.PUBLIC | Modifier.STATIC, false, LambdaMetafactory.class, CallSite.class, "metafactory", MethodHandles.Lookup.class, String.class, MethodType.class, MethodType.class, MethodHandle.class, MethodType.class);
+    VirtualStub metafactory(ConstantStub dummy, int modifiers, boolean isInterface, Klass owner, Klass result,
+                            String name, Klass... parameters) {
+        final Handle maker = this.handle(Modifier.PUBLIC | Modifier.STATIC, false, LambdaMetafactory.class,
+            CallSite.class, "metafactory", MethodHandles.Lookup.class, String.class, MethodType.class,
+            MethodType.class, MethodHandle.class, MethodType.class);
         final Handle lambda = this.handle(modifiers, isInterface, owner, result, name, parameters);
         final String descriptor = Type.methodDescriptor(result, parameters);
-        return new VirtualStub(visitor -> visitor.visitInvokeDynamicInsn(dummy.name(), Type.methodDescriptor(dummy.returnType, dummy.parameters), maker, org.objectweb.asm.Type.getType(descriptor), lambda, org.objectweb.asm.Type.getType(descriptor)));
+        return new VirtualStub(visitor -> visitor.visitInvokeDynamicInsn(dummy.name(),
+            Type.methodDescriptor(dummy.returnType, dummy.parameters), maker,
+            org.objectweb.asm.Type.getType(descriptor), lambda, org.objectweb.asm.Type.getType(descriptor)));
     }
 
     @SafeVarargs
@@ -59,20 +67,24 @@ public class CallMethod {
         else if (Modifier.isPrivate(modifiers)) code = Opcodes.H_INVOKESPECIAL;
         else if (isInterface) code = Opcodes.H_INVOKEINTERFACE;
         else code = Opcodes.H_INVOKEVIRTUAL;
-        return new Handle(code, Type.of(owner).internalName(), name, Type.methodDescriptor(result, parameters), isInterface);
+        return new Handle(code, Type.of(owner).internalName(), name, Type.methodDescriptor(result, parameters),
+            isInterface);
     }
 
     public Handle handle(Method method) {
         final boolean isInterface = method.getDeclaringClass().isInterface();
-        return this.handle(method.getModifiers(), isInterface, Type.of(method.getDeclaringClass()), Type.of(method.getReturnType()), method.getName(), Type.array(method.getParameterTypes()));
+        return this.handle(method.getModifiers(), isInterface, Type.of(method.getDeclaringClass()),
+            Type.of(method.getReturnType()), method.getName(), Type.array(method.getParameterTypes()));
     }
 
     public Handle handle(PreMethod method) {
-        return this.handle(method.getModifiers(), method.isInterface(), method.getOwner(), method.returnType(), method.name(), method.getParameters());
+        return this.handle(method.getModifiers(), method.isInterface(), method.getOwner(), method.returnType(),
+            method.name(), method.getParameters());
     }
 
     public Stub of(PreClass owner, PreMethod method) {
-        return new ConstantStub(owner.isInterface(), Type.of(owner), Type.of(method.returnType()), method.name(), Type.array(method.getParameters()));
+        return new ConstantStub(owner.isInterface(), Type.of(owner), Type.of(method.returnType()), method.name(),
+            Type.array(method.getParameters()));
     }
 
     public Stub of(Class<?> owner, String name, Class<?>... parameters) {
@@ -92,7 +104,8 @@ public class CallMethod {
 
     public final <Klass extends java.lang.reflect.Type & TypeDescriptor>
     Stub of(boolean isInterface, Klass owner, MethodErasure erasure) {
-        return new ConstantStub(isInterface, Type.of(owner), erasure.returnType(), erasure.name(), erasure.parameters());
+        return new ConstantStub(isInterface, Type.of(owner), erasure.returnType(), erasure.name(),
+            erasure.parameters());
     }
 
     @SafeVarargs
@@ -105,19 +118,8 @@ public class CallMethod {
     public final <Klass extends java.lang.reflect.Type & TypeDescriptor>
     ConstantStub of(Klass owner, MethodErasure erasure) {
         final boolean isInterface = owner instanceof Class<?> thing && thing.isInterface();
-        return new ConstantStub(isInterface, Type.of(owner), erasure.returnType(), erasure.name(), erasure.parameters());
-    }
-
-    public record VirtualStub(Instruction.Input<Object> factory) {
-
-        @SafeVarargs
-        public final Instruction.Input<Object> invoke(Instruction.Input<Object>... arguments) {
-            return visitor -> {
-                for (Instruction.Input<Object> argument : arguments) argument.write(visitor);
-                this.factory.write(visitor);
-            };
-        }
-
+        return new ConstantStub(isInterface, Type.of(owner), erasure.returnType(), erasure.name(),
+            erasure.parameters());
     }
 
     public interface Stub extends MethodErasure {
@@ -125,7 +127,8 @@ public class CallMethod {
         default Instruction.Base callStatic(Instruction.Input<?>... arguments) {
             return visitor -> {
                 for (Instruction.Input argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(Opcodes.INVOKESTATIC, owner().internalName(), name(), Type.methodDescriptor(returnType(), parameters()), isInterface());
+                visitor.visitMethodInsn(Opcodes.INVOKESTATIC, owner().internalName(), name(),
+                    Type.methodDescriptor(returnType(), parameters()), isInterface());
                 if (returnType() != Type.VOID) visitor.visitInsn(Opcodes.POP);
             };
         }
@@ -133,7 +136,8 @@ public class CallMethod {
         default <Result> Instruction.Input<Result> getStatic(Instruction.Input<?>... arguments) {
             return visitor -> {
                 for (Instruction.Input argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(Opcodes.INVOKESTATIC, owner().internalName(), name(), Type.methodDescriptor(returnType(), parameters()), isInterface());
+                visitor.visitMethodInsn(Opcodes.INVOKESTATIC, owner().internalName(), name(),
+                    Type.methodDescriptor(returnType(), parameters()), isInterface());
                 if (returnType() == Type.VOID) visitor.visitInsn(Opcodes.ACONST_NULL);
             };
         }
@@ -143,7 +147,8 @@ public class CallMethod {
             return visitor -> {
                 object.write(visitor);
                 for (Instruction.Input<?> argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(instruction, owner().internalName(), name(), Type.methodDescriptor(returnType(), parameters()), isInterface());
+                visitor.visitMethodInsn(instruction, owner().internalName(), name(),
+                    Type.methodDescriptor(returnType(), parameters()), isInterface());
                 if (returnType() != Type.VOID) visitor.visitInsn(Opcodes.POP);
             };
         }
@@ -153,7 +158,8 @@ public class CallMethod {
             return visitor -> {
                 object.write(visitor);
                 for (Instruction.Input<?> argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(instruction, owner().internalName(), name(), Type.methodDescriptor(returnType(), parameters()), isInterface());
+                visitor.visitMethodInsn(instruction, owner().internalName(), name(),
+                    Type.methodDescriptor(returnType(), parameters()), isInterface());
                 if (returnType() == Type.VOID) visitor.visitInsn(Opcodes.ACONST_NULL);
             };
         }
@@ -167,6 +173,18 @@ public class CallMethod {
         String name();
 
         Type[] parameters();
+
+    }
+
+    public record VirtualStub(Instruction.Input<Object> factory) {
+
+        @SafeVarargs
+        public final Instruction.Input<Object> invoke(Instruction.Input<Object>... arguments) {
+            return visitor -> {
+                for (Instruction.Input<Object> argument : arguments) argument.write(visitor);
+                this.factory.write(visitor);
+            };
+        }
 
     }
 

@@ -71,7 +71,8 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
         for (Type anInterface : this.interfaces) {
             interfaces.add(anInterface.internalName());
         }
-        writer.visit(version, this.modifierCode(), type.internalName(), null, parent.internalName(), interfaces.toArray(new String[0]));
+        writer.visit(version, this.modifierCode(), type.internalName(), null, parent.internalName(),
+            interfaces.toArray(new String[0]));
         for (PreAnnotation annotation : annotations) annotation.write(writer);
         for (PreField field : fields) field.build(writer);
         for (PreMethod method : methods) method.build(writer);
@@ -85,15 +86,15 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
         }
     }
 
+    public boolean isInterface() {
+        return modifiers.contains(Modifier.INTERFACE);
+    }
+
     public void setInterface(boolean anInterface) {
         if (anInterface) {
             modifiers.add(Modifier.ABSTRACT);
             modifiers.add(Modifier.INTERFACE);
         } else modifiers.remove(Modifier.INTERFACE);
-    }
-
-    public boolean isInterface() {
-        return modifiers.contains(Modifier.INTERFACE);
     }
 
     public <Klass extends java.lang.reflect.Type & TypeDescriptor> void setParent(Klass parent) {

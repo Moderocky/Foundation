@@ -11,7 +11,8 @@ public class Array {
     }
 
     @SafeVarargs
-    public final <Klass extends Type & TypeDescriptor> Instruction.Input<Object> of(Klass type, Instruction.Input<Object>... values) {
+    public final <Klass extends Type & TypeDescriptor> Instruction.Input<Object> of(Klass type,
+                                                                                    Instruction.Input<Object>... values) {
         final mx.kenzie.foundation.Type found = mx.kenzie.foundation.Type.of(type);
         final int length = values.length;
         return visitor -> {

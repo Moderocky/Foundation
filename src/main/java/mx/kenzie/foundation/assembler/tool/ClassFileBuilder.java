@@ -18,18 +18,18 @@ import java.util.List;
 
 import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.*;
 
-public class ClassFileBuilder implements Constantive {
+public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
 
     private static final U4 MAGIC = U4.valueOf(0xCAFEBABE);
     protected final U4 magic;
     protected final U2 minor_version, major_version;
-    protected U2 access_flags = U2.ZERO;
     protected List<ConstantPoolInfo> constantPool;
     protected PoolReference this_class, super_class = PoolReference.ZERO;
     protected List<PoolReference> interfaces; //interfaces_count
-    protected List<FieldInfo> fields; //fields_count
-    protected List<MethodInfo> methods; //methods_count
+    protected List<FieldBuilder> fields; //fields_count
+    protected List<MethodBuilder> methods; //methods_count
     protected List<AttributeInfo> attributes; //attributes_count
+    private Storage storage;
 
     public ClassFileBuilder(int majorVersion, int minorVersion) {
         this.magic = MAGIC;
@@ -40,7 +40,12 @@ public class ClassFileBuilder implements Constantive {
         this.fields = new ArrayList<>();
         this.methods = new ArrayList<>();
         this.attributes = new ArrayList<>();
-        this.helper().setSuperType(Type.OBJECT);
+        this.setSuperType(Type.OBJECT);
+    }
+
+    public ClassFileBuilder(int majorVersion, Type type) {
+        this(majorVersion, Version.RELEASE);
+        this.setType(type);
     }
 
     protected U2 interfacesCount() {
@@ -59,16 +64,6 @@ public class ClassFileBuilder implements Constantive {
         return U2.valueOf(attributes.size());
     }
 
-    public ClassFileBuilder setAccessFlags(Access.Type... flags) {
-        this.access_flags = Access.of(flags).constant();
-        return this;
-    }
-
-    public ClassFileBuilder addAccessFlags(Access.Type... flags) {
-        this.access_flags = U2.valueOf(this.access_flags.value() | Access.of(flags).value());
-        return this;
-    }
-
     protected U2 constantPoolCount() {
         int size = 0;
         for (ConstantPoolInfo info : constantPool) size += info.tag().indices();
@@ -78,6 +73,7 @@ public class ClassFileBuilder implements Constantive {
     protected ConstantPoolInfo[] constantPool() {
         this.constantPool.sort(ConstantPoolInfo::compareTo);
         final List<ConstantPoolInfo> list = new ArrayList<>(constantPool.size() + 8); // guesswork
+        list.add(new DeadSpaceInfo()); // the first index is empty
         for (ConstantPoolInfo info : constantPool) {
             list.add(info);
             if (info instanceof LongNumberInfo<?>) list.add(new DeadSpaceInfo());
@@ -85,17 +81,54 @@ public class ClassFileBuilder implements Constantive {
         return list.toArray(new ConstantPoolInfo[0]);
     }
 
+    protected FieldInfo[] fields() {
+        final List<FieldInfo> list = new ArrayList<>(fields.size());
+        for (FieldBuilder value : fields) list.add(value.constant());
+        return list.toArray(new FieldInfo[0]);
+    }
+
     public ClassFile build() throws ClassBuilderException {
         if (this_class == null) throw new ClassBuilderException("Type was null.");
         if (super_class == null) throw new ClassBuilderException("Supertype was null.");
         return new ClassFile(magic, minor_version, major_version, constantPoolCount(), constantPool(), access_flags,
             this_class, super_class, interfacesCount(), interfaces.toArray(new PoolReference[0]), fieldsCount(),
-            fields.toArray(new FieldInfo[0]), methodsCount(), methods.toArray(new MethodInfo[0]), attributesCount(),
-            attributes.toArray(new AttributeInfo[0]));
+            fields(), methodsCount(), methods(), attributesCount(), attributes.toArray(new AttributeInfo[0]));
     }
 
-    public Helper helper() {
-        return this.new Helper();
+    private MethodInfo[] methods() {
+        final List<MethodInfo> list = new ArrayList<>(methods.size());
+        for (MethodBuilder value : methods) list.add(value.constant());
+        return list.toArray(new MethodInfo[0]);
+    }
+
+    public ClassFileBuilder setModifiers(Access.Type... flags) {
+        return (ClassFileBuilder) super.setModifiers(flags);
+    }
+
+    public ClassFileBuilder addModifiers(Access.Type... flags) {
+        return (ClassFileBuilder) super.addModifiers(flags);
+    }
+
+    public <Klass extends java.lang.reflect.Type & TypeDescriptor> ClassFileBuilder setType(Klass type) {
+        this.this_class = this.helper().constant(TYPE, Type.of(type));
+        return this;
+    }
+
+    public <Klass extends java.lang.reflect.Type & TypeDescriptor> ClassFileBuilder setSuperType(Klass type) {
+        if (type == null) return this.removeSuperType();
+        this.super_class = this.helper().constant(TYPE, Type.of(type));
+        return this;
+    }
+
+    public ClassFileBuilder removeSuperType() {
+        this.super_class = this.helper().constant(TYPE, Type.OBJECT);
+        return this;
+    }
+
+    @SafeVarargs
+    public final <Klass extends java.lang.reflect.Type & TypeDescriptor> ClassFileBuilder addInterfaces(Klass... interfaces) {
+        for (Klass klass : interfaces) this.interfaces.add(this.helper().constant(TYPE, Type.of(klass)));
+        return this;
     }
 
     @Override
@@ -103,7 +136,40 @@ public class ClassFileBuilder implements Constantive {
         return this.build();
     }
 
-    public class Helper {
+    public FieldBuilder field() {
+        final FieldBuilder builder = new FieldBuilder(this.helper());
+        this.fields.add(builder);
+        return builder;
+    }
+
+    public MethodBuilder method() {
+        final MethodBuilder builder = new MethodBuilder(this.helper());
+        this.methods.add(builder);
+        return builder;
+    }
+
+    @Override
+    public ClassFileBuilder synthetic() {
+        return (ClassFileBuilder) super.synthetic();
+    }
+
+    @Override
+    public ClassFileBuilder deprecated() {
+        return (ClassFileBuilder) super.deprecated();
+    }
+
+    @Override
+    protected ClassFileBuilder attribute(AttributeInfo attribute) {
+        return (ClassFileBuilder) super.attribute(attribute);
+    }
+
+    @Override
+    public Storage helper() {
+        if (storage != null) return storage;
+        return storage = this.new Storage();
+    }
+
+    public class Storage {
 
         public <Value extends Constable> PoolReference constant(ConstantType<?, Value> type, Value value) {
             for (ConstantPoolInfo info : constantPool) {
@@ -166,21 +232,8 @@ public class ClassFileBuilder implements Constantive {
             return new LongNumberInfo<>(DOUBLE, U4.fromSigned(buffer.getInt(0)), U4.fromSigned(buffer.getInt(4)));
         }
 
-        public <Klass extends java.lang.reflect.Type & TypeDescriptor> void setType(Klass type) {
-            this_class = this.constant(TYPE, Type.of(type));
-        }
-
-        public <Klass extends java.lang.reflect.Type & TypeDescriptor> void setSuperType(Klass type) {
-            super_class = this.constant(TYPE, Type.of(type));
-        }
-
-        public void removeSuperType() {
-            super_class = this.constant(TYPE, Type.OBJECT);
-        }
-
-        @SafeVarargs
-        public final <Klass extends java.lang.reflect.Type & TypeDescriptor> void addInterfaces(Klass... interfaces) {
-            for (Klass klass : interfaces) ClassFileBuilder.this.interfaces.add(this.constant(TYPE, Type.of(klass)));
+        public ClassFileBuilder source() {
+            return ClassFileBuilder.this;
         }
 
     }

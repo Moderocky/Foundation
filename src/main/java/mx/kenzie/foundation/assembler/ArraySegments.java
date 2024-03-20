@@ -7,7 +7,7 @@ import java.lang.reflect.Field;
 /**
  * This is where we keep our unsafe things.
  */
-abstract class ArraySegments {
+public abstract class ArraySegments {
 
     public static ArraySegments segments;
 

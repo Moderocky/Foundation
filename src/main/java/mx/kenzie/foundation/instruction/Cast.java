@@ -17,7 +17,8 @@ public class Cast {
         };
     }
 
-    public <Klass extends Type & TypeDescriptor> Instruction.Input<Object> object(Instruction.Input<Object> value, Klass type) {
+    public <Klass extends Type & TypeDescriptor> Instruction.Input<Object> object(Instruction.Input<Object> value,
+                                                                                  Klass type) {
         final mx.kenzie.foundation.Type found = mx.kenzie.foundation.Type.of(type);
         return visitor -> {
             value.write(visitor);

@@ -2,20 +2,20 @@ package mx.kenzie.foundation;
 
 import mx.kenzie.foundation.instruction.CallMethod;
 import mx.kenzie.foundation.instruction.Instruction;
+import org.valross.constantine.RecordConstant;
 
 import java.lang.invoke.TypeDescriptor;
 import java.lang.reflect.Executable;
-import java.lang.reflect.Method;
 import java.util.Objects;
 
-public interface MethodErasure {
+public interface MethodErasure extends TypeDescriptor {
 
     static MethodErasure of(MethodErasure erasure) {
         return erasure;
     }
 
     static MethodErasure of(Executable executable) {
-        if (executable instanceof Method method)
+        if (executable instanceof java.lang.reflect.Method method)
             return new Simple(method.getReturnType(), method.getName(), method.getParameterTypes());
         final Type returnType = Type.of(executable.getAnnotatedReturnType().getType());
         final String name = executable.getName();
@@ -47,14 +47,15 @@ public interface MethodErasure {
         return Objects.equals(this.name(), other.name()) && Objects.equals(this.returnType(), other.returnType());
     }
 
-    record Simple(Type returnType, String name, Type... parameters) implements MethodErasure {
+    record Simple(Type returnType, String name, Type... parameters) implements MethodErasure, RecordConstant {
 
         @SafeVarargs
-        public <Klass extends java.lang.reflect.Type & TypeDescriptor> Simple(Klass returnType, CharSequence name, Klass... parameters) {
+        public <Klass extends java.lang.reflect.Type & TypeDescriptor> Simple(Klass returnType, CharSequence name,
+                                                                              Klass... parameters) {
             this(Type.of(returnType), name.toString(), Type.array(parameters));
         }
 
-        public Simple(Method method) {
+        public Simple(java.lang.reflect.Method method) {
             this(method.getReturnType(), method.getName(), method.getParameterTypes());
         }
 

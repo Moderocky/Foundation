@@ -12,7 +12,7 @@ import java.io.OutputStream;
 public record Exceptions(PoolReference attribute_name_index,
                          U4 attribute_length,
                          PoolReference[] exception_index_table)
-    implements CodeAttributeInfo, AttributeInfo, UVec, RecordConstant {
+    implements AttributeInfo.CodeAttribute, AttributeInfo, UVec, RecordConstant {
 
     @Override
     public U4 attribute_length() {

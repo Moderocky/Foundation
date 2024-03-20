@@ -51,4 +51,5 @@ public class Return extends MultiTypeInstruction {
     public Instruction.Base none() {
         return visitor -> visitor.visitInsn(RETURN);
     }
+
 }

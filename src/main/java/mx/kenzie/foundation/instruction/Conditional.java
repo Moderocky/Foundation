@@ -14,7 +14,8 @@ public class Conditional {
         return new Block.If(condition);
     }
 
-    public Block compareInts(Instruction.Input<Integer> a, Instruction.Operator operator, Instruction.Input<Integer> b) {
+    public Block compareInts(Instruction.Input<Integer> a, Instruction.Operator operator,
+                             Instruction.Input<Integer> b) {
         return new Block() {
             @Override
             public void write(MethodVisitor visitor) {

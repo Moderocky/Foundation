@@ -35,6 +35,7 @@ public class Block implements CodeBody, Instruction.Base {
     }
 
     public static class If extends mx.kenzie.foundation.Block {
+
         protected Instruction.Input<Integer> condition;
         protected mx.kenzie.foundation.Block elseBlock;
 
@@ -61,5 +62,7 @@ public class Block implements CodeBody, Instruction.Base {
                 this.elseBlock.write(visitor);
             }
         }
+
     }
+
 }

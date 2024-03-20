@@ -24,49 +24,41 @@ import java.lang.constant.Constable;
 public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
 
     ConstantType<Utf8Info, String> UTF8 = new ConstantType<>(1, Utf8Info.class, String.class,
-        ClassFileBuilder.Helper::valueOf);
+        ClassFileBuilder.Storage::valueOf);
     ConstantType<ClassInfo, Type> TYPE = new ConstantType<>(7, ClassInfo.class, Type.class,
-        ClassFileBuilder.Helper::valueOf);
+        ClassFileBuilder.Storage::valueOf);
     ConstantType<StringInfo, String> STRING = new ConstantType<>(8, StringInfo.class, String.class,
-        ClassFileBuilder.Helper::valueOfString);
+        ClassFileBuilder.Storage::valueOfString);
     ConstantType<SignatureInfo, Signature> NAME_AND_TYPE = new ConstantType<>(12, SignatureInfo.class,
-        Signature.class, ClassFileBuilder.Helper::valueOf);
+        Signature.class, ClassFileBuilder.Storage::valueOf);
 
     static ConstantPoolInfo of(String string) {
         return Utf8Info.of(string);
-    }    ConstantType<ReferenceInfo, Member> METHOD_REFERENCE = new ConstantType<>(10, ReferenceInfo.class, Member.class,
-        ClassFileBuilder.Helper::valueOfMethod);
+    }
 
-    ConstantType<?, ?> tag();    ConstantType<ReferenceInfo, Member> INTERFACE_METHOD_REFERENCE = new ConstantType<>(11, ReferenceInfo.class,
-        Member.class, ClassFileBuilder.Helper::valueOfInterfaceMethod);
+    ConstantType<?, ?> tag();
 
-    UVec info();    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
-    ConstantType<NumberInfo<Integer>, Integer> INTEGER = new ConstantType<>(3,
-        (Class<NumberInfo<Integer>>) (Class) NumberInfo.class, Integer.class, ClassFileBuilder.Helper::valueOf);
+    UVec info();    ConstantType<ReferenceInfo, Member> METHOD_REFERENCE = new ConstantType<>(10, ReferenceInfo.class, Member.class,
+        ClassFileBuilder.Storage::valueOfMethod);
 
     /**
      * Whether this is (probably) storing the given object.
      * This should use a value-based equality check, since the aim is to
      * prevent duplicates being added to the constant pool.
      */
-    boolean is(Constable object);    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
-    ConstantType<NumberInfo<Float>, Float> FLOAT = new ConstantType<>(4,
-        (Class<NumberInfo<Float>>) (Class) NumberInfo.class, Float.class, ClassFileBuilder.Helper::valueOf);
+    boolean is(Constable object);
 
     @Override
     default void write(OutputStream stream) throws IOException, ReflectiveOperationException {
         this.tag().write(stream);
         this.info().write(stream);
-    }    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
-    ConstantType<LongNumberInfo<Long>, Long> LONG = new ConstantType<>(5,
-        (Class<LongNumberInfo<Long>>) (Class) LongNumberInfo.class, Long.class, ClassFileBuilder.Helper::valueOf);
+    }
 
     @Override
     default byte[] binary() { // inefficient but subclasses should deal with this
         return UVec.of(this.tag(), this.info()).binary();
-    }    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
-    ConstantType<LongNumberInfo<Double>, Double> DOUBLE = new ConstantType<>(6,
-        (Class<LongNumberInfo<Double>>) (Class) LongNumberInfo.class, Double.class, ClassFileBuilder.Helper::valueOf);
+    }    ConstantType<ReferenceInfo, Member> INTERFACE_METHOD_REFERENCE = new ConstantType<>(11, ReferenceInfo.class,
+        Member.class, ClassFileBuilder.Storage::valueOfInterfaceMethod);
 
     /**
      * @return The sort code of this constant.
@@ -79,20 +71,28 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
         return Integer.compare(this.sort(), o.sort());
     }
 
+    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    ConstantType<NumberInfo<Integer>, Integer> INTEGER = new ConstantType<>(3,
+        (Class<NumberInfo<Integer>>) (Class) NumberInfo.class, Integer.class, ClassFileBuilder.Storage::valueOf);
 
 
 
+
+
+    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    ConstantType<NumberInfo<Float>, Float> FLOAT = new ConstantType<>(4,
+        (Class<NumberInfo<Float>>) (Class) NumberInfo.class, Float.class, ClassFileBuilder.Storage::valueOf);
+
+    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    ConstantType<LongNumberInfo<Long>, Long> LONG = new ConstantType<>(5,
+        (Class<LongNumberInfo<Long>>) (Class) LongNumberInfo.class, Long.class, ClassFileBuilder.Storage::valueOf);
+
+    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    ConstantType<LongNumberInfo<Double>, Double> DOUBLE = new ConstantType<>(6,
+        (Class<LongNumberInfo<Double>>) (Class) LongNumberInfo.class, Double.class, ClassFileBuilder.Storage::valueOf);
 
     ConstantType<ReferenceInfo, Member> FIELD_REFERENCE = new ConstantType<>(9, ReferenceInfo.class, Member.class,
-        ClassFileBuilder.Helper::valueOfField);
-
-
-
-
-
-
-
-
+        ClassFileBuilder.Storage::valueOfField);
 
 }
 
