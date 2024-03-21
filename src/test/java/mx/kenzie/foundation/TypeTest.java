@@ -51,6 +51,12 @@ public class TypeTest {
     @Test
     public void testGetTypeName() {
         assert Type.of(Object.class).getTypeName().equals(Object.class.getTypeName());
+        assert Type.OBJECT.getTypeName().equals(Object.class.getTypeName());
+        assert Type.INT.getTypeName().equals(int.class.getTypeName());
+        assert Type.INT.arrayType().getTypeName().equals(int[].class.getTypeName());
+        assert Type.OBJECT.arrayType().getTypeName().equals(Object[].class.getTypeName());
+        assert Type.OBJECT.arrayType().arrayType().getTypeName().equals(Object[][].class.getTypeName());
+        assert Type.OBJECT.arrayType().arrayType().componentType().getTypeName().equals(Object[].class.getTypeName());
     }
 
     @Test

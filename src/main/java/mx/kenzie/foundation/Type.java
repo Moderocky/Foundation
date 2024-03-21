@@ -260,7 +260,7 @@ public record Type(String getTypeName, String descriptorString, String internalN
     }
 
     public Type componentType() {
-        if (!descriptorString.startsWith("[") || getTypeName.endsWith("[]"))
+        if (!descriptorString.startsWith("[") || !getTypeName.endsWith("[]"))
             throw new UnsupportedOperationException("Cannot get component type of non-array " + descriptorString);
         final String sub = descriptorString.substring(1);
         final String typeName = getTypeName.substring(0, getTypeName.length() - 2);
