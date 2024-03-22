@@ -28,6 +28,22 @@ public class CodeVector implements UVec {
     public void append() {
     }
 
+    public void insert(int index, @NotNull CodeElement... elements) {
+        if (elements.length == 0) return;
+        this.code.addAll(index, List.of(elements));
+    }
+
+    public void insertAfter(@NotNull CodeElement target, @NotNull CodeElement element) {
+        final int index = code.indexOf(target);
+        if (index == code.size() - 1) code.add(element);
+        else code.add(index + 1, element);
+    }
+
+    public void insertBefore(@NotNull CodeElement target, @NotNull CodeElement element) {
+        final int index = code.indexOf(target);
+        this.code.add(index, element);
+    }
+
     @Override
     public int length() {
         int length = 0;

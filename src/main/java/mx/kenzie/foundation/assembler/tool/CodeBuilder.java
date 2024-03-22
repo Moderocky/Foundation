@@ -25,9 +25,16 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
         this.attributeName = storage.constant(UTF8, "Code");
     }
 
-    protected CodeBuilder writing(CodeVector vector) {
+    protected CodeBuilder writingTo(CodeVector vector) {
         this.vector = vector;
         return this;
+    }
+
+    /**
+     * @return The code vector that actually stores the current block.
+     */
+    protected CodeVector getVector() {
+        return vector;
     }
 
     public CodeBuilder maxLocals(int maxLocals) {
@@ -70,6 +77,24 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
 
     public CodeBuilder write(@NotNull UnboundedElement @NotNull ... elements) {
         for (UnboundedElement element : elements) this.write(element);
+        return this;
+    }
+
+    public CodeBuilder write(byte... bytes) {
+        return this.write(CodeElement.fixed(bytes));
+    }
+
+    public CodeBuilder insertAfter(@NotNull CodeElement target, @NotNull UnboundedElement element) {
+        final CodeElement bound = element.bound(storage);
+        this.vector.insertAfter(target, bound);
+        bound.notify(this);
+        return this;
+    }
+
+    public CodeBuilder insertBefore(@NotNull CodeElement target, @NotNull UnboundedElement element) {
+        final CodeElement bound = element.bound(storage);
+        this.vector.insertBefore(target, bound);
+        bound.notify(this);
         return this;
     }
 
