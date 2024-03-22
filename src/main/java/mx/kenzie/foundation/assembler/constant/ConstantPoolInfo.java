@@ -38,8 +38,7 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
 
     ConstantType<?, ?> tag();
 
-    UVec info();    ConstantType<ReferenceInfo, Member> METHOD_REFERENCE = new ConstantType<>(10, ReferenceInfo.class, Member.class,
-        ClassFileBuilder.Storage::valueOfMethod);
+    UVec info();
 
     /**
      * Whether this is (probably) storing the given object.
@@ -57,8 +56,8 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
     @Override
     default byte[] binary() { // inefficient but subclasses should deal with this
         return UVec.of(this.tag(), this.info()).binary();
-    }    ConstantType<ReferenceInfo, Member> INTERFACE_METHOD_REFERENCE = new ConstantType<>(11, ReferenceInfo.class,
-        Member.class, ClassFileBuilder.Storage::valueOfInterfaceMethod);
+    }    ConstantType<ReferenceInfo, Member> METHOD_REFERENCE = new ConstantType<>(10, ReferenceInfo.class, Member.class,
+        ClassFileBuilder.Storage::valueOfMethod);
 
     /**
      * @return The sort code of this constant.
@@ -71,13 +70,14 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
         return Integer.compare(this.sort(), o.sort());
     }
 
+
+
+    ConstantType<ReferenceInfo, Member> INTERFACE_METHOD_REFERENCE = new ConstantType<>(11, ReferenceInfo.class,
+        Member.class, ClassFileBuilder.Storage::valueOfInterfaceMethod);
+
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
     ConstantType<NumberInfo<Integer>, Integer> INTEGER = new ConstantType<>(3,
         (Class<NumberInfo<Integer>>) (Class) NumberInfo.class, Integer.class, ClassFileBuilder.Storage::valueOf);
-
-
-
-
 
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
     ConstantType<NumberInfo<Float>, Float> FLOAT = new ConstantType<>(4,

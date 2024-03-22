@@ -10,6 +10,14 @@ abstract class ModifiableBuilder extends AttributableBuilder {
 
     }
 
+    public U2 modifiers() {
+        return access_flags;
+    }
+
+    public boolean hasModifier(Access flag) {
+        return Access.is(access_flags, flag);
+    }
+
     protected ModifiableBuilder setModifiers(Access... flags) {
         this.access_flags = Access.of(flags).constant();
         return this;

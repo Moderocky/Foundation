@@ -10,8 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.constant.Constable;
 
-public record ClassInfo(PoolReference name_index)
-    implements ConstantPoolInfo, Data, UVec, RecordConstant {
+public record ClassInfo(PoolReference name_index) implements ConstantPoolInfo, Data, UVec, RecordConstant {
 
     @Override
     public ConstantType<ClassInfo, Type> tag() {
@@ -25,7 +24,8 @@ public record ClassInfo(PoolReference name_index)
 
     @Override
     public boolean is(Constable object) {
-        return object instanceof Type type && name_index.ensure().is(type.internalName());
+        return object instanceof Type type && name_index.ensure().is(type.internalName())
+            || object instanceof java.lang.reflect.Type other && name_index.ensure().is(Type.internalName(other));
     }
 
     @Override

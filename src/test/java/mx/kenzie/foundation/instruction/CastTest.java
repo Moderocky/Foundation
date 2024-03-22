@@ -32,4 +32,5 @@ public class CastTest extends FoundationTest {
         method.line(RETURN.intValue(EQUALS.objects(LOAD_VAR.object(0), CONSTANT.of("hello"))));
         this.thing.add(method);
     }
+
 }

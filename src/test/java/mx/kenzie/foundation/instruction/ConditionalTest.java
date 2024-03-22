@@ -38,4 +38,5 @@ public class ConditionalTest extends FoundationTest {
         next.elseBlock().line(RETURN.intValue(FALSE));
         this.thing.add(method);
     }
+
 }

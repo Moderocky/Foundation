@@ -19,10 +19,7 @@ public record Type(String getTypeName, String descriptorString, String internalN
     public static Type of(String path, String name) {
         final String internal = path.replace('.', '/') + '/' + name;
         return new Type(path + '.' + name, 'L' + internal + ';', internal);
-    }    public static final Type BYTE = Type.of(byte.class), SHORT = Type.of(short.class), INT = Type.of(int.class),
-        LONG = Type.of(long.class), FLOAT = Type.of(float.class), DOUBLE = Type.of(double.class), BOOLEAN =
-        Type.of(boolean.class), CHAR = Type.of(char.class), VOID = Type.of(void.class), OBJECT =
-        Type.of(Object.class), STRING = Type.of(String.class);
+    }
 
     @SafeVarargs
     public static <Klass extends java.lang.reflect.Type & TypeDescriptor> Type[] array(Klass... values) {
@@ -39,7 +36,10 @@ public record Type(String getTypeName, String descriptorString, String internalN
         final Type[] types = new Type[values.length];
         for (int i = 0; i < values.length; i++) types[i] = Type.of(values[i].getType());
         return types;
-    }
+    }    public static final Type BYTE = Type.of(byte.class), SHORT = Type.of(short.class), INT = Type.of(int.class),
+        LONG = Type.of(long.class), FLOAT = Type.of(float.class), DOUBLE = Type.of(double.class), BOOLEAN =
+        Type.of(boolean.class), CHAR = Type.of(char.class), VOID = Type.of(void.class), OBJECT =
+        Type.of(Object.class), STRING = Type.of(String.class);
 
     public static Type fromDescriptor(TypeDescriptor value) {
         if (value instanceof java.lang.reflect.Type type) return of(type);

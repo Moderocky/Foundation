@@ -60,6 +60,14 @@ public class PoolReference implements UVec, Data, Constantive {
         return new byte[] {(byte) (value >>> 8), (byte) (value)};
     }
 
+    @Override
+    public String toString() {
+        return "PoolReference[" +
+            "index=" + this.index() +
+            ", reference=" + reference.get() +
+            ']';
+    }
+
     public ConstantPoolInfo get() {
         return reference.get();
     }

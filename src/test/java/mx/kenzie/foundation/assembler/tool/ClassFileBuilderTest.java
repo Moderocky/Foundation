@@ -5,13 +5,16 @@ import mx.kenzie.foundation.Type;
 import mx.kenzie.foundation.assembler.ClassFile;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
-import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.STRING;
+import static mx.kenzie.foundation.assembler.code.OpCode.ARETURN;
+import static mx.kenzie.foundation.assembler.code.OpCode.LDC;
 import static mx.kenzie.foundation.assembler.tool.Access.*;
 import static mx.kenzie.foundation.assembler.tool.Version.JAVA_21;
+import static mx.kenzie.foundation.assembler.tool.Version.RELEASE;
 
-public class ClassFileBuilderTest {
+public class ClassFileBuilderTest extends ModifiableBuilderTest {
 
     @Test
     public void simple() {
@@ -28,46 +31,27 @@ public class ClassFileBuilderTest {
     }
 
     @Test
-    public void withField() {
+    public void withMethod() throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         final Loader loader = Loader.createDefault();
         final Type type = Type.of("org.example", "Test");
-        final ClassFileBuilder builder = new ClassFileBuilder(JAVA_21, type)
-            .field().named("test").ofType(Object.class).exit();
+        final ClassFileBuilder builder = new ClassFileBuilder(JAVA_21, type);
+        final MethodBuilder method = builder.method();
+        method.returns(String.class).named("blob").setModifiers(PUBLIC, STATIC);
+        final CodeBuilder code = method.code();
+        code.write(LDC.value("hello"), ARETURN);
         final ClassFile file = builder.build();
         final Class<?> done = this.load(loader, file, type);
         assert done != null;
         assert Type.of(done).equals(type);
-        assert done.getDeclaredFields().length == 1;
-        assert done.getDeclaredFields()[0].getName().equals("test");
-        assert done.getDeclaredFields()[0].getType() == Object.class;
+        assert done.getDeclaredFields().length == 0;
+        final Method found = done.getDeclaredMethod("blob");
+        found.setAccessible(true);
+        assert found.invoke(null).equals("hello");
     }
 
-    @Test
-    public void withTwoFields()
-        throws IllegalAccessException, NoSuchFieldException {
-        final Loader loader = Loader.createDefault();
-        final Type type = Type.of("org.example", "Test");
-        final ClassFileBuilder builder = new ClassFileBuilder(JAVA_21, type)
-            .field().named("test").ofType(Object.class).exit();
-        final FieldBuilder field = builder.field().setModifiers(PUBLIC, STATIC, FINAL);
-        field.ofType(String.class).named("foo").constantValue(STRING,
-            "hello");
-        final ClassFile file = builder.build();
-        final Class<?> done = this.load(loader, file, type);
-        assert done != null;
-        assert Type.of(done).equals(type);
-        assert done.getDeclaredFields().length == 2;
-        final Field test = done.getDeclaredField("test");
-        assert test.getType() == Object.class;
-        final Field foo = done.getDeclaredField("foo");
-        assert foo.getType() == String.class;
-        foo.setAccessible(true);
-        assert foo.get(null).equals("hello");
-        System.out.println(foo.get(null));
-    }
-
-    protected Class<?> load(Loader loader, ClassFile file, Type type) {
-        return loader.loadClass(type.getTypeName(), file.binary());
+    @Override
+    protected ModifiableBuilder example() {
+        return new ClassFileBuilder(JAVA_21, RELEASE);
     }
 
 }

@@ -201,4 +201,5 @@ public class BinaryTest extends FoundationTest {
             this.thing.add(method);
         }
     }
+
 }

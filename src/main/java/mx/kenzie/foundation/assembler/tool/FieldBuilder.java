@@ -11,8 +11,8 @@ import org.valross.constantine.Constantive;
 
 import java.lang.constant.Constable;
 import java.lang.invoke.TypeDescriptor;
-import java.util.ArrayList;
 import java.util.Objects;
+import java.util.function.Function;
 
 import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.UTF8;
 
@@ -23,7 +23,6 @@ public class FieldBuilder extends ModifiableBuilder implements Constantive {
 
     public FieldBuilder(ClassFileBuilder.Storage storage) {
         this.storage = storage;
-        this.attributes = new ArrayList<>();
     }
 
     public FieldBuilder signature(Signature signature) {
@@ -49,6 +48,10 @@ public class FieldBuilder extends ModifiableBuilder implements Constantive {
         return (FieldBuilder) super.attribute(attribute);
     }
 
+    public FieldBuilder attribute(Function<ClassFileBuilder.Storage, AttributeInfo.FieldAttribute> attribute) {
+        return (FieldBuilder) super.makeAttribute(attribute);
+    }
+
     @Override
     public FieldBuilder synthetic() {
         return (FieldBuilder) super.synthetic();
@@ -72,8 +75,7 @@ public class FieldBuilder extends ModifiableBuilder implements Constantive {
     @Override
     @Contract(pure = true)
     public FieldInfo constant() {
-        Objects.requireNonNull(name, "No field name provided");
-        Objects.requireNonNull(descriptor, "No field type (descriptor) provided");
+        this.finalise();
         return new FieldInfo(access_flags, name, descriptor, U2.valueOf(attributes.size()),
             attributes.toArray(new AttributeInfo[0]));
     }
@@ -84,6 +86,12 @@ public class FieldBuilder extends ModifiableBuilder implements Constantive {
 
     public FieldBuilder addModifiers(Access.Field... flags) {
         return (FieldBuilder) super.addModifiers(flags);
+    }
+
+    @Override
+    public void finalise() {
+        Objects.requireNonNull(name, "No field name provided");
+        Objects.requireNonNull(descriptor, "No field type (descriptor) provided");
     }
 
 }

@@ -6,7 +6,7 @@ import mx.kenzie.foundation.assembler.tool.PoolReference;
 import org.valross.constantine.RecordConstant;
 
 public record SourceFile(PoolReference attribute_name_index, PoolReference sourcefile_index)
-    implements AttributeInfo, UVec, RecordConstant {
+    implements AttributeInfo.TypeAttribute, AttributeInfo, UVec, RecordConstant {
 
     @Override
     public U4 attribute_length() {

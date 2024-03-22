@@ -10,12 +10,12 @@ import java.lang.constant.Constable;
 import java.util.Arrays;
 import java.util.Objects;
 
-public record Utf8Info(int length, byte[] data) implements ConstantPoolInfo, UVec, RecordConstant {
+public record Utf8Info(int length, String value, byte[] data) implements ConstantPoolInfo, UVec, RecordConstant {
 
     private static final int MAX_LENGTH = 65535;
 
     public Utf8Info(byte[] data) {
-        this(data.length, data);
+        this(data.length, null, data);
     }
 
     public static Utf8Info of(String string) {
@@ -38,7 +38,7 @@ public record Utf8Info(int length, byte[] data) implements ConstantPoolInfo, UVe
         }
         if (pointer > MAX_LENGTH) throw new IllegalArgumentException("UTF-8 string is too long.");
         if (++pointer != data.length) data = copy(data, pointer);
-        return new Utf8Info(data);
+        return new Utf8Info(data.length, string, data);
     }
 
     private static byte[] copy(byte[] data, int length) {
@@ -59,7 +59,9 @@ public record Utf8Info(int length, byte[] data) implements ConstantPoolInfo, UVe
 
     @Override
     public boolean is(Constable object) {
-        return object instanceof String string && this.equals(Utf8Info.of(string));
+        if (value != null) return value.equals(object);
+        return object instanceof String string &&
+            this.equals(Utf8Info.of(string));
     }
 
     @Override
@@ -83,6 +85,8 @@ public record Utf8Info(int length, byte[] data) implements ConstantPoolInfo, UVe
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
+        if (value != null && object instanceof Utf8Info utf8Info && utf8Info.value != null)
+            return value.equals(utf8Info.value);
         return object instanceof Utf8Info utf8Info
             && length == utf8Info.length && Arrays.equals(data, utf8Info.data);
     }
@@ -90,6 +94,15 @@ public record Utf8Info(int length, byte[] data) implements ConstantPoolInfo, UVe
     @Override
     public int hashCode() {
         return 31 * Objects.hash(length) + Arrays.hashCode(data);
+    }
+
+    @Override
+    public String toString() {
+        return "Utf8Info[" +
+            "length=" + length +
+            ", value='" + value + '\'' +
+            ", data=" + Arrays.toString(data) +
+            ']';
     }
 
 }

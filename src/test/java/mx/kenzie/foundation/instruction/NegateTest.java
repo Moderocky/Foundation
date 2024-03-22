@@ -18,4 +18,5 @@ public class NegateTest extends FoundationTest {
         method.line(RETURN.intValue(NOT.invert(LOAD_VAR.booleanValue(0))));
         this.thing.add(method);
     }
+
 }

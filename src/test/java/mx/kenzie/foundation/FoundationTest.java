@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 public abstract class FoundationTest {
+
     static FoundationTest test;
     protected final PreClass thing;
 

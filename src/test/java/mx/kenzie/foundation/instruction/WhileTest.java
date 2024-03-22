@@ -35,4 +35,5 @@ public class WhileTest extends FoundationTest {
         method.line(RETURN.intValue(COMPARE.ints(LOAD_VAR.intValue(0), EQ, ONE)));
         this.thing.add(method);
     }
+
 }

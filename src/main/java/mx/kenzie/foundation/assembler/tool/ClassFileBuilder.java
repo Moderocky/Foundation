@@ -15,6 +15,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.*;
 
@@ -28,7 +29,6 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
     protected List<PoolReference> interfaces; //interfaces_count
     protected List<FieldBuilder> fields; //fields_count
     protected List<MethodBuilder> methods; //methods_count
-    protected List<AttributeInfo> attributes; //attributes_count
     private Storage storage;
 
     public ClassFileBuilder(int majorVersion, int minorVersion) {
@@ -39,7 +39,6 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
         this.interfaces = new ArrayList<>();
         this.fields = new ArrayList<>();
         this.methods = new ArrayList<>();
-        this.attributes = new ArrayList<>();
         this.setSuperType(Type.OBJECT);
     }
 
@@ -58,10 +57,6 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
 
     protected U2 methodsCount() {
         return U2.valueOf(methods.size());
-    }
-
-    protected U2 attributesCount() {
-        return U2.valueOf(attributes.size());
     }
 
     protected U2 constantPoolCount() {
@@ -88,11 +83,10 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
     }
 
     public ClassFile build() throws ClassBuilderException {
-        if (this_class == null) throw new ClassBuilderException("Type was null.");
-        if (super_class == null) throw new ClassBuilderException("Supertype was null.");
+        this.finalise();
         return new ClassFile(magic, minor_version, major_version, constantPoolCount(), constantPool(), access_flags,
             this_class, super_class, interfacesCount(), interfaces.toArray(new PoolReference[0]), fieldsCount(),
-            fields(), methodsCount(), methods(), attributesCount(), attributes.toArray(new AttributeInfo[0]));
+            fields(), methodsCount(), methods(), attributesCount(), attributes());
     }
 
     private MethodInfo[] methods() {
@@ -148,6 +142,12 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
         return builder;
     }
 
+    public MethodBuilder constructor() {
+        final MethodBuilder builder = new MethodBuilder(this.helper());
+        this.methods.add(builder);
+        return builder.named("<init>");
+    }
+
     @Override
     public ClassFileBuilder synthetic() {
         return (ClassFileBuilder) super.synthetic();
@@ -159,17 +159,43 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
     }
 
     @Override
-    protected ClassFileBuilder attribute(AttributeInfo attribute) {
-        return (ClassFileBuilder) super.attribute(attribute);
-    }
-
-    @Override
     public Storage helper() {
         if (storage != null) return storage;
         return storage = this.new Storage();
     }
 
+    public ClassFileBuilder attribute(AttributeInfo.TypeAttribute attribute) {
+        return (ClassFileBuilder) super.attribute(attribute);
+    }
+
+    public ClassFileBuilder attribute(Function<Storage, AttributeInfo.TypeAttribute> attribute) {
+        return (ClassFileBuilder) super.makeAttribute(attribute);
+    }
+
+    @Override
+    public void finalise() {
+        if (this_class == null) throw new ClassBuilderException("Type was null.");
+        if (super_class == null) throw new ClassBuilderException("Supertype was null.");
+        this.constantPool.sort(ConstantPoolInfo::compareTo); // so our innards can bake their references
+        for (FieldBuilder field : fields) field.finalise();
+        for (MethodBuilder method : methods) method.finalise();
+        for (AttributeBuilder attribute : attributes) attribute.finalise();
+    }
+
     public class Storage {
+
+        public PoolReference constant(Constable constable) {
+            return switch (constable) {
+                case Long j -> this.constant(ConstantPoolInfo.LONG, j);
+                case Double d -> this.constant(ConstantPoolInfo.DOUBLE, d);
+                case String value -> this.constant(ConstantPoolInfo.STRING, value);
+                case Float value -> this.constant(ConstantPoolInfo.FLOAT, value);
+                case Number value -> this.constant(ConstantPoolInfo.INTEGER, value.intValue());
+                case Class<?> value -> this.constant(ConstantPoolInfo.TYPE, Type.of(value));
+                case Type value -> this.constant(ConstantPoolInfo.TYPE, value);
+                default -> throw new IllegalStateException("Unhandled constant value: " + constable);
+            };
+        }
 
         public <Value extends Constable> PoolReference constant(ConstantType<?, Value> type, Value value) {
             for (ConstantPoolInfo info : constantPool) {

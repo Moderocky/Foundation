@@ -27,7 +27,7 @@ public interface Access extends UVec {
     Type RECORD = () -> 0x10000; // For a Record (type)
 
     static boolean is(UVec flags, Access check) {
-        return (flags.intValue() & check.value()) != 0;
+        return (flags.intValue() & check.intValue()) != 0;
     }
 
     static All of(All... flags) {
@@ -67,6 +67,11 @@ public interface Access extends UVec {
 
     default @Override int length() {
         return 2;
+    }
+
+    @Override
+    default byte[] binary() {
+        return this.constant().binary();
     }
 
     int value();
