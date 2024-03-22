@@ -16,4 +16,9 @@ public record Deprecated(PoolReference attribute_name_index)
         this(storage.constant(UTF8, "Deprecated"));
     }
 
+    @Override
+    public int length() {
+        return attribute_name_index.length();
+    }
+
 }

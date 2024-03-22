@@ -56,15 +56,15 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
     @Override
     default byte[] binary() { // inefficient but subclasses should deal with this
         return UVec.of(this.tag(), this.info()).binary();
-    }    ConstantType<ReferenceInfo, Member> METHOD_REFERENCE = new ConstantType<>(10, ReferenceInfo.class, Member.class,
-        ClassFileBuilder.Storage::valueOfMethod);
+    }
 
     /**
      * @return The sort code of this constant.
      */
     default int sort() {
         return 99;
-    }
+    }    ConstantType<ReferenceInfo, Member> METHOD_REFERENCE = new ConstantType<>(10, ReferenceInfo.class, Member.class,
+        ClassFileBuilder.Storage::valueOfMethod);
 
     default @Override int compareTo(@NotNull ConstantPoolInfo o) {
         return Integer.compare(this.sort(), o.sort());

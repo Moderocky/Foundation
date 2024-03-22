@@ -38,6 +38,22 @@ public class FieldBuilderTest extends ClassFileBuilderTest {
     }
 
     @Test
+    public void deprecatedSyntheticField() {
+        final Loader loader = Loader.createDefault();
+        final Type type = Type.of("org.example", "Test");
+        final ClassFileBuilder builder =
+            new ClassFileBuilder(JAVA_21, type).field().named("test").ofType(Object.class).deprecated()
+                .synthetic().exit();
+        final ClassFile file = builder.build();
+        final Class<?> done = this.load(loader, file, type);
+        assert done != null;
+        assert Type.of(done).equals(type);
+        assert done.getDeclaredFields().length == 1;
+        assert done.getDeclaredFields()[0].getName().equals("test");
+        assert done.getDeclaredFields()[0].getType() == Object.class;
+    }
+
+    @Test
     public void withTwoFields() throws IllegalAccessException, NoSuchFieldException {
         final Loader loader = Loader.createDefault();
         final Type type = Type.of("org.example", "Test");

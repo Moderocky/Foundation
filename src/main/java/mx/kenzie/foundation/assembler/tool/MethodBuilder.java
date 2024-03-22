@@ -46,8 +46,9 @@ public class MethodBuilder extends ModifiableBuilder implements Constantive, Met
         return this.named(erasure.name()).type(erasure.returnType(), erasure.parameters());
     }
 
-    public <Klass extends java.lang.reflect.Type & TypeDescriptor> MethodBuilder type(Klass returnType,
-                                                                                      Klass... parameters) {
+    @SafeVarargs
+    public final <Klass extends java.lang.reflect.Type & TypeDescriptor> MethodBuilder type(Klass returnType,
+                                                                                            Klass... parameters) {
         this.returnType = Type.of(returnType);
         this.parameters = Type.array(parameters);
         return this.descriptor(Descriptor.of(this.returnType, this.parameters));
