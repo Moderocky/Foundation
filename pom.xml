@@ -6,7 +6,11 @@
 
     <groupId>mx.kenzie</groupId>
     <artifactId>foundation</artifactId>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
+    <modules>
+        <module>Assembler</module>
+        <module>Builder</module>
+    </modules>
     <version>3.0.0</version>
     <name>Foundation</name>
     <description>A framework for building compiled bytecode.</description>
@@ -60,34 +64,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>mx.kenzie</groupId>
-            <artifactId>fern</artifactId>
-            <version>2.0.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.valross</groupId>
             <artifactId>constantine</artifactId>
             <version>1.0.0</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-            <version>9.4</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-commons</artifactId>
-            <version>9.4</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-util</artifactId>
-            <version>9.4</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
