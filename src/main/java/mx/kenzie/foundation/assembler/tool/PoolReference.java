@@ -1,20 +1,13 @@
 package mx.kenzie.foundation.assembler.tool;
 
-import mx.kenzie.foundation.assembler.Data;
-import mx.kenzie.foundation.assembler.U2;
-import mx.kenzie.foundation.assembler.UVec;
 import mx.kenzie.foundation.assembler.constant.ConstantPoolInfo;
 import mx.kenzie.foundation.assembler.constant.DeadSpaceInfo;
 import org.jetbrains.annotations.NotNull;
-import org.valross.constantine.Constantive;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
-import java.util.Objects;
 
-public class PoolReference implements UVec, Data, Constantive {
+public class PoolReference extends TableReference<ConstantPoolInfo> {
 
     public static final PoolReference ZERO = new Zero();
 
@@ -26,6 +19,7 @@ public class PoolReference implements UVec, Data, Constantive {
         this.reference = new WeakReference<>(value);
     }
 
+    @Override
     public int index() {
         final ConstantPoolInfo info = reference.get();
         if (info == null) return -1; // it was discarded :(
@@ -38,29 +32,6 @@ public class PoolReference implements UVec, Data, Constantive {
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException {
-        final short value = (short) this.index();
-        stream.write((value >>> 8));
-        stream.write(value);
-    }
-
-    @Override
-    public U2 constant() {
-        return U2.valueOf(this.index());
-    }
-
-    @Override
-    public int length() {
-        return 2;
-    }
-
-    @Override
-    public byte[] binary() {
-        final short value = (short) this.index();
-        return new byte[] {(byte) (value >>> 8), (byte) (value)};
-    }
-
-    @Override
     public String toString() {
         return "PoolReference[" +
             "index=" + this.index() +
@@ -68,12 +39,9 @@ public class PoolReference implements UVec, Data, Constantive {
             ']';
     }
 
+    @Override
     public ConstantPoolInfo get() {
         return reference.get();
-    }
-
-    public @NotNull ConstantPoolInfo ensure() {
-        return Objects.requireNonNull(this.get());
     }
 
     static final class Zero extends PoolReference {

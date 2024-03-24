@@ -87,6 +87,10 @@ public record Member(Type owner, Signature signature) implements Descriptor, Rec
         return signature.descriptorString();
     }
 
+    public boolean isField() {
+        return !signature.descriptorString().startsWith("(");
+    }
+
     /**
      * The data needed for a dynamic method invocation (using the invoke dynamic instruction).
      *
