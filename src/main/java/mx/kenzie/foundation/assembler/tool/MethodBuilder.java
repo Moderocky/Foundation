@@ -1,8 +1,8 @@
 package mx.kenzie.foundation.assembler.tool;
 
-import mx.kenzie.foundation.Descriptor;
-import mx.kenzie.foundation.MethodErasure;
-import mx.kenzie.foundation.Signature;
+import mx.kenzie.foundation.detail.Descriptor;
+import mx.kenzie.foundation.detail.MethodErasure;
+import mx.kenzie.foundation.detail.Signature;
 import mx.kenzie.foundation.Type;
 import mx.kenzie.foundation.assembler.MethodInfo;
 import mx.kenzie.foundation.assembler.attribute.AttributeInfo;

@@ -1,7 +1,6 @@
-package mx.kenzie.foundation;
+package mx.kenzie.foundation.detail;
 
-import mx.kenzie.foundation.instruction.CallMethod;
-import mx.kenzie.foundation.instruction.Instruction;
+import mx.kenzie.foundation.Type;
 import org.valross.constantine.RecordConstant;
 
 import java.lang.invoke.TypeDescriptor;
@@ -37,10 +36,6 @@ public interface MethodErasure extends TypeDescriptor {
 
     default String descriptorString() {
         return Type.methodDescriptor(this.returnType(), this.parameters());
-    }
-
-    default <Klass extends java.lang.reflect.Type & TypeDescriptor> CallMethod.Stub in(Klass owner) {
-        return Instruction.METHOD.of(owner, this);
     }
 
     default boolean overloads(MethodErasure other) {

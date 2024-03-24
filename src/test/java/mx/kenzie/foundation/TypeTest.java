@@ -1,5 +1,6 @@
 package mx.kenzie.foundation;
 
+import mx.kenzie.foundation.detail.Descriptor;
 import org.junit.Test;
 
 import java.lang.reflect.Method;

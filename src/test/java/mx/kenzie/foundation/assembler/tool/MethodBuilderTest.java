@@ -1,8 +1,8 @@
 package mx.kenzie.foundation.assembler.tool;
 
 import mx.kenzie.foundation.Loader;
-import mx.kenzie.foundation.MethodErasure;
-import mx.kenzie.foundation.Signature;
+import mx.kenzie.foundation.detail.MethodErasure;
+import mx.kenzie.foundation.detail.Signature;
 import mx.kenzie.foundation.Type;
 import mx.kenzie.foundation.assembler.ClassFile;
 import org.junit.Test;
@@ -14,8 +14,8 @@ import static mx.kenzie.foundation.assembler.code.OpCode.ARETURN;
 import static mx.kenzie.foundation.assembler.code.OpCode.LDC;
 import static mx.kenzie.foundation.assembler.tool.Access.PUBLIC;
 import static mx.kenzie.foundation.assembler.tool.Access.STATIC;
-import static mx.kenzie.foundation.assembler.tool.Version.JAVA_21;
-import static mx.kenzie.foundation.assembler.tool.Version.RELEASE;
+import static mx.kenzie.foundation.detail.Version.JAVA_21;
+import static mx.kenzie.foundation.detail.Version.RELEASE;
 
 public class MethodBuilderTest extends ClassFileBuilderTest {
 

@@ -1,6 +1,6 @@
 package mx.kenzie.foundation.instruction;
 
-import mx.kenzie.foundation.MethodErasure;
+import mx.kenzie.foundation.detail.MethodErasure;
 import mx.kenzie.foundation.Type;
 import org.objectweb.asm.Opcodes;
 

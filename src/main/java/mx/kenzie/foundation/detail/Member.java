@@ -1,5 +1,6 @@
-package mx.kenzie.foundation;
+package mx.kenzie.foundation.detail;
 
+import mx.kenzie.foundation.Type;
 import mx.kenzie.foundation.assembler.constant.MethodTypeReference;
 import mx.kenzie.foundation.instruction.AccessField;
 import mx.kenzie.foundation.instruction.CallMethod;

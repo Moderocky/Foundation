@@ -1,7 +1,7 @@
 package mx.kenzie.foundation;
 
-import static mx.kenzie.foundation.Modifier.PUBLIC;
-import static mx.kenzie.foundation.Modifier.STATIC;
+import static mx.kenzie.foundation.detail.Modifier.PUBLIC;
+import static mx.kenzie.foundation.detail.Modifier.STATIC;
 import static mx.kenzie.foundation.Type.*;
 import static mx.kenzie.foundation.instruction.Instruction.RETURN;
 

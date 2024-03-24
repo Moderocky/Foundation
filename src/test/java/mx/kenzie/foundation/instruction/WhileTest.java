@@ -5,8 +5,8 @@ import mx.kenzie.foundation.FoundationTest;
 import mx.kenzie.foundation.PreMethod;
 import org.junit.Test;
 
-import static mx.kenzie.foundation.Modifier.PUBLIC;
-import static mx.kenzie.foundation.Modifier.STATIC;
+import static mx.kenzie.foundation.detail.Modifier.PUBLIC;
+import static mx.kenzie.foundation.detail.Modifier.STATIC;
 import static mx.kenzie.foundation.Type.BOOLEAN;
 import static mx.kenzie.foundation.instruction.Instruction.*;
 import static mx.kenzie.foundation.instruction.Instruction.Math.PLUS;

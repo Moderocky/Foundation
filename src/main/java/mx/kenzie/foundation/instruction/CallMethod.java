@@ -1,6 +1,6 @@
 package mx.kenzie.foundation.instruction;
 
-import mx.kenzie.foundation.MethodErasure;
+import mx.kenzie.foundation.detail.MethodErasure;
 import mx.kenzie.foundation.PreClass;
 import mx.kenzie.foundation.PreMethod;
 import mx.kenzie.foundation.Type;

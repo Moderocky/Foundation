@@ -3,7 +3,7 @@ package mx.kenzie.foundation;
 import mx.kenzie.foundation.instruction.AccessField;
 import org.junit.Test;
 
-import static mx.kenzie.foundation.Modifier.*;
+import static mx.kenzie.foundation.detail.Modifier.*;
 import static mx.kenzie.foundation.Type.BOOLEAN;
 import static mx.kenzie.foundation.instruction.Instruction.*;
 

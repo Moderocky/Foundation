@@ -1,6 +1,6 @@
 package mx.kenzie.foundation.assembler.tool;
 
-import mx.kenzie.foundation.Signature;
+import mx.kenzie.foundation.detail.Signature;
 import mx.kenzie.foundation.assembler.FieldInfo;
 import mx.kenzie.foundation.assembler.U2;
 import mx.kenzie.foundation.assembler.attribute.AttributeInfo;

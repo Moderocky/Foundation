@@ -1,6 +1,6 @@
 package mx.kenzie.foundation.assembler.tool;
 
-import mx.kenzie.foundation.Member;
+import mx.kenzie.foundation.detail.Member;
 import mx.kenzie.foundation.assembler.attribute.BootstrapMethods;
 import mx.kenzie.foundation.assembler.constant.ConstantPoolInfo;
 

@@ -1,4 +1,4 @@
-package mx.kenzie.foundation.assembler.tool;
+package mx.kenzie.foundation.detail;
 
 public interface Version {
 

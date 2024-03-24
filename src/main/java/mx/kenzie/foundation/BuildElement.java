@@ -1,5 +1,6 @@
 package mx.kenzie.foundation;
 
+import mx.kenzie.foundation.detail.Modifier;
 import org.objectweb.asm.ClassWriter;
 
 import java.util.HashSet;

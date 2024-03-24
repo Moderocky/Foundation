@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import java.lang.reflect.Method;
 
-import static mx.kenzie.foundation.Modifier.*;
+import static mx.kenzie.foundation.detail.Modifier.*;
 import static mx.kenzie.foundation.Type.*;
 import static mx.kenzie.foundation.instruction.Instruction.*;
 

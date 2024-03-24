@@ -1,9 +1,8 @@
 package mx.kenzie.foundation.assembler.constant;
 
-import mx.kenzie.foundation.detail.Member;
 import mx.kenzie.foundation.assembler.Data;
-import mx.kenzie.foundation.assembler.U1;
 import mx.kenzie.foundation.assembler.UVec;
+import mx.kenzie.foundation.assembler.tool.BootstrapReference;
 import mx.kenzie.foundation.assembler.tool.PoolReference;
 import org.valross.constantine.RecordConstant;
 
@@ -11,19 +10,18 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.constant.Constable;
 
-public record MethodHandleInfo(ConstantType<MethodHandleInfo, Member.Invocation> tag, Member.Invocation invocation,
-                               U1 reference_kind,
-                               PoolReference reference_index)
-    implements ConstantPoolInfo, Data, UVec, RecordConstant {
+public record DynamicInfo(ConstantType<DynamicInfo, ?> tag, BootstrapReference bootstrap_method_attr_index,
+                          PoolReference name_and_type_index) implements ConstantPoolInfo, Data, UVec, RecordConstant {
 
     @Override
     public UVec info() {
-        return UVec.of(reference_kind, reference_index);
+        return UVec.of(bootstrap_method_attr_index, name_and_type_index);
     }
 
     @Override
     public boolean is(Constable object) {
-        return invocation.equals(object);
+        // todo
+        return false;
     }
 
     @Override
@@ -33,12 +31,13 @@ public record MethodHandleInfo(ConstantType<MethodHandleInfo, Member.Invocation>
 
     @Override
     public int sort() {
-        return 55;
+        if (tag == ConstantPoolInfo.DYNAMIC) return 61;
+        return 62;
     }
 
     @Override
     public int length() {
-        return 4;
+        return 5;
     }
 
 }

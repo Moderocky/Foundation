@@ -1,7 +1,7 @@
 package mx.kenzie.foundation.assembler.tool;
 
 import mx.kenzie.foundation.Loader;
-import mx.kenzie.foundation.Signature;
+import mx.kenzie.foundation.detail.Signature;
 import mx.kenzie.foundation.Type;
 import mx.kenzie.foundation.assembler.ClassFile;
 import mx.kenzie.foundation.assembler.attribute.ConstantValue;
@@ -12,8 +12,8 @@ import java.lang.reflect.Field;
 
 import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.STRING;
 import static mx.kenzie.foundation.assembler.tool.Access.*;
-import static mx.kenzie.foundation.assembler.tool.Version.JAVA_21;
-import static mx.kenzie.foundation.assembler.tool.Version.RELEASE;
+import static mx.kenzie.foundation.detail.Version.JAVA_21;
+import static mx.kenzie.foundation.detail.Version.RELEASE;
 
 public class FieldBuilderTest extends ClassFileBuilderTest {
 

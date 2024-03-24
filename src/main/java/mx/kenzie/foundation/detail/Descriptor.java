@@ -1,5 +1,6 @@
-package mx.kenzie.foundation;
+package mx.kenzie.foundation.detail;
 
+import mx.kenzie.foundation.Type;
 import org.valross.constantine.Constant;
 import org.valross.constantine.RecordConstant;
 

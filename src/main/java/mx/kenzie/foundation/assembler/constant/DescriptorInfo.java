@@ -1,6 +1,6 @@
 package mx.kenzie.foundation.assembler.constant;
 
-import mx.kenzie.foundation.Descriptor;
+import mx.kenzie.foundation.detail.Descriptor;
 import mx.kenzie.foundation.assembler.Data;
 import mx.kenzie.foundation.assembler.UVec;
 import mx.kenzie.foundation.assembler.tool.PoolReference;

@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import java.lang.reflect.Method;
 
-import static mx.kenzie.foundation.Modifier.PUBLIC;
-import static mx.kenzie.foundation.Modifier.STATIC;
+import static mx.kenzie.foundation.detail.Modifier.PUBLIC;
+import static mx.kenzie.foundation.detail.Modifier.STATIC;
 import static mx.kenzie.foundation.Type.BOOLEAN;
 import static mx.kenzie.foundation.instruction.Instruction.*;
 

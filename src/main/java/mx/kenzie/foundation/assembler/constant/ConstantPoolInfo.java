@@ -1,8 +1,9 @@
 package mx.kenzie.foundation.assembler.constant;
 
-import mx.kenzie.foundation.Descriptor;
-import mx.kenzie.foundation.Member;
-import mx.kenzie.foundation.Signature;
+import mx.kenzie.foundation.detail.Descriptor;
+import mx.kenzie.foundation.detail.DynamicReference;
+import mx.kenzie.foundation.detail.Member;
+import mx.kenzie.foundation.detail.Signature;
 import mx.kenzie.foundation.Type;
 import mx.kenzie.foundation.assembler.Data;
 import mx.kenzie.foundation.assembler.UVec;
@@ -54,6 +55,10 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
         Member.Invocation.class, ClassFileBuilder.Storage::valueOf);
     ConstantType<DescriptorInfo, Descriptor> METHOD_TYPE = new ConstantType<>(16, DescriptorInfo.class,
         Descriptor.class, ClassFileBuilder.Storage::valueOf);
+    ConstantType<DynamicInfo, DynamicReference> DYNAMIC = new ConstantType<>(17, DynamicInfo.class,
+        DynamicReference.class, ClassFileBuilder.Storage::valueOf);
+    ConstantType<DynamicInfo, DynamicReference> INVOKE_DYNAMIC = new ConstantType<>(18, DynamicInfo.class,
+        DynamicReference.class, ClassFileBuilder.Storage::valueOf);
 
     static ConstantPoolInfo of(String string) {
         return Utf8Info.of(string);

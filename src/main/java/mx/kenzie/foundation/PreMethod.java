@@ -1,5 +1,7 @@
 package mx.kenzie.foundation;
 
+import mx.kenzie.foundation.detail.MethodErasure;
+import mx.kenzie.foundation.detail.Modifier;
 import mx.kenzie.foundation.instruction.CallMethod;
 import mx.kenzie.foundation.instruction.Instruction;
 import org.objectweb.asm.ClassWriter;

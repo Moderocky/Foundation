@@ -1,13 +1,11 @@
 package mx.kenzie.foundation.assembler.tool;
 
-import mx.kenzie.foundation.Descriptor;
-import mx.kenzie.foundation.Member;
-import mx.kenzie.foundation.Signature;
 import mx.kenzie.foundation.Type;
 import mx.kenzie.foundation.assembler.*;
 import mx.kenzie.foundation.assembler.attribute.AttributeInfo;
 import mx.kenzie.foundation.assembler.constant.*;
 import mx.kenzie.foundation.assembler.error.ClassBuilderException;
+import mx.kenzie.foundation.detail.*;
 import org.valross.constantine.Constantive;
 
 import java.lang.constant.Constable;
@@ -31,6 +29,7 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
     protected List<PoolReference> interfaces; //interfaces_count
     protected List<FieldBuilder> fields; //fields_count
     protected List<MethodBuilder> methods; //methods_count
+    protected BootstrapTableBuilder bootstrapTable;
     private Storage storage;
 
     public ClassFileBuilder(int majorVersion, int minorVersion) {
@@ -47,6 +46,14 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
     public ClassFileBuilder(int majorVersion, Type type) {
         this(majorVersion, Version.RELEASE);
         this.setType(type);
+    }
+
+    public BootstrapTableBuilder bootstrapTable() {
+        if (bootstrapTable == null) {
+            this.bootstrapTable = new BootstrapTableBuilder(this.helper());
+            super.attribute(bootstrapTable);
+        }
+        return bootstrapTable;
     }
 
     protected U2 interfacesCount() {
@@ -179,12 +186,17 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
         if (this_class == null) throw new ClassBuilderException("Type was null.");
         if (super_class == null) throw new ClassBuilderException("Supertype was null.");
         this.constantPool.sort(ConstantPoolInfo::compareTo); // so our innards can bake their references
+        if (bootstrapTable != null) bootstrapTable.finalise();
         for (FieldBuilder field : fields) field.finalise();
         for (MethodBuilder method : methods) method.finalise();
         for (AttributeBuilder attribute : attributes) attribute.finalise();
     }
 
     public class Storage {
+
+        public ClassFileBuilder source() {
+            return ClassFileBuilder.this;
+        }
 
         public PoolReference constant(Constable constable) {
             return switch (constable) {
@@ -267,8 +279,14 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
             return new LongNumberInfo<>(DOUBLE, U4.fromSigned(buffer.getInt(0)), U4.fromSigned(buffer.getInt(4)));
         }
 
-        public ClassFileBuilder source() {
-            return ClassFileBuilder.this;
+        public DynamicInfo constantDynamic(Signature signature, Member.Invocation invocation, Constable... arguments) {
+            return new DynamicInfo(DYNAMIC, bootstrapTable().registerMethod(invocation, arguments),
+                this.constant(NAME_AND_TYPE, signature));
+        }
+
+        public DynamicInfo invokeDynamic(Signature signature, Member.Invocation invocation, Constable... arguments) {
+            return new DynamicInfo(INVOKE_DYNAMIC, bootstrapTable().registerMethod(invocation, arguments),
+                this.constant(NAME_AND_TYPE, signature));
         }
 
         public MethodHandleInfo valueOf(Member.Invocation invocation) {
@@ -287,6 +305,15 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
 
         public DescriptorInfo valueOf(Descriptor descriptor) {
             return new DescriptorInfo(this.constant(UTF8, descriptor.descriptorString()));
+        }
+
+        public DynamicInfo valueOf(DynamicReference reference) {
+            return switch (reference.type()) {
+                case CONSTANT:
+                    yield this.constantDynamic(reference.signature(), reference.invocation(), reference.arguments());
+                case INVOCATION:
+                    yield this.invokeDynamic(reference.signature(), reference.invocation(), reference.arguments());
+            };
         }
 
     }

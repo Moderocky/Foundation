@@ -6,8 +6,8 @@ import mx.kenzie.foundation.assembler.ClassFile;
 import org.junit.Test;
 
 import static mx.kenzie.foundation.assembler.tool.Access.*;
-import static mx.kenzie.foundation.assembler.tool.Version.JAVA_21;
-import static mx.kenzie.foundation.assembler.tool.Version.RELEASE;
+import static mx.kenzie.foundation.detail.Version.JAVA_21;
+import static mx.kenzie.foundation.detail.Version.RELEASE;
 
 public class ClassFileBuilderTest extends ModifiableBuilderTest {
 
