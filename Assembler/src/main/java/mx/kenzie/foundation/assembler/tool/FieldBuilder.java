@@ -1,11 +1,11 @@
 package mx.kenzie.foundation.assembler.tool;
 
-import mx.kenzie.foundation.detail.Signature;
 import mx.kenzie.foundation.assembler.FieldInfo;
-import mx.kenzie.foundation.assembler.U2;
 import mx.kenzie.foundation.assembler.attribute.AttributeInfo;
 import mx.kenzie.foundation.assembler.attribute.ConstantValue;
 import mx.kenzie.foundation.assembler.constant.ConstantType;
+import mx.kenzie.foundation.assembler.vector.U2;
+import mx.kenzie.foundation.detail.Signature;
 import org.jetbrains.annotations.Contract;
 import org.valross.constantine.Constantive;
 

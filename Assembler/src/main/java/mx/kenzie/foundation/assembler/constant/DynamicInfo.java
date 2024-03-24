@@ -1,9 +1,9 @@
 package mx.kenzie.foundation.assembler.constant;
 
 import mx.kenzie.foundation.assembler.Data;
-import mx.kenzie.foundation.assembler.UVec;
 import mx.kenzie.foundation.assembler.tool.BootstrapReference;
 import mx.kenzie.foundation.assembler.tool.PoolReference;
+import mx.kenzie.foundation.assembler.vector.UVec;
 import mx.kenzie.foundation.detail.DynamicReference;
 import org.valross.constantine.RecordConstant;
 

@@ -1,8 +1,8 @@
 package mx.kenzie.foundation.assembler.tool;
 
 import mx.kenzie.foundation.assembler.Data;
-import mx.kenzie.foundation.assembler.U2;
-import mx.kenzie.foundation.assembler.UVec;
+import mx.kenzie.foundation.assembler.vector.U2;
+import mx.kenzie.foundation.assembler.vector.UVec;
 import org.jetbrains.annotations.NotNull;
 import org.valross.constantine.Constantive;
 
@@ -27,14 +27,14 @@ public abstract class TableReference<Element> implements UVec, Data, Constantive
     }
 
     @Override
-    public byte[] binary() {
-        final short value = (short) this.index();
-        return new byte[] {(byte) (value >>> 8), (byte) (value)};
+    public int length() {
+        return 2;
     }
 
     @Override
-    public int length() {
-        return 2;
+    public byte[] binary() {
+        final short value = (short) this.index();
+        return new byte[] {(byte) (value >>> 8), (byte) (value)};
     }
 
     public abstract Element get();

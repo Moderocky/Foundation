@@ -1,6 +1,6 @@
 package mx.kenzie.foundation.assembler.code;
 
-import mx.kenzie.foundation.assembler.UVec;
+import mx.kenzie.foundation.assembler.vector.UVec;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;

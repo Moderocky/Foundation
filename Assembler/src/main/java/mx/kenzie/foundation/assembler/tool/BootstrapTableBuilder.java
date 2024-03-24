@@ -1,8 +1,8 @@
 package mx.kenzie.foundation.assembler.tool;
 
-import mx.kenzie.foundation.detail.Member;
 import mx.kenzie.foundation.assembler.attribute.BootstrapMethods;
 import mx.kenzie.foundation.assembler.constant.ConstantPoolInfo;
+import mx.kenzie.foundation.detail.Member;
 
 import java.lang.constant.Constable;
 import java.util.ArrayList;
@@ -10,8 +10,8 @@ import java.util.List;
 
 public class BootstrapTableBuilder implements AttributeBuilder {
 
-    private final ClassFileBuilder.Storage storage;
     protected final List<BootstrapMethods.BootstrapMethod> methods;
+    private final ClassFileBuilder.Storage storage;
 
     protected BootstrapTableBuilder(ClassFileBuilder.Storage storage) {
         this.storage = storage;

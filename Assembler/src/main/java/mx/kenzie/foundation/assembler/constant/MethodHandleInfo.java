@@ -1,10 +1,10 @@
 package mx.kenzie.foundation.assembler.constant;
 
-import mx.kenzie.foundation.detail.Member;
 import mx.kenzie.foundation.assembler.Data;
-import mx.kenzie.foundation.assembler.U1;
-import mx.kenzie.foundation.assembler.UVec;
 import mx.kenzie.foundation.assembler.tool.PoolReference;
+import mx.kenzie.foundation.assembler.vector.U1;
+import mx.kenzie.foundation.assembler.vector.UVec;
+import mx.kenzie.foundation.detail.Member;
 import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;

@@ -32,16 +32,16 @@ public class PoolReference extends TableReference<ConstantPoolInfo> {
     }
 
     @Override
+    public ConstantPoolInfo get() {
+        return reference.get();
+    }
+
+    @Override
     public String toString() {
         return "PoolReference[" +
             "index=" + this.index() +
             ", reference=" + reference.get() +
             ']';
-    }
-
-    @Override
-    public ConstantPoolInfo get() {
-        return reference.get();
     }
 
     static final class Zero extends PoolReference {

@@ -1,8 +1,8 @@
 package mx.kenzie.foundation.assembler.constant;
 
 import mx.kenzie.foundation.assembler.Data;
-import mx.kenzie.foundation.assembler.UVec;
 import mx.kenzie.foundation.assembler.tool.ClassFileBuilder;
+import mx.kenzie.foundation.assembler.vector.UVec;
 import mx.kenzie.foundation.detail.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,6 +29,8 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
         ClassFileBuilder.Storage::valueOfString);
     ConstantType<SignatureInfo, Signature> NAME_AND_TYPE = new ConstantType<>(12, SignatureInfo.class,
         Signature.class, ClassFileBuilder.Storage::valueOf);
+    ConstantType<DescriptorInfo, Descriptor> METHOD_TYPE = new ConstantType<>(16, DescriptorInfo.class,
+        Descriptor.class, ClassFileBuilder.Storage::valueOf);
     ConstantType<ReferenceInfo, Member> METHOD_REFERENCE = new ConstantType<>(10, ReferenceInfo.class, Member.class,
         ClassFileBuilder.Storage::valueOfMethod);
     ConstantType<ReferenceInfo, Member> INTERFACE_METHOD_REFERENCE = new ConstantType<>(11, ReferenceInfo.class,
@@ -36,6 +38,10 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
     ConstantType<NumberInfo<Integer>, Integer> INTEGER = new ConstantType<>(3,
         (Class<NumberInfo<Integer>>) (Class) NumberInfo.class, Integer.class, ClassFileBuilder.Storage::valueOf);
+    ConstantType<DynamicInfo, DynamicReference> DYNAMIC = new ConstantType<>(17, DynamicInfo.class,
+        DynamicReference.class, ClassFileBuilder.Storage::valueOf);
+    ConstantType<DynamicInfo, DynamicReference> INVOKE_DYNAMIC = new ConstantType<>(18, DynamicInfo.class,
+        DynamicReference.class, ClassFileBuilder.Storage::valueOf);
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
     ConstantType<NumberInfo<Float>, Float> FLOAT = new ConstantType<>(4,
         (Class<NumberInfo<Float>>) (Class) NumberInfo.class, Float.class, ClassFileBuilder.Storage::valueOf);
@@ -49,12 +55,6 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
         ClassFileBuilder.Storage::valueOfField);
     ConstantType<MethodHandleInfo, Member.Invocation> METHOD_HANDLE = new ConstantType<>(15, MethodHandleInfo.class,
         Member.Invocation.class, ClassFileBuilder.Storage::valueOf);
-    ConstantType<DescriptorInfo, Descriptor> METHOD_TYPE = new ConstantType<>(16, DescriptorInfo.class,
-        Descriptor.class, ClassFileBuilder.Storage::valueOf);
-    ConstantType<DynamicInfo, DynamicReference> DYNAMIC = new ConstantType<>(17, DynamicInfo.class,
-        DynamicReference.class, ClassFileBuilder.Storage::valueOf);
-    ConstantType<DynamicInfo, DynamicReference> INVOKE_DYNAMIC = new ConstantType<>(18, DynamicInfo.class,
-        DynamicReference.class, ClassFileBuilder.Storage::valueOf);
 
     static ConstantPoolInfo of(String string) {
         return Utf8Info.of(string);

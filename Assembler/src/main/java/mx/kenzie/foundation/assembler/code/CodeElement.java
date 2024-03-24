@@ -1,9 +1,9 @@
 package mx.kenzie.foundation.assembler.code;
 
 import mx.kenzie.foundation.assembler.Data;
-import mx.kenzie.foundation.assembler.UVec;
 import mx.kenzie.foundation.assembler.tool.ClassFileBuilder;
 import mx.kenzie.foundation.assembler.tool.CodeBuilder;
+import mx.kenzie.foundation.assembler.vector.UVec;
 import org.valross.constantine.Constant;
 import org.valross.constantine.RecordConstant;
 

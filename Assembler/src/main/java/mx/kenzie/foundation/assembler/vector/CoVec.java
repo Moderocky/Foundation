@@ -1,5 +1,6 @@
-package mx.kenzie.foundation.assembler;
+package mx.kenzie.foundation.assembler.vector;
 
+import mx.kenzie.foundation.assembler.Data;
 import org.valross.constantine.Constantive;
 
 import java.io.IOException;

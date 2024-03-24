@@ -28,13 +28,13 @@ public class BootstrapReference extends TableReference<BootstrapMethods.Bootstra
     }
 
     @Override
-    public String toString() {
-        return "BootstrapReference[" + "index=" + this.index() + ", reference=" + reference.get() + ']';
+    public BootstrapMethods.BootstrapMethod get() {
+        return reference.get();
     }
 
     @Override
-    public BootstrapMethods.BootstrapMethod get() {
-        return reference.get();
+    public String toString() {
+        return "BootstrapReference[" + "index=" + this.index() + ", reference=" + reference.get() + ']';
     }
 
 }

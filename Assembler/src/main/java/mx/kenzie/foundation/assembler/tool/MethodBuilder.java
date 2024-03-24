@@ -1,13 +1,13 @@
 package mx.kenzie.foundation.assembler.tool;
 
-import mx.kenzie.foundation.detail.Descriptor;
-import mx.kenzie.foundation.detail.MethodErasure;
-import mx.kenzie.foundation.detail.Signature;
-import mx.kenzie.foundation.detail.Type;
 import mx.kenzie.foundation.assembler.MethodInfo;
 import mx.kenzie.foundation.assembler.attribute.AttributeInfo;
 import mx.kenzie.foundation.assembler.code.CodeVector;
 import mx.kenzie.foundation.assembler.error.ClassBuilderException;
+import mx.kenzie.foundation.detail.Descriptor;
+import mx.kenzie.foundation.detail.MethodErasure;
+import mx.kenzie.foundation.detail.Signature;
+import mx.kenzie.foundation.detail.Type;
 import org.jetbrains.annotations.Contract;
 import org.valross.constantine.Constantive;
 

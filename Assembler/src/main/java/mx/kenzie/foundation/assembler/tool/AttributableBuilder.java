@@ -1,9 +1,9 @@
 package mx.kenzie.foundation.assembler.tool;
 
-import mx.kenzie.foundation.assembler.U2;
 import mx.kenzie.foundation.assembler.attribute.AttributeInfo;
 import mx.kenzie.foundation.assembler.attribute.Deprecated;
 import mx.kenzie.foundation.assembler.attribute.Synthetic;
+import mx.kenzie.foundation.assembler.vector.U2;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;

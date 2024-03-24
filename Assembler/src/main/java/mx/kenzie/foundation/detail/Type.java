@@ -1,6 +1,5 @@
 package mx.kenzie.foundation.detail;
 
-import mx.kenzie.foundation.detail.Descriptor;
 import org.valross.constantine.RecordConstant;
 
 import java.lang.constant.Constable;
@@ -44,10 +43,7 @@ public record Type(String getTypeName, String descriptorString, String internalN
         var string = value.descriptorString();
         string = string.substring(string.lastIndexOf(')') + 1);
         return of(string);
-    }    public static final Type BYTE = Type.of(byte.class), SHORT = Type.of(short.class), INT = Type.of(int.class),
-        LONG = Type.of(long.class), FLOAT = Type.of(float.class), DOUBLE = Type.of(double.class), BOOLEAN =
-        Type.of(boolean.class), CHAR = Type.of(char.class), VOID = Type.of(void.class), OBJECT =
-        Type.of(Object.class), STRING = Type.of(String.class);
+    }
 
     private static Type of(String descriptor) {
         descriptor = descriptor.substring(descriptor.lastIndexOf(')') + 1);
@@ -63,7 +59,10 @@ public record Type(String getTypeName, String descriptorString, String internalN
             case "V" -> VOID;
             default -> new Type(getTypeName(descriptor), descriptor, getInternalName(descriptor));
         };
-    }
+    }    public static final Type BYTE = Type.of(byte.class), SHORT = Type.of(short.class), INT = Type.of(int.class),
+        LONG = Type.of(long.class), FLOAT = Type.of(float.class), DOUBLE = Type.of(double.class), BOOLEAN =
+        Type.of(boolean.class), CHAR = Type.of(char.class), VOID = Type.of(void.class), OBJECT =
+        Type.of(Object.class), STRING = Type.of(String.class);
 
     public static Type[] parameters(TypeDescriptor value) {
         if (value instanceof java.lang.reflect.Type) return new Type[0];

@@ -1,11 +1,11 @@
 package mx.kenzie.foundation.assembler.tool;
 
-import mx.kenzie.foundation.assembler.U2;
 import mx.kenzie.foundation.assembler.attribute.AttributeInfo;
 import mx.kenzie.foundation.assembler.attribute.Code;
 import mx.kenzie.foundation.assembler.code.CodeElement;
 import mx.kenzie.foundation.assembler.code.CodeVector;
 import mx.kenzie.foundation.assembler.code.UnboundedElement;
+import mx.kenzie.foundation.assembler.vector.U2;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 

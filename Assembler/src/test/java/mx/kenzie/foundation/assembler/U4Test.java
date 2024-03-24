@@ -1,5 +1,6 @@
 package mx.kenzie.foundation.assembler;
 
+import mx.kenzie.foundation.assembler.vector.U4;
 import org.junit.Test;
 
 public class U4Test {

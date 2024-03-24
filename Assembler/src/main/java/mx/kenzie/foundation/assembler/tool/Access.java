@@ -1,7 +1,7 @@
 package mx.kenzie.foundation.assembler.tool;
 
-import mx.kenzie.foundation.assembler.U2;
-import mx.kenzie.foundation.assembler.UVec;
+import mx.kenzie.foundation.assembler.vector.U2;
+import mx.kenzie.foundation.assembler.vector.UVec;
 
 @FunctionalInterface
 public interface Access extends UVec {

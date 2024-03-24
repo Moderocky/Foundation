@@ -1,9 +1,14 @@
 package mx.kenzie.foundation.assembler.tool;
 
-import mx.kenzie.foundation.assembler.*;
+import mx.kenzie.foundation.assembler.ClassFile;
+import mx.kenzie.foundation.assembler.FieldInfo;
+import mx.kenzie.foundation.assembler.MethodInfo;
 import mx.kenzie.foundation.assembler.attribute.AttributeInfo;
 import mx.kenzie.foundation.assembler.constant.*;
 import mx.kenzie.foundation.assembler.error.ClassBuilderException;
+import mx.kenzie.foundation.assembler.vector.U1;
+import mx.kenzie.foundation.assembler.vector.U2;
+import mx.kenzie.foundation.assembler.vector.U4;
 import mx.kenzie.foundation.detail.*;
 import org.valross.constantine.Constantive;
 

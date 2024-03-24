@@ -50,21 +50,21 @@ public abstract class ArraySegments {
         return -1;
     }
 
-    protected void putChar(char value, byte[] bytes, int offset) {
+    public void putChar(char value, byte[] bytes, int offset) {
         final byte[] buffer = new byte[2];
         buffer[0] = (byte) (value >>> 8);
         buffer[1] = (byte) (value);
         this.put(buffer, bytes, offset);
     }
 
-    protected void putShort(short value, byte[] bytes, int offset) {
+    public void putShort(short value, byte[] bytes, int offset) {
         final byte[] buffer = new byte[2];
         buffer[0] = (byte) (value >>> 8);
         buffer[1] = (byte) (value);
         this.put(buffer, bytes, offset);
     }
 
-    protected void putInt(int value, byte[] bytes, int offset) {
+    public void putInt(int value, byte[] bytes, int offset) {
         final byte[] buffer = new byte[4];
         buffer[0] = (byte) (value >>> 24);
         buffer[1] = (byte) (value >>> 16);
@@ -73,7 +73,7 @@ public abstract class ArraySegments {
         this.put(buffer, bytes, offset);
     }
 
-    protected void putLong(long value, byte[] bytes, int offset) {
+    public void putLong(long value, byte[] bytes, int offset) {
         final byte[] buffer = new byte[8];
         buffer[0] = (byte) (value >>> 56);
         buffer[1] = (byte) (value >>> 48);
@@ -90,19 +90,19 @@ public abstract class ArraySegments {
         System.arraycopy(buffer, 0, bytes, offset, Math.min(buffer.length, bytes.length - offset));
     }
 
-    protected char getChar(byte[] bytes, int offset) {
+    public char getChar(byte[] bytes, int offset) {
         return (char) ((read(bytes, offset) << 8) + read(bytes, offset + 1));
     }
 
-    protected short getShort(byte[] bytes, int offset) {
+    public short getShort(byte[] bytes, int offset) {
         return (short) ((read(bytes, offset) << 8) + read(bytes, offset + 1));
     }
 
-    protected int getInt(byte[] bytes, int offset) {
+    public int getInt(byte[] bytes, int offset) {
         return ((read(bytes, offset) << 24) + (read(bytes, offset + 1) << 16) + (read(bytes, offset + 2) << 8) + read(bytes, offset + 3));
     }
 
-    protected long getLong(byte[] bytes, int offset) {
+    public long getLong(byte[] bytes, int offset) {
         return ((long) read(bytes, offset++) << 56) + (((long) read(bytes, offset++) & 255) << 48) + (((long) read(bytes, offset++) & 255) << 40) + (((long) read(bytes, offset++) & 255) << 32) + (((long) read(bytes, offset++) & 255) << 24) + (((long) read(bytes, offset++) & 255) << 16) + (((long) read(bytes, offset++) & 255) << 8) + ((long) read(bytes, offset) & 255);
     }
 

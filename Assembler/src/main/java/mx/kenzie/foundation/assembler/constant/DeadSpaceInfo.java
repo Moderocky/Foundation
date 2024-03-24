@@ -1,6 +1,6 @@
 package mx.kenzie.foundation.assembler.constant;
 
-import mx.kenzie.foundation.assembler.UVec;
+import mx.kenzie.foundation.assembler.vector.UVec;
 
 import java.io.IOException;
 import java.io.OutputStream;
