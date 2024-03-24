@@ -7,11 +7,11 @@ import java.lang.invoke.TypeDescriptor;
 import java.lang.reflect.Field;
 
 /**
- * Represents the 'signature' of a class member (e.g. field, method).
+ * Represents the 'signature' of a class invocation (e.g. field, method).
  * This is its name and type information, but without any references to the class it originates from.
  *
- * @param name       the member name (e.g. field name, method name)
- * @param descriptor the member descriptor (field = type descriptor, method = method descriptor)
+ * @param name       the invocation name (e.g. field name, method name)
+ * @param descriptor the invocation descriptor (field = type descriptor, method = method descriptor)
  */
 public record Signature(String name, Descriptor descriptor) implements RecordConstant, Descriptor {
 

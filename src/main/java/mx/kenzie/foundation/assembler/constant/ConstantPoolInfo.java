@@ -1,5 +1,6 @@
 package mx.kenzie.foundation.assembler.constant;
 
+import mx.kenzie.foundation.Descriptor;
 import mx.kenzie.foundation.Member;
 import mx.kenzie.foundation.Signature;
 import mx.kenzie.foundation.Type;
@@ -31,6 +32,28 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
         ClassFileBuilder.Storage::valueOfString);
     ConstantType<SignatureInfo, Signature> NAME_AND_TYPE = new ConstantType<>(12, SignatureInfo.class,
         Signature.class, ClassFileBuilder.Storage::valueOf);
+    ConstantType<ReferenceInfo, Member> METHOD_REFERENCE = new ConstantType<>(10, ReferenceInfo.class, Member.class,
+        ClassFileBuilder.Storage::valueOfMethod);
+    ConstantType<ReferenceInfo, Member> INTERFACE_METHOD_REFERENCE = new ConstantType<>(11, ReferenceInfo.class,
+        Member.class, ClassFileBuilder.Storage::valueOfInterfaceMethod);
+    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    ConstantType<NumberInfo<Integer>, Integer> INTEGER = new ConstantType<>(3,
+        (Class<NumberInfo<Integer>>) (Class) NumberInfo.class, Integer.class, ClassFileBuilder.Storage::valueOf);
+    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    ConstantType<NumberInfo<Float>, Float> FLOAT = new ConstantType<>(4,
+        (Class<NumberInfo<Float>>) (Class) NumberInfo.class, Float.class, ClassFileBuilder.Storage::valueOf);
+    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    ConstantType<LongNumberInfo<Long>, Long> LONG = new ConstantType<>(5,
+        (Class<LongNumberInfo<Long>>) (Class) LongNumberInfo.class, Long.class, ClassFileBuilder.Storage::valueOf);
+    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    ConstantType<LongNumberInfo<Double>, Double> DOUBLE = new ConstantType<>(6,
+        (Class<LongNumberInfo<Double>>) (Class) LongNumberInfo.class, Double.class, ClassFileBuilder.Storage::valueOf);
+    ConstantType<ReferenceInfo, Member> FIELD_REFERENCE = new ConstantType<>(9, ReferenceInfo.class, Member.class,
+        ClassFileBuilder.Storage::valueOfField);
+    ConstantType<MethodHandleInfo, Member.Invocation> METHOD_HANDLE = new ConstantType<>(15, MethodHandleInfo.class,
+        Member.Invocation.class, ClassFileBuilder.Storage::valueOf);
+    ConstantType<DescriptorInfo, Descriptor> METHOD_TYPE = new ConstantType<>(16, DescriptorInfo.class,
+        Descriptor.class, ClassFileBuilder.Storage::valueOf);
 
     static ConstantPoolInfo of(String string) {
         return Utf8Info.of(string);
@@ -63,36 +86,11 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
      */
     default int sort() {
         return 99;
-    }    ConstantType<ReferenceInfo, Member> METHOD_REFERENCE = new ConstantType<>(10, ReferenceInfo.class, Member.class,
-        ClassFileBuilder.Storage::valueOfMethod);
+    }
 
     default @Override int compareTo(@NotNull ConstantPoolInfo o) {
         return Integer.compare(this.sort(), o.sort());
     }
-
-
-
-    ConstantType<ReferenceInfo, Member> INTERFACE_METHOD_REFERENCE = new ConstantType<>(11, ReferenceInfo.class,
-        Member.class, ClassFileBuilder.Storage::valueOfInterfaceMethod);
-
-    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
-    ConstantType<NumberInfo<Integer>, Integer> INTEGER = new ConstantType<>(3,
-        (Class<NumberInfo<Integer>>) (Class) NumberInfo.class, Integer.class, ClassFileBuilder.Storage::valueOf);
-
-    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
-    ConstantType<NumberInfo<Float>, Float> FLOAT = new ConstantType<>(4,
-        (Class<NumberInfo<Float>>) (Class) NumberInfo.class, Float.class, ClassFileBuilder.Storage::valueOf);
-
-    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
-    ConstantType<LongNumberInfo<Long>, Long> LONG = new ConstantType<>(5,
-        (Class<LongNumberInfo<Long>>) (Class) LongNumberInfo.class, Long.class, ClassFileBuilder.Storage::valueOf);
-
-    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
-    ConstantType<LongNumberInfo<Double>, Double> DOUBLE = new ConstantType<>(6,
-        (Class<LongNumberInfo<Double>>) (Class) LongNumberInfo.class, Double.class, ClassFileBuilder.Storage::valueOf);
-
-    ConstantType<ReferenceInfo, Member> FIELD_REFERENCE = new ConstantType<>(9, ReferenceInfo.class, Member.class,
-        ClassFileBuilder.Storage::valueOfField);
 
 }
 

@@ -1,5 +1,6 @@
 package mx.kenzie.foundation.assembler.tool;
 
+import mx.kenzie.foundation.Descriptor;
 import mx.kenzie.foundation.Member;
 import mx.kenzie.foundation.Signature;
 import mx.kenzie.foundation.Type;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.*;
+import static mx.kenzie.foundation.assembler.constant.MethodTypeReference.*;
 
 public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
 
@@ -193,6 +195,9 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
                 case Number value -> this.constant(ConstantPoolInfo.INTEGER, value.intValue());
                 case Class<?> value -> this.constant(ConstantPoolInfo.TYPE, Type.of(value));
                 case Type value -> this.constant(ConstantPoolInfo.TYPE, value);
+                case Signature value -> this.constant(NAME_AND_TYPE, value);
+                case Member.Invocation value -> this.constant(METHOD_HANDLE, value);
+                case Descriptor value -> this.constant(METHOD_TYPE, value);
                 default -> throw new IllegalStateException("Unhandled constant value: " + constable);
             };
         }
@@ -260,6 +265,24 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
 
         public ClassFileBuilder source() {
             return ClassFileBuilder.this;
+        }
+
+        public MethodHandleInfo valueOf(Member.Invocation invocation) {
+            return new MethodHandleInfo(METHOD_HANDLE, invocation, U1.valueOf(invocation.type()),
+                switch (invocation.type()) {
+                case GET_FIELD, GET_STATIC, PUT_FIELD, PUT_STATIC ->
+                    this.constant(FIELD_REFERENCE, invocation.member());
+                case INVOKE_INTERFACE -> this.constant(INTERFACE_METHOD_REFERENCE, invocation.member());
+                case INVOKE_STATIC, INVOKE_SPECIAL ->
+                    this.constant(invocation.isInterface() ? INTERFACE_METHOD_REFERENCE : METHOD_REFERENCE,
+                        invocation.member());
+                case INVOKE_VIRTUAL, NEW_INVOKE_SPECIAL -> this.constant(METHOD_REFERENCE, invocation.member());
+                default -> throw new IllegalArgumentException("Unknown dynamic instruction " + invocation.type());
+            });
+        }
+
+        public DescriptorInfo valueOf(Descriptor descriptor) {
+            return new DescriptorInfo(this.constant(UTF8, descriptor.descriptorString()));
         }
 
     }
