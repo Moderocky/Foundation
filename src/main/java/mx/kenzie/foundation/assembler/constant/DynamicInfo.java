@@ -4,6 +4,7 @@ import mx.kenzie.foundation.assembler.Data;
 import mx.kenzie.foundation.assembler.UVec;
 import mx.kenzie.foundation.assembler.tool.BootstrapReference;
 import mx.kenzie.foundation.assembler.tool.PoolReference;
+import mx.kenzie.foundation.detail.DynamicReference;
 import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;
@@ -20,8 +21,11 @@ public record DynamicInfo(ConstantType<DynamicInfo, ?> tag, BootstrapReference b
 
     @Override
     public boolean is(Constable object) {
-        // todo
-        return false;
+        return object instanceof DynamicReference reference
+            && reference.type().ordinal() + 17 == tag().value().intValue()
+            && name_and_type_index.ensure().is(reference.signature()) // we should check arguments properly
+            && bootstrap_method_attr_index.ensure().bootstrap_arguments().length == reference.arguments().length
+            && bootstrap_method_attr_index.ensure().bootstrap_method_ref().ensure().is(reference.invocation());
     }
 
     @Override
