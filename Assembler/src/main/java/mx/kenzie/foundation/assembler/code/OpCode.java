@@ -1,22 +1,15 @@
 package mx.kenzie.foundation.assembler.code;
 
-import mx.kenzie.foundation.assembler.constant.ConstantPoolInfo;
-import mx.kenzie.foundation.assembler.tool.CodeBuilder;
-import mx.kenzie.foundation.assembler.tool.PoolReference;
 import mx.kenzie.foundation.assembler.vector.U1;
-import mx.kenzie.foundation.assembler.vector.U2;
 import mx.kenzie.foundation.assembler.vector.UVec;
-import mx.kenzie.foundation.detail.Type;
-import org.valross.constantine.RecordConstant;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.constant.Constable;
-import java.lang.invoke.TypeDescriptor;
 
 /**
- * Operation code.
- * An instruction in the virtual machine.
+ * An operation code starts an instruction in the virtual machine.
+ * Some operation codes (opcodes) will be just the code with no other data,
+ * while others are followed by the data needed to complete the instruction (e.g. "load variable (variable index)").
+ * Most instructions use, add to or modify the stack.
+ * The opcodes here can be switched using their byte `code()` method, using the constants in {@link Codes}
+ * as the switch cases.
  */
 public interface OpCode {
 
@@ -39,7 +32,7 @@ public interface OpCode {
             };
         }
     };
-    TypedCode ANEWARRAY = new TypedCode("ANEWARRAY", Codes.ANEWARRAY);
+    TypeCode ANEWARRAY = new TypeCode("ANEWARRAY", Codes.ANEWARRAY);
     Instruction ARETURN = new Instruction("ARETURN", Codes.ARETURN);
     Instruction ARRAYLENGTH = new Instruction("ARRAYLENGTH", Codes.ARRAYLENGTH);
     Instruction ASTORE_0 = new Instruction("ASTORE_0", Codes.ASTORE_0);
@@ -61,10 +54,10 @@ public interface OpCode {
     Instruction ATHROW = new Instruction("ATHROW", Codes.ATHROW);
     Instruction BALOAD = new Instruction("BALOAD", Codes.BALOAD);
     Instruction BASTORE = new Instruction("BASTORE", Codes.BASTORE);
-    UncheckedCode BIPUSH = new UncheckedCode("BIPUSH", Codes.BIPUSH);
+    PushCode BIPUSH = new PushCode("BIPUSH", Codes.BIPUSH);
     Instruction CALOAD = new Instruction("CALOAD", Codes.CALOAD);
     Instruction CASTORE = new Instruction("CASTORE", Codes.CASTORE);
-    TypedCode CHECKCAST = new TypedCode("CHECKCAST", Codes.CHECKCAST);
+    TypeCode CHECKCAST = new TypeCode("CHECKCAST", Codes.CHECKCAST);
     Instruction D2F = new Instruction("D2F", Codes.D2F);
     Instruction D2I = new Instruction("D2I", Codes.D2I);
     Instruction D2L = new Instruction("D2L", Codes.D2L);
@@ -225,12 +218,12 @@ public interface OpCode {
     };
     Instruction IMUL = new Instruction("IMUL", Codes.IMUL);
     Instruction INEG = new Instruction("INEG", Codes.INEG);
-    TypedCode INSTANCEOF = new TypedCode("INSTANCEOF", Codes.INSTANCEOF);
-    UncheckedCode INVOKEDYNAMIC = new UncheckedCode("INVOKEDYNAMIC", Codes.INVOKEDYNAMIC);
-    UncheckedCode INVOKEINTERFACE = new UncheckedCode("INVOKEINTERFACE", Codes.INVOKEINTERFACE);
-    UncheckedCode INVOKESPECIAL = new UncheckedCode("INVOKESPECIAL", Codes.INVOKESPECIAL);
-    UncheckedCode INVOKESTATIC = new UncheckedCode("INVOKESTATIC", Codes.INVOKESTATIC);
-    UncheckedCode INVOKEVIRTUAL = new UncheckedCode("INVOKEVIRTUAL", Codes.INVOKEVIRTUAL);
+    TypeCode INSTANCEOF = new TypeCode("INSTANCEOF", Codes.INSTANCEOF);
+    InvokeDynamicCode INVOKEDYNAMIC = new InvokeDynamicCode("INVOKEDYNAMIC", Codes.INVOKEDYNAMIC);
+    InvokeInterfaceCode INVOKEINTERFACE = new InvokeInterfaceCode("INVOKEINTERFACE", Codes.INVOKEINTERFACE);
+    InvokeCode INVOKESPECIAL = new InvokeCode("INVOKESPECIAL", Codes.INVOKESPECIAL);
+    InvokeCode INVOKESTATIC = new InvokeCode("INVOKESTATIC", Codes.INVOKESTATIC);
+    InvokeCode INVOKEVIRTUAL = new InvokeCode("INVOKEVIRTUAL", Codes.INVOKEVIRTUAL);
     Instruction IOR = new Instruction("IOR", Codes.IOR);
     Instruction IREM = new Instruction("IREM", Codes.IREM);
     Instruction IRETURN = new Instruction("IRETURN", Codes.IRETURN);
@@ -328,10 +321,10 @@ public interface OpCode {
     Instruction RETURN = new Instruction("RETURN", Codes.RETURN);
     Instruction SALOAD = new Instruction("SALOAD", Codes.SALOAD);
     Instruction SASTORE = new Instruction("SASTORE", Codes.SASTORE);
-    UncheckedCode SIPUSH = new UncheckedCode("SIPUSH", Codes.SIPUSH);
+    PushCode SIPUSH = new PushCode("SIPUSH", Codes.SIPUSH);
     Instruction SWAP = new Instruction("SWAP", Codes.SWAP);
     UncheckedCode TABLESWITCH = new UncheckedCode("TABLESWITCH", Codes.TABLESWITCH);
-    Wide WIDE = new Wide("WIDE", Codes.WIDE);
+    WideCode WIDE = new WideCode("WIDE", Codes.WIDE);
 
     static OpCode[] opcodes() {
         return Codes.getAllOpcodes();
@@ -341,8 +334,22 @@ public interface OpCode {
         return Codes.getAllOpcodes()[opcode];
     }
 
+    /**
+     * The 'mnemonic' (reference name) of this instruction.
+     * This has no actual presence in a compiled program, but is useful for debugging purposes.
+     * These names ought to have parity with the constants in {@link Codes}.
+     *
+     * @return The name of the instruction.
+     */
     String mnemonic();
 
+    /**
+     * The raw numeric operation code for this instruction.
+     * Note that this byte shouldn't be signed, i.e. it needs to be unpacked with {@link Byte#toUnsignedInt(byte)}
+     * in order to be read correctly.
+     *
+     * @return The opcode, in a signed byte.
+     */
     byte code();
 
     int length();
@@ -357,340 +364,6 @@ public interface OpCode {
 
     default CodeElement raw(int unsignedByte) {
         return new UncheckedElement(this.code(), U1.valueOf(unsignedByte));
-    }
-
-    /**
-     * A simple, single-byte instruction, containing only its operation code.
-     * Since no additional parameters are needed for this instruction it may be used as-is.
-     *
-     * @param mnemonic The operation code's reference name.
-     * @param code     The byte code. This is likely to be an UNSIGNED byte in disguise, so should be treated with
-     *                 caution.
-     */
-    record Instruction(String mnemonic, byte code) implements OpCode, CodeElement, RecordConstant {
-
-        public Instruction(String mnemonic, int code) {
-            this(mnemonic, (byte) code);
-        }
-
-        @Override
-        public int length() {
-            return 1;
-        }
-
-        @Override
-        public byte[] binary() {
-            return new byte[] {code};
-        }
-
-        @Override
-        public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
-            stream.write(code);
-        }
-
-        @Override
-        public String toString() {
-            return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
-        }
-
-    }
-
-    /**
-     * An instruction for loading a constant value.
-     *
-     * @param mnemonic The operation code's reference name.
-     * @param code     The byte code. This is likely to be an UNSIGNED byte in disguise, so should be treated with
-     *                 caution.
-     */
-    record TypedCode(String mnemonic, byte code) implements OpCode {
-
-        //<editor-fold desc="Make" defaultstate="collapsed">
-        @Override
-        public int length() {
-            return 3;
-        }
-
-        public <Klass extends java.lang.reflect.Type & TypeDescriptor> UnboundedElement type(Klass type) {
-            final Type value = Type.of(type);
-            return storage -> new Typed(code, storage.constant(ConstantPoolInfo.TYPE, value));
-        }
-
-        private record Typed(byte code, PoolReference reference) implements RecordConstant, CodeElement {
-
-            @Override
-            public int length() {
-                return 3;
-            }
-
-            @Override
-            public void write(OutputStream stream) throws IOException {
-                stream.write(code);
-                this.reference.write(stream);
-            }
-
-        }
-
-        @Override
-        public String toString() {
-            return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
-        }
-
-        //</editor-fold>
-
-    }
-
-    /**
-     * An instruction for loading a constant value.
-     *
-     * @param mnemonic The operation code's reference name.
-     * @param code     The byte code. This is likely to be an UNSIGNED byte in disguise, so should be treated with
-     *                 caution.
-     */
-    record LoadConstantCode(String mnemonic, byte code) implements OpCode {
-
-        //<editor-fold desc="LDC" defaultstate="collapsed">
-        @Override
-        public int length() {
-            return 1;
-        }
-
-        public UnboundedElement value(Constable value) {
-            return switch (value) {
-                case null -> ACONST_NULL;
-                case Long j -> storage -> new WideType(storage.constant(ConstantPoolInfo.LONG, j));
-                case Double d -> storage -> new WideType(storage.constant(ConstantPoolInfo.DOUBLE, d));
-                default -> storage -> new NarrowType(storage.constant(value));
-            };
-        }
-
-        @Override
-        public String toString() {
-            return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
-        }
-
-        private record NarrowType(PoolReference reference) implements CodeElement, RecordConstant {
-
-            @Override
-            public void write(OutputStream stream) throws IOException {
-                final short index = (short) reference.index();
-                final boolean wide = index > 255;
-                if (wide) {
-                    stream.write(Codes.LDC_W);
-                    stream.write((index >>> 8));
-                    stream.write(index);
-                } else {
-                    stream.write(Codes.LDC);
-                    stream.write((byte) index);
-                }
-            }
-
-            @Override
-            public void notify(CodeBuilder builder) {
-                builder.notifyStack(1);
-            }
-
-            @Override
-            public byte code() {
-                return (short) reference.index() > 255 ? Codes.LDC_W : Codes.LDC;
-            }
-
-            @Override
-            public int length() {
-                return reference.index() > 255 ? 3 : 2;
-            }
-
-        }
-
-        private record WideType(PoolReference reference) implements CodeElement, RecordConstant {
-
-            @Override
-            public void write(OutputStream stream) throws IOException {
-                stream.write(Codes.LDC2_W);
-                this.reference.write(stream);
-            }
-
-            @Override
-            public void notify(CodeBuilder builder) {
-                builder.notifyStack(2);
-            }
-
-            @Override
-            public byte code() {
-                return Codes.LDC2_W;
-            }
-
-            @Override
-            public int length() {
-                return 3;
-            }
-
-        }
-        //</editor-fold>
-
-    }
-
-    /**
-     * An instruction for incrementing the numeric value in a variable slot.
-     *
-     * @param mnemonic The operation code's reference name.
-     * @param code     The byte code. This is likely to be an UNSIGNED byte in disguise, so should be treated with
-     *                 caution.
-     */
-    record IncrementCode(String mnemonic, byte code) implements OpCode {
-
-        //<editor-fold desc="IINC" defaultstate="collapsed">
-        @Override
-        public int length() {
-            return 3;
-        }
-
-        public UnboundedElement var(int slot, int increment) {
-            final boolean wide = slot > 255 || increment > Byte.MAX_VALUE || increment < Byte.MIN_VALUE;
-            if (wide)
-                return CodeElement.incrementStack(CodeElement.wide(CodeElement.fixed(code, (byte) (slot >>> 8),
-                    (byte) (slot), (byte) (increment >> 8), (byte) (increment))), 0);
-            return CodeElement.fixed(this.code(), (byte) slot, (byte) increment);
-        }
-
-        @Override
-        public String toString() {
-            return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
-        }
-        //</editor-fold>
-
-    }
-
-    /**
-     * An instruction for widening another instruction.
-     * This can be unreliable to use -- most instructions that support widening have support built in.
-     *
-     * @param mnemonic The operation code's reference name.
-     * @param code     The byte code. This is likely to be an UNSIGNED byte in disguise, so should be treated with
-     *                 caution.
-     */
-    record Wide(String mnemonic, byte code) implements OpCode {
-
-        //<editor-fold desc="WIDE" defaultstate="collapsed">
-        @Override
-        public int length() {
-            return 6;
-        }
-
-        public UnboundedElement widen(CodeElement instruction) {
-            return CodeElement.wide(instruction);
-        }
-
-        @Override
-        public String toString() {
-            return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
-        }
-        //</editor-fold>
-
-    }
-
-    /**
-     * A variable loading/storing code. This has its own special handlers so that it can
-     * default to the built-in instructions (e.g. `aload 0` -> `aload_0`) to save space
-     * wherever possible.
-     */
-    abstract class VariableCode implements OpCode {
-
-        //<editor-fold desc="Variable" defaultstate="collapsed">
-        private final String mnemonic;
-        private final byte code;
-
-        public VariableCode(String mnemonic, byte code) {
-            this.mnemonic = mnemonic;
-            this.code = code;
-        }
-
-        public VariableCode(String mnemonic, int code) {
-            this(mnemonic, (byte) code);
-        }
-
-        @Override
-        public String mnemonic() {
-            return mnemonic;
-        }
-
-        @Override
-        public byte code() {
-            return code;
-        }
-
-        @Override
-        public int length() {
-            return 2;
-        }
-
-        public CodeElement var(int slot) {
-            U2.valueOf(slot);
-            final int increment = switch (code) {
-                case Codes.LLOAD, Codes.DLOAD -> 2;
-                case Codes.LSTORE, Codes.DSTORE -> -2;
-                default -> code < Codes.ISTORE ? 1 : -1;
-            };
-            if (slot > 255)
-                return CodeElement.incrementStack(CodeElement.wide(CodeElement.fixed(code, (byte) (slot >>> 8),
-                    (byte) (slot))), increment);
-            return CodeElement.fixed(code, (byte) slot);
-        }
-
-        @Override
-        public String toString() {
-            return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
-        }
-        //</editor-fold>
-
-    }
-
-    /**
-     * An opcode for accessing a field (e.g. getting/setting value)
-     *
-     * @param mnemonic The operation code's reference name.
-     * @param code     The byte code. This is likely to be an UNSIGNED byte in disguise, so should be treated with
-     *                 caution.
-     */
-    record FieldCode(String mnemonic, byte code) implements OpCode {
-
-        public CodeElement field(PoolReference fieldReference) {
-            return CodeElement.vector(code, fieldReference);
-        }
-
-        @Override
-        public String toString() {
-            return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
-        }
-
-        @Override
-        public int length() {
-            return 3;
-        }
-
-    }
-
-    /**
-     * An opcode reference that doesn't have a strictly-defined type or data schema.
-     * This is most likely a reserved/internal opcode, and/or one that is used by a specific VM/debugger.
-     *
-     * @param mnemonic The operation code's reference name.
-     * @param code     The byte code. This is likely to be an UNSIGNED byte in disguise, so should be treated with
-     *                 caution.
-     * @param length   The (expected) length of this instruction, including 1 for the code itself.
-     *                 If the length is indeterminable (i.e. a conditional or variable-length instruction) then
-     *                 this should return -1.
-     */
-    record UncheckedCode(String mnemonic, byte code, int length) implements OpCode {
-
-        public UncheckedCode(String mnemonic, byte code) {
-            this(mnemonic, code, -1);
-        }
-
-        @Override
-        public String toString() {
-            return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
-        }
-
     }
 
 }

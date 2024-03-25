@@ -32,6 +32,8 @@ public record U1(short value) implements UVec, Data, RecordConstant {
         return current;
     }
 
+    public static final U1 ZERO = U1.valueOf(0);
+
     @Override
     public int length() {
         return 1;

@@ -1,5 +1,6 @@
 package mx.kenzie.foundation.detail;
 
+import org.jetbrains.annotations.NotNull;
 import org.valross.constantine.RecordConstant;
 
 import java.lang.constant.Constable;
@@ -59,7 +60,28 @@ public record Type(String getTypeName, String descriptorString, String internalN
             case "V" -> VOID;
             default -> new Type(getTypeName(descriptor), descriptor, getInternalName(descriptor));
         };
-    }    public static final Type BYTE = Type.of(byte.class), SHORT = Type.of(short.class), INT = Type.of(int.class),
+    }
+
+    /**
+     * The actual size of a method's parameters when represented on the stack.
+     * This does not include the caller object, so for non-static method calls this will be +1
+     *
+     * @param descriptor A method descriptor
+     * @return The size taken up (e.g. argument count + wide type offset)
+     */
+    /* this could be done faster since we don't need to actually construct the types,
+     * but it would require a lot of duplicated code.
+     */
+    public static int parameterSize(@NotNull TypeDescriptor descriptor) {
+        int count = 0;
+        final String string = descriptor.descriptorString();
+        if (string.isEmpty()) return 0; // probably a mess
+        if (string.charAt(0) != '(') return 0; // probably a field descriptor
+        for (Type type : parameters(descriptor)) count += type.width();
+        return count;
+    }
+
+    public static final Type BYTE = Type.of(byte.class), SHORT = Type.of(short.class), INT = Type.of(int.class),
         LONG = Type.of(long.class), FLOAT = Type.of(float.class), DOUBLE = Type.of(double.class), BOOLEAN =
         Type.of(boolean.class), CHAR = Type.of(char.class), VOID = Type.of(void.class), OBJECT =
         Type.of(Object.class), STRING = Type.of(String.class);
@@ -264,11 +286,13 @@ public record Type(String getTypeName, String descriptorString, String internalN
             throw new UnsupportedOperationException("Cannot get component type of non-array " + descriptorString);
         final String sub = descriptorString.substring(1);
         final String typeName = getTypeName.substring(0, getTypeName.length() - 2);
-        if (sub.charAt(0) == 'L')
-            return new Type(typeName, sub, sub.substring(0, sub.length() - 1));
+        if (sub.charAt(0) == 'L') return new Type(typeName, sub, sub.substring(0, sub.length() - 1));
         return new Type(typeName, sub, sub);
     }
 
-
+    public int width() {
+        if (this.equals(Type.LONG) || this.equals(Type.DOUBLE)) return 2;
+        return 1;
+    }
 
 }
