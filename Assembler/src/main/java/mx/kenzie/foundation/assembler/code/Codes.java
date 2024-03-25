@@ -1,8 +1,12 @@
 package mx.kenzie.foundation.assembler.code;
 
-interface Codes {
+/**
+ * The raw set of (numerical) operation codes.
+ * These are stored in a *signed* byte so be careful when treating them as-is.
+ */
+public final class Codes {
 
-    byte AALOAD = (byte) 0x32, // 50
+    public static final byte AALOAD = (byte) 0x32, // 50
         AASTORE = (byte) 0x53, // 83
         ACONST_NULL = (byte) 0x1, // 1
         ALOAD = (byte) 0x19, // 25
@@ -204,5 +208,218 @@ interface Codes {
         SWAP = (byte) 0x5f, // 95
         TABLESWITCH = (byte) 0xaa, // 170
         WIDE = (byte) 0xc4; // 196
+
+    static OpCode[] getAllOpcodes() {
+        if (opCodes == null) {
+            //<editor-fold desc="Put all opcodes into an array :(" defaultstate="collapsed">
+            opCodes = new OpCode[202];
+            opCodes[0] = OpCode.NOP;
+            opCodes[1] = OpCode.ACONST_NULL;
+            opCodes[2] = OpCode.ICONST_M1;
+            opCodes[3] = OpCode.ICONST_0;
+            opCodes[4] = OpCode.ICONST_1;
+            opCodes[5] = OpCode.ICONST_2;
+            opCodes[6] = OpCode.ICONST_3;
+            opCodes[7] = OpCode.ICONST_4;
+            opCodes[8] = OpCode.ICONST_5;
+            opCodes[9] = OpCode.LCONST_0;
+            opCodes[10] = OpCode.LCONST_1;
+            opCodes[11] = OpCode.FCONST_0;
+            opCodes[12] = OpCode.FCONST_1;
+            opCodes[13] = OpCode.FCONST_2;
+            opCodes[14] = OpCode.DCONST_0;
+            opCodes[15] = OpCode.DCONST_1;
+            opCodes[16] = OpCode.BIPUSH;
+            opCodes[17] = OpCode.SIPUSH;
+            opCodes[18] = OpCode.LDC;
+            opCodes[19] = OpCode.LDC_W;
+            opCodes[20] = OpCode.LDC2_W;
+            opCodes[21] = OpCode.ILOAD;
+            opCodes[22] = OpCode.LLOAD;
+            opCodes[23] = OpCode.FLOAD;
+            opCodes[24] = OpCode.DLOAD;
+            opCodes[25] = OpCode.ALOAD;
+            opCodes[26] = OpCode.ILOAD_0;
+            opCodes[27] = OpCode.ILOAD_1;
+            opCodes[28] = OpCode.ILOAD_2;
+            opCodes[29] = OpCode.ILOAD_3;
+            opCodes[30] = OpCode.LLOAD_0;
+            opCodes[31] = OpCode.LLOAD_1;
+            opCodes[32] = OpCode.LLOAD_2;
+            opCodes[33] = OpCode.LLOAD_3;
+            opCodes[34] = OpCode.FLOAD_0;
+            opCodes[35] = OpCode.FLOAD_1;
+            opCodes[36] = OpCode.FLOAD_2;
+            opCodes[37] = OpCode.FLOAD_3;
+            opCodes[38] = OpCode.DLOAD_0;
+            opCodes[39] = OpCode.DLOAD_1;
+            opCodes[40] = OpCode.DLOAD_2;
+            opCodes[41] = OpCode.DLOAD_3;
+            opCodes[42] = OpCode.ALOAD_0;
+            opCodes[43] = OpCode.ALOAD_1;
+            opCodes[44] = OpCode.ALOAD_2;
+            opCodes[45] = OpCode.ALOAD_3;
+            opCodes[46] = OpCode.IALOAD;
+            opCodes[47] = OpCode.LALOAD;
+            opCodes[48] = OpCode.FALOAD;
+            opCodes[49] = OpCode.DALOAD;
+            opCodes[50] = OpCode.AALOAD;
+            opCodes[51] = OpCode.BALOAD;
+            opCodes[52] = OpCode.CALOAD;
+            opCodes[53] = OpCode.SALOAD;
+            opCodes[54] = OpCode.ISTORE;
+            opCodes[55] = OpCode.LSTORE;
+            opCodes[56] = OpCode.FSTORE;
+            opCodes[57] = OpCode.DSTORE;
+            opCodes[58] = OpCode.ASTORE;
+            opCodes[59] = OpCode.ISTORE_0;
+            opCodes[60] = OpCode.ISTORE_1;
+            opCodes[61] = OpCode.ISTORE_2;
+            opCodes[62] = OpCode.ISTORE_3;
+            opCodes[63] = OpCode.LSTORE_0;
+            opCodes[64] = OpCode.LSTORE_1;
+            opCodes[65] = OpCode.LSTORE_2;
+            opCodes[66] = OpCode.LSTORE_3;
+            opCodes[67] = OpCode.FSTORE_0;
+            opCodes[68] = OpCode.FSTORE_1;
+            opCodes[69] = OpCode.FSTORE_2;
+            opCodes[70] = OpCode.FSTORE_3;
+            opCodes[71] = OpCode.DSTORE_0;
+            opCodes[72] = OpCode.DSTORE_1;
+            opCodes[73] = OpCode.DSTORE_2;
+            opCodes[74] = OpCode.DSTORE_3;
+            opCodes[75] = OpCode.ASTORE_0;
+            opCodes[76] = OpCode.ASTORE_1;
+            opCodes[77] = OpCode.ASTORE_2;
+            opCodes[78] = OpCode.ASTORE_3;
+            opCodes[79] = OpCode.IASTORE;
+            opCodes[80] = OpCode.LASTORE;
+            opCodes[81] = OpCode.FASTORE;
+            opCodes[82] = OpCode.DASTORE;
+            opCodes[83] = OpCode.AASTORE;
+            opCodes[84] = OpCode.BASTORE;
+            opCodes[85] = OpCode.CASTORE;
+            opCodes[86] = OpCode.SASTORE;
+            opCodes[87] = OpCode.POP;
+            opCodes[88] = OpCode.POP2;
+            opCodes[89] = OpCode.DUP;
+            opCodes[90] = OpCode.DUP_X1;
+            opCodes[91] = OpCode.DUP_X2;
+            opCodes[92] = OpCode.DUP2;
+            opCodes[93] = OpCode.DUP2_X1;
+            opCodes[94] = OpCode.DUP2_X2;
+            opCodes[95] = OpCode.SWAP;
+            opCodes[96] = OpCode.IADD;
+            opCodes[97] = OpCode.LADD;
+            opCodes[98] = OpCode.FADD;
+            opCodes[99] = OpCode.DADD;
+            opCodes[100] = OpCode.ISUB;
+            opCodes[101] = OpCode.LSUB;
+            opCodes[102] = OpCode.FSUB;
+            opCodes[103] = OpCode.DSUB;
+            opCodes[104] = OpCode.IMUL;
+            opCodes[105] = OpCode.LMUL;
+            opCodes[106] = OpCode.FMUL;
+            opCodes[107] = OpCode.DMUL;
+            opCodes[108] = OpCode.IDIV;
+            opCodes[109] = OpCode.LDIV;
+            opCodes[110] = OpCode.FDIV;
+            opCodes[111] = OpCode.DDIV;
+            opCodes[112] = OpCode.IREM;
+            opCodes[113] = OpCode.LREM;
+            opCodes[114] = OpCode.FREM;
+            opCodes[115] = OpCode.DREM;
+            opCodes[116] = OpCode.INEG;
+            opCodes[117] = OpCode.LNEG;
+            opCodes[118] = OpCode.FNEG;
+            opCodes[119] = OpCode.DNEG;
+            opCodes[120] = OpCode.ISHL;
+            opCodes[121] = OpCode.LSHL;
+            opCodes[122] = OpCode.ISHR;
+            opCodes[123] = OpCode.LSHR;
+            opCodes[124] = OpCode.IUSHR;
+            opCodes[125] = OpCode.LUSHR;
+            opCodes[126] = OpCode.IAND;
+            opCodes[127] = OpCode.LAND;
+            opCodes[128] = OpCode.IOR;
+            opCodes[129] = OpCode.LOR;
+            opCodes[130] = OpCode.IXOR;
+            opCodes[131] = OpCode.LXOR;
+            opCodes[132] = OpCode.IINC;
+            opCodes[133] = OpCode.I2L;
+            opCodes[134] = OpCode.I2F;
+            opCodes[135] = OpCode.I2D;
+            opCodes[136] = OpCode.L2I;
+            opCodes[137] = OpCode.L2F;
+            opCodes[138] = OpCode.L2D;
+            opCodes[139] = OpCode.F2I;
+            opCodes[140] = OpCode.F2L;
+            opCodes[141] = OpCode.F2D;
+            opCodes[142] = OpCode.D2I;
+            opCodes[143] = OpCode.D2L;
+            opCodes[144] = OpCode.D2F;
+            opCodes[145] = OpCode.I2B;
+            opCodes[146] = OpCode.I2C;
+            opCodes[147] = OpCode.I2S;
+            opCodes[148] = OpCode.LCMP;
+            opCodes[149] = OpCode.FCMPL;
+            opCodes[150] = OpCode.FCMPG;
+            opCodes[151] = OpCode.DCMPL;
+            opCodes[152] = OpCode.DCMPG;
+            opCodes[153] = OpCode.IFEQ;
+            opCodes[154] = OpCode.IFNE;
+            opCodes[155] = OpCode.IFLT;
+            opCodes[156] = OpCode.IFGE;
+            opCodes[157] = OpCode.IFGT;
+            opCodes[158] = OpCode.IFLE;
+            opCodes[159] = OpCode.IF_ICMPEQ;
+            opCodes[160] = OpCode.IF_ICMPNE;
+            opCodes[161] = OpCode.IF_ICMPLT;
+            opCodes[162] = OpCode.IF_ICMPGE;
+            opCodes[163] = OpCode.IF_ICMPGT;
+            opCodes[164] = OpCode.IF_ICMPLE;
+            opCodes[165] = OpCode.IF_ACMPEQ;
+            opCodes[166] = OpCode.IF_ACMPNE;
+            opCodes[167] = OpCode.GOTO;
+            opCodes[168] = OpCode.JSR;
+            opCodes[169] = OpCode.RET;
+            opCodes[170] = OpCode.TABLESWITCH;
+            opCodes[171] = OpCode.LOOKUPSWITCH;
+            opCodes[172] = OpCode.IRETURN;
+            opCodes[173] = OpCode.LRETURN;
+            opCodes[174] = OpCode.FRETURN;
+            opCodes[175] = OpCode.DRETURN;
+            opCodes[176] = OpCode.ARETURN;
+            opCodes[177] = OpCode.RETURN;
+            opCodes[178] = OpCode.GETSTATIC;
+            opCodes[179] = OpCode.PUTSTATIC;
+            opCodes[180] = OpCode.GETFIELD;
+            opCodes[181] = OpCode.PUTFIELD;
+            opCodes[182] = OpCode.INVOKEVIRTUAL;
+            opCodes[183] = OpCode.INVOKESPECIAL;
+            opCodes[184] = OpCode.INVOKESTATIC;
+            opCodes[185] = OpCode.INVOKEINTERFACE;
+            opCodes[186] = OpCode.INVOKEDYNAMIC;
+            opCodes[187] = OpCode.NEW;
+            opCodes[188] = OpCode.NEWARRAY;
+            opCodes[189] = OpCode.ANEWARRAY;
+            opCodes[190] = OpCode.ARRAYLENGTH;
+            opCodes[191] = OpCode.ATHROW;
+            opCodes[192] = OpCode.CHECKCAST;
+            opCodes[193] = OpCode.INSTANCEOF;
+            opCodes[194] = OpCode.MONITORENTER;
+            opCodes[195] = OpCode.MONITOREXIT;
+            opCodes[196] = OpCode.WIDE;
+            opCodes[197] = OpCode.MULTIANEWARRAY;
+            opCodes[198] = OpCode.IFNULL;
+            opCodes[199] = OpCode.IFNONNULL;
+            opCodes[200] = OpCode.GOTO_W;
+            opCodes[201] = OpCode.JSR_W;
+            //</editor-fold>
+        }
+        return opCodes;
+    }
+
+    private static OpCode[] opCodes;
 
 }

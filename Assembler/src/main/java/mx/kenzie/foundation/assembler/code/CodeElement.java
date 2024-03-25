@@ -5,6 +5,7 @@ import mx.kenzie.foundation.assembler.tool.ClassFileBuilder;
 import mx.kenzie.foundation.assembler.tool.CodeBuilder;
 import mx.kenzie.foundation.assembler.vector.UVec;
 import org.valross.constantine.Constant;
+import org.valross.constantine.Constantive;
 import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;
@@ -16,6 +17,39 @@ public interface CodeElement extends Data, UVec, UnboundedElement {
 
     static CodeElement fixed(byte... bytes) {
         return new FixedCodeElement(bytes);
+    }
+
+    static CodeElement vector(byte code, UVec data) {
+        //<editor-fold desc="Vector Element" defaultstate="collapsed">
+        record VectorElement(byte code, UVec data) implements CodeElement, Constantive {
+
+            @Override
+            public byte code() {
+                return code;
+            }
+
+            @Override
+            public int length() {
+                return 1 + data.length();
+            }
+
+            @Override
+            public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+                stream.write(code);
+                this.data.write(stream);
+            }
+
+            @Override
+            public FixedCodeElement constant() {
+                final byte[] bytes = VectorElement.this.data.binary(), array = new byte[bytes.length + 1];
+                System.arraycopy(bytes, 0, array, 1, bytes.length);
+                array[0] = VectorElement.this.code;
+                return (FixedCodeElement) fixed(array);
+            }
+
+        }
+        //</editor-fold>
+        return new VectorElement(code, data);
     }
 
     static CodeElement wide(CodeElement element) {

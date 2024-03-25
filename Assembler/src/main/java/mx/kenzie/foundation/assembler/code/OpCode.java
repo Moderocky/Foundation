@@ -27,7 +27,7 @@ public interface OpCode {
     Instruction ALOAD_1 = new Instruction("ALOAD_1", Codes.ALOAD_1);
     Instruction ALOAD_2 = new Instruction("ALOAD_2", Codes.ALOAD_2);
     Instruction ALOAD_3 = new Instruction("ALOAD_3", Codes.ALOAD_3);
-    VariableInstruction ALOAD = new VariableInstruction("ALOAD", Codes.ALOAD) {
+    VariableCode ALOAD = new VariableCode("ALOAD", Codes.ALOAD) {
         @Override
         public CodeElement var(int slot) {
             return switch (slot) {
@@ -39,14 +39,14 @@ public interface OpCode {
             };
         }
     };
-    TypedInstruction ANEWARRAY = new TypedInstruction("ANEWARRAY", Codes.ANEWARRAY);
+    TypedCode ANEWARRAY = new TypedCode("ANEWARRAY", Codes.ANEWARRAY);
     Instruction ARETURN = new Instruction("ARETURN", Codes.ARETURN);
     Instruction ARRAYLENGTH = new Instruction("ARRAYLENGTH", Codes.ARRAYLENGTH);
     Instruction ASTORE_0 = new Instruction("ASTORE_0", Codes.ASTORE_0);
     Instruction ASTORE_1 = new Instruction("ASTORE_1", Codes.ASTORE_1);
     Instruction ASTORE_2 = new Instruction("ASTORE_2", Codes.ASTORE_2);
     Instruction ASTORE_3 = new Instruction("ASTORE_3", Codes.ASTORE_3);
-    VariableInstruction ASTORE = new VariableInstruction("ASTORE", Codes.ASTORE) {
+    VariableCode ASTORE = new VariableCode("ASTORE", Codes.ASTORE) {
         @Override
         public CodeElement var(int slot) {
             return switch (slot) {
@@ -64,7 +64,7 @@ public interface OpCode {
     UncheckedCode BIPUSH = new UncheckedCode("BIPUSH", Codes.BIPUSH);
     Instruction CALOAD = new Instruction("CALOAD", Codes.CALOAD);
     Instruction CASTORE = new Instruction("CASTORE", Codes.CASTORE);
-    TypedInstruction CHECKCAST = new TypedInstruction("CHECKCAST", Codes.CHECKCAST);
+    TypedCode CHECKCAST = new TypedCode("CHECKCAST", Codes.CHECKCAST);
     Instruction D2F = new Instruction("D2F", Codes.D2F);
     Instruction D2I = new Instruction("D2I", Codes.D2I);
     Instruction D2L = new Instruction("D2L", Codes.D2L);
@@ -80,7 +80,7 @@ public interface OpCode {
     Instruction DLOAD_1 = new Instruction("DLOAD_1", Codes.DLOAD_1);
     Instruction DLOAD_2 = new Instruction("DLOAD_2", Codes.DLOAD_2);
     Instruction DLOAD_3 = new Instruction("DLOAD_3", Codes.DLOAD_3);
-    VariableInstruction DLOAD = new VariableInstruction("DLOAD", Codes.DLOAD) {
+    VariableCode DLOAD = new VariableCode("DLOAD", Codes.DLOAD) {
         @Override
         public CodeElement var(int slot) {
             return switch (slot) {
@@ -100,7 +100,7 @@ public interface OpCode {
     Instruction DSTORE_1 = new Instruction("DSTORE_1", Codes.DSTORE_1);
     Instruction DSTORE_2 = new Instruction("DSTORE_2", Codes.DSTORE_2);
     Instruction DSTORE_3 = new Instruction("DSTORE_3", Codes.DSTORE_3);
-    VariableInstruction DSTORE = new VariableInstruction("DSTORE", Codes.DSTORE) {
+    VariableCode DSTORE = new VariableCode("DSTORE", Codes.DSTORE) {
         @Override
         public CodeElement var(int slot) {
             return switch (slot) {
@@ -135,7 +135,7 @@ public interface OpCode {
     Instruction FLOAD_1 = new Instruction("FLOAD_1", Codes.FLOAD_1);
     Instruction FLOAD_2 = new Instruction("FLOAD_2", Codes.FLOAD_2);
     Instruction FLOAD_3 = new Instruction("FLOAD_3", Codes.FLOAD_3);
-    VariableInstruction FLOAD = new VariableInstruction("FLOAD", Codes.FLOAD) {
+    VariableCode FLOAD = new VariableCode("FLOAD", Codes.FLOAD) {
         @Override
         public CodeElement var(int slot) {
             return switch (slot) {
@@ -155,7 +155,7 @@ public interface OpCode {
     Instruction FSTORE_1 = new Instruction("FSTORE_1", Codes.FSTORE_1);
     Instruction FSTORE_2 = new Instruction("FSTORE_2", Codes.FSTORE_2);
     Instruction FSTORE_3 = new Instruction("FSTORE_3", Codes.FSTORE_3);
-    VariableInstruction FSTORE = new VariableInstruction("FSTORE", Codes.FSTORE) {
+    VariableCode FSTORE = new VariableCode("FSTORE", Codes.FSTORE) {
         @Override
         public CodeElement var(int slot) {
             return switch (slot) {
@@ -168,8 +168,8 @@ public interface OpCode {
         }
     };
     Instruction FSUB = new Instruction("FSUB", Codes.FSUB);
-    UncheckedCode GETFIELD = new UncheckedCode("GETFIELD", Codes.GETFIELD);
-    UncheckedCode GETSTATIC = new UncheckedCode("GETSTATIC", Codes.GETSTATIC);
+    FieldCode GETFIELD = new FieldCode("GETFIELD", Codes.GETFIELD);
+    FieldCode GETSTATIC = new FieldCode("GETSTATIC", Codes.GETSTATIC);
     UncheckedCode GOTO = new UncheckedCode("GOTO", Codes.GOTO);
     UncheckedCode GOTO_W = new UncheckedCode("GOTO_W", Codes.GOTO_W);
     Instruction I2B = new Instruction("I2B", Codes.I2B);
@@ -206,12 +206,12 @@ public interface OpCode {
     Instruction IFLE = new Instruction("IFLE", Codes.IFLE);
     UncheckedCode IFNONNULL = new UncheckedCode("IFNONNULL", Codes.IFNONNULL);
     UncheckedCode IFNULL = new UncheckedCode("IFNULL", Codes.IFNULL);
-    Increment IINC = new Increment("IINC", Codes.IINC);
+    IncrementCode IINC = new IncrementCode("IINC", Codes.IINC);
     Instruction ILOAD_0 = new Instruction("ILOAD_0", Codes.ILOAD_0);
     Instruction ILOAD_1 = new Instruction("ILOAD_1", Codes.ILOAD_1);
     Instruction ILOAD_2 = new Instruction("ILOAD_2", Codes.ILOAD_2);
     Instruction ILOAD_3 = new Instruction("ILOAD_3", Codes.ILOAD_3);
-    VariableInstruction ILOAD = new VariableInstruction("ILOAD", Codes.ILOAD) {
+    VariableCode ILOAD = new VariableCode("ILOAD", Codes.ILOAD) {
         @Override
         public CodeElement var(int slot) {
             return switch (slot) {
@@ -225,7 +225,7 @@ public interface OpCode {
     };
     Instruction IMUL = new Instruction("IMUL", Codes.IMUL);
     Instruction INEG = new Instruction("INEG", Codes.INEG);
-    UncheckedCode INSTANCEOF = new UncheckedCode("INSTANCEOF", Codes.INSTANCEOF);
+    TypedCode INSTANCEOF = new TypedCode("INSTANCEOF", Codes.INSTANCEOF);
     UncheckedCode INVOKEDYNAMIC = new UncheckedCode("INVOKEDYNAMIC", Codes.INVOKEDYNAMIC);
     UncheckedCode INVOKEINTERFACE = new UncheckedCode("INVOKEINTERFACE", Codes.INVOKEINTERFACE);
     UncheckedCode INVOKESPECIAL = new UncheckedCode("INVOKESPECIAL", Codes.INVOKESPECIAL);
@@ -240,7 +240,7 @@ public interface OpCode {
     Instruction ISTORE_1 = new Instruction("ISTORE_1", Codes.ISTORE_1);
     Instruction ISTORE_2 = new Instruction("ISTORE_2", Codes.ISTORE_2);
     Instruction ISTORE_3 = new Instruction("ISTORE_3", Codes.ISTORE_3);
-    VariableInstruction ISTORE = new VariableInstruction("ISTORE", Codes.ISTORE) {
+    VariableCode ISTORE = new VariableCode("ISTORE", Codes.ISTORE) {
         @Override
         public CodeElement var(int slot) {
             return switch (slot) {
@@ -267,7 +267,7 @@ public interface OpCode {
     Instruction LCMP = new Instruction("LCMP", Codes.LCMP);
     Instruction LCONST_0 = new Instruction("LCONST_0", Codes.LCONST_0);
     Instruction LCONST_1 = new Instruction("LCONST_1", Codes.LCONST_1);
-    LoadConstant LDC = new LoadConstant("LDC", Codes.LDC);
+    LoadConstantCode LDC = new LoadConstantCode("LDC", Codes.LDC);
     UncheckedCode LDC_W = new UncheckedCode("LDC_W", Codes.LDC_W);
     UncheckedCode LDC2_W = new UncheckedCode("LDC2_W", Codes.LDC2_W);
     Instruction LDIV = new Instruction("LDIV", Codes.LDIV);
@@ -275,7 +275,7 @@ public interface OpCode {
     Instruction LLOAD_1 = new Instruction("LLOAD_1", Codes.LLOAD_1);
     Instruction LLOAD_2 = new Instruction("LLOAD_2", Codes.LLOAD_2);
     Instruction LLOAD_3 = new Instruction("LLOAD_3", Codes.LLOAD_3);
-    VariableInstruction LLOAD = new VariableInstruction("LLOAD", Codes.LLOAD) {
+    VariableCode LLOAD = new VariableCode("LLOAD", Codes.LLOAD) {
         @Override
         public CodeElement var(int slot) {
             return switch (slot) {
@@ -299,7 +299,7 @@ public interface OpCode {
     Instruction LSTORE_1 = new Instruction("LSTORE_1", Codes.LSTORE_1);
     Instruction LSTORE_2 = new Instruction("LSTORE_2", Codes.LSTORE_2);
     Instruction LSTORE_3 = new Instruction("LSTORE_3", Codes.LSTORE_3);
-    VariableInstruction LSTORE = new VariableInstruction("LSTORE", Codes.LSTORE) {
+    VariableCode LSTORE = new VariableCode("LSTORE", Codes.LSTORE) {
         @Override
         public CodeElement var(int slot) {
             return switch (slot) {
@@ -322,9 +322,9 @@ public interface OpCode {
     Instruction NOP = new Instruction("NOP", Codes.NOP);
     Instruction POP = new Instruction("POP", Codes.POP);
     Instruction POP2 = new Instruction("POP2", Codes.POP2);
-    UncheckedCode PUTFIELD = new UncheckedCode("PUTFIELD", Codes.PUTFIELD);
-    UncheckedCode PUTSTATIC = new UncheckedCode("PUTSTATIC", Codes.PUTSTATIC);
-    VariableInstruction RET = new VariableInstruction("RET", Codes.RET) {};
+    FieldCode PUTFIELD = new FieldCode("PUTFIELD", Codes.PUTFIELD);
+    FieldCode PUTSTATIC = new FieldCode("PUTSTATIC", Codes.PUTSTATIC);
+    VariableCode RET = new VariableCode("RET", Codes.RET) {};
     Instruction RETURN = new Instruction("RETURN", Codes.RETURN);
     Instruction SALOAD = new Instruction("SALOAD", Codes.SALOAD);
     Instruction SASTORE = new Instruction("SASTORE", Codes.SASTORE);
@@ -332,6 +332,14 @@ public interface OpCode {
     Instruction SWAP = new Instruction("SWAP", Codes.SWAP);
     UncheckedCode TABLESWITCH = new UncheckedCode("TABLESWITCH", Codes.TABLESWITCH);
     Wide WIDE = new Wide("WIDE", Codes.WIDE);
+
+    static OpCode[] opcodes() {
+        return Codes.getAllOpcodes();
+    }
+
+    static OpCode getCode(int opcode) {
+        return Codes.getAllOpcodes()[opcode];
+    }
 
     String mnemonic();
 
@@ -394,7 +402,7 @@ public interface OpCode {
      * @param code     The byte code. This is likely to be an UNSIGNED byte in disguise, so should be treated with
      *                 caution.
      */
-    record TypedInstruction(String mnemonic, byte code) implements OpCode {
+    record TypedCode(String mnemonic, byte code) implements OpCode {
 
         //<editor-fold desc="Make" defaultstate="collapsed">
         @Override
@@ -402,8 +410,7 @@ public interface OpCode {
             return 3;
         }
 
-        public <Klass extends java.lang.reflect.Type & TypeDescriptor>
-        UnboundedElement type(Klass type) {
+        public <Klass extends java.lang.reflect.Type & TypeDescriptor> UnboundedElement type(Klass type) {
             final Type value = Type.of(type);
             return storage -> new Typed(code, storage.constant(ConstantPoolInfo.TYPE, value));
         }
@@ -439,7 +446,7 @@ public interface OpCode {
      * @param code     The byte code. This is likely to be an UNSIGNED byte in disguise, so should be treated with
      *                 caution.
      */
-    record LoadConstant(String mnemonic, byte code) implements OpCode {
+    record LoadConstantCode(String mnemonic, byte code) implements OpCode {
 
         //<editor-fold desc="LDC" defaultstate="collapsed">
         @Override
@@ -529,7 +536,7 @@ public interface OpCode {
      * @param code     The byte code. This is likely to be an UNSIGNED byte in disguise, so should be treated with
      *                 caution.
      */
-    record Increment(String mnemonic, byte code) implements OpCode {
+    record IncrementCode(String mnemonic, byte code) implements OpCode {
 
         //<editor-fold desc="IINC" defaultstate="collapsed">
         @Override
@@ -586,18 +593,18 @@ public interface OpCode {
      * default to the built-in instructions (e.g. `aload 0` -> `aload_0`) to save space
      * wherever possible.
      */
-    abstract class VariableInstruction implements OpCode {
+    abstract class VariableCode implements OpCode {
 
         //<editor-fold desc="Variable" defaultstate="collapsed">
         private final String mnemonic;
         private final byte code;
 
-        public VariableInstruction(String mnemonic, byte code) {
+        public VariableCode(String mnemonic, byte code) {
             this.mnemonic = mnemonic;
             this.code = code;
         }
 
-        public VariableInstruction(String mnemonic, int code) {
+        public VariableCode(String mnemonic, int code) {
             this(mnemonic, (byte) code);
         }
 
@@ -634,6 +641,31 @@ public interface OpCode {
             return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
         }
         //</editor-fold>
+
+    }
+
+    /**
+     * An opcode for accessing a field (e.g. getting/setting value)
+     *
+     * @param mnemonic The operation code's reference name.
+     * @param code     The byte code. This is likely to be an UNSIGNED byte in disguise, so should be treated with
+     *                 caution.
+     */
+    record FieldCode(String mnemonic, byte code) implements OpCode {
+
+        public CodeElement field(PoolReference fieldReference) {
+            return CodeElement.vector(code, fieldReference);
+        }
+
+        @Override
+        public String toString() {
+            return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
+        }
+
+        @Override
+        public int length() {
+            return 3;
+        }
 
     }
 
