@@ -234,6 +234,7 @@ public record Type(String getTypeName, String descriptorString, String internalN
             case "V" -> void.class;
             default -> {
                 try {
+                    if (descriptorString.charAt(0) == '[') yield Class.forName(descriptorString.replace('/', '.'));
                     yield Class.forName(getTypeName);
                 } catch (ClassNotFoundException e) {
                     yield null;
