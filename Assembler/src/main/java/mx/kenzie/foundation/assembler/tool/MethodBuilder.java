@@ -160,7 +160,7 @@ public class MethodBuilder extends ModifiableBuilder implements Constantive, Met
 
     public CodeBuilder code() {
         if (code != null) return code;
-        this.attribute(code = new CodeBuilder(this.helper()).writingTo(new CodeVector()));
+        this.attribute(code = new CodeBuilder(this).writingTo(new CodeVector()));
         int slots = 0;
         for (Type parameter : parameters) {
             if (parameter.equals(Type.LONG) || parameter.equals(Type.DOUBLE)) slots += 2;

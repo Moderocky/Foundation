@@ -14,14 +14,16 @@ import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.UTF8;
 public class CodeBuilder extends AttributableBuilder implements AttributeBuilder {
 
     protected final ClassFileBuilder.Storage storage;
+    protected final MethodBuilder method;
     protected final PoolReference attributeName;
     private CodeVector vector;
     private int maxStack;
     private int maxLocals;
     private int stackCounter;
 
-    public CodeBuilder(ClassFileBuilder.Storage storage) {
-        this.storage = storage;
+    public CodeBuilder(MethodBuilder builder) {
+        this.storage = builder.helper();
+        this.method = builder;
         this.attributeName = storage.constant(UTF8, "Code");
     }
 
@@ -104,8 +106,8 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
     }
 
     @Contract(pure = true)
-    public ClassFileBuilder exit() {
-        return storage.source();
+    public MethodBuilder exit() {
+        return method;
     }
 
     @Override

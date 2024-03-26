@@ -251,44 +251,113 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     @Test
-    public void testBALOAD() {
+    public void testBALOAD() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(ICONST_1, NEWARRAY.type(byte.class), DUP, ICONST_0, BIPUSH.value(5), BASTORE);
+        builder.code().write(ICONST_0, BALOAD, IRETURN);
+        builder.returns(int.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals(5);
     }
 
     @Test
-    public void testBASTORE() {
+    public void testBASTORE() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(ICONST_1, NEWARRAY.primitive(8), DUP, ICONST_0, BIPUSH.value(3), BASTORE);
+        builder.code().write(ICONST_0, BALOAD, IRETURN);
+        builder.returns(int.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals(3);
     }
 
     @Test
-    public void testBIPUSH() {
+    public void testBIPUSH() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         assert BIPUSH.length() == 2 && BIPUSH.hasFixedLength();
         for (int i = Byte.MIN_VALUE; i < Byte.MAX_VALUE; i++) {
             assert BIPUSH.value(i).code() == Codes.BIPUSH;
             assert BIPUSH.value((byte) i).code() == Codes.BIPUSH;
         }
+        for (int i = Byte.MIN_VALUE; i <= Byte.MAX_VALUE; i++) {
+            final MethodBuilder builder = this.method();
+            builder.code().write(ICONST_1, NEWARRAY.primitive(8), DUP, ICONST_0, BIPUSH.value(i), BASTORE);
+            builder.code().write(ICONST_0, BALOAD, IRETURN);
+            builder.returns(byte.class);
+            final Method method = this.compileForTest(builder);
+            assert method.invoke(null).equals((byte) i) : method.invoke(null) + " != " + i;
+        }
+        final MethodBuilder builder = this.method();
+        builder.code().write(ICONST_1, NEWARRAY.primitive(8), DUP, ICONST_0);
+        builder.code().write(BIPUSH.value(255), BASTORE);
+        builder.code().write(ICONST_0, BALOAD, IRETURN);
+        builder.returns(byte.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals((byte) -1) : method.invoke(null) + " != " + -1;
     }
 
     @Test
-    public void testCALOAD() {
+    public void testCALOAD() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(ICONST_1, NEWARRAY.type(char.class), DUP, ICONST_0, BIPUSH.value('t'), CASTORE);
+        builder.code().write(ICONST_0, CALOAD, IRETURN);
+        builder.returns(char.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals('t');
     }
 
     @Test
-    public void testCASTORE() {
+    public void testCASTORE() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(ICONST_1, NEWARRAY.type(char.class), DUP, ICONST_0, BIPUSH.value('c'), CASTORE);
+        builder.code().write(ICONST_0, CALOAD, IRETURN);
+        builder.returns(char.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals('c');
     }
 
     @Test
-    public void testCHECKCAST() {
+    public void testCHECKCAST() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(LDC.value("test"), CHECKCAST.type(Object.class), CHECKCAST.type(String.class));
+        builder.code().write(ARETURN);
+        builder.returns(String.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals("test");
     }
 
     @Test
-    public void testD2F() {
+    public void testD2F() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(float.class).code()
+            .write(DCONST_0, D2F, FRETURN).exit()).invoke(null).equals(0F);
+        assert this.compileForTest(this.method().returns(float.class).code()
+            .write(DCONST_1, D2F, FRETURN).exit()).invoke(null).equals(1.0F);
+        assert this.compileForTest(this.method().returns(float.class).code()
+            .write(LDC.value(1.5D), D2F, FRETURN).exit()).invoke(null).equals(1.5F);
+        assert this.compileForTest(this.method().returns(float.class).code()
+            .write(LDC.value(-4.1D), D2F, FRETURN).exit()).invoke(null).equals(-4.1F);
     }
 
     @Test
-    public void testD2I() {
+    public void testD2I() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(int.class).code()
+            .write(DCONST_0, D2I, IRETURN).exit()).invoke(null).equals(0);
+        assert this.compileForTest(this.method().returns(int.class).code()
+            .write(DCONST_1, D2I, IRETURN).exit()).invoke(null).equals(1);
+        assert this.compileForTest(this.method().returns(int.class).code()
+            .write(LDC.value(1.5D), D2I, IRETURN).exit()).invoke(null).equals(1);
+        assert this.compileForTest(this.method().returns(int.class).code()
+            .write(LDC.value(-4.1D), D2I, IRETURN).exit()).invoke(null).equals(-4);
     }
 
     @Test
-    public void testD2L() {
+    public void testD2L() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(long.class).code()
+            .write(DCONST_0, D2L, LRETURN).exit()).invoke(null).equals(0L);
+        assert this.compileForTest(this.method().returns(long.class).code()
+            .write(DCONST_1, D2L, LRETURN).exit()).invoke(null).equals(1L);
+        assert this.compileForTest(this.method().returns(long.class).code()
+            .write(LDC.value(1.5D), D2L, LRETURN).exit()).invoke(null).equals(1L);
+        assert this.compileForTest(this.method().returns(long.class).code()
+            .write(LDC.value(-4.1D), D2L, LRETURN).exit()).invoke(null).equals(-4L);
     }
 
     @Test
