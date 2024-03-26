@@ -296,4 +296,16 @@ public record Type(String getTypeName, String descriptorString, String internalN
         return 1;
     }
 
+    /**
+     * Returns the number of stacked array dimensions this type would have when created.
+     * E.g. int -> 0, int[] -> 1, int[][][] -> 3.
+     * Effectively, it counts the number of [] brackets after the type name.
+     *
+     * @return How many array dimensions this type has
+     */
+    public int arrayDepth() {
+        for (int i = 0; i < Short.MAX_VALUE; i++) if (descriptorString.charAt(i) != '[') return i;
+        throw new IllegalStateException("Type " + this + " is too big?");
+    }
+
 }

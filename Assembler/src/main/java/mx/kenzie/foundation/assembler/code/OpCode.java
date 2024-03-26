@@ -32,7 +32,7 @@ public interface OpCode {
             };
         }
     };
-    TypeCode ANEWARRAY = new TypeCode("ANEWARRAY", Codes.ANEWARRAY);
+    TypeCode.Array ANEWARRAY = new TypeCode.Array("ANEWARRAY", Codes.ANEWARRAY);
     Instruction ARETURN = new Instruction("ARETURN", Codes.ARETURN);
     Instruction ARRAYLENGTH = new Instruction("ARRAYLENGTH", Codes.ARRAYLENGTH);
     Instruction ASTORE_0 = new Instruction("ASTORE_0", Codes.ASTORE_0);
@@ -309,9 +309,9 @@ public interface OpCode {
     Instruction LXOR = new Instruction("LXOR", Codes.LXOR);
     Instruction MONITORENTER = new Instruction("MONITORENTER", Codes.MONITORENTER);
     Instruction MONITOREXIT = new Instruction("MONITOREXIT", Codes.MONITOREXIT);
-    UncheckedCode MULTIANEWARRAY = new UncheckedCode("MULTIANEWARRAY", Codes.MULTIANEWARRAY);
+    TypeCode.MultiArray MULTIANEWARRAY = new TypeCode.MultiArray("MULTIANEWARRAY", Codes.MULTIANEWARRAY);
     TypeCode NEW = new TypeCode("NEW", Codes.NEW);
-    UncheckedCode NEWARRAY = new UncheckedCode("NEWARRAY", Codes.NEWARRAY);
+    TypeCode.Array NEWARRAY = new TypeCode.Array("NEWARRAY", Codes.NEWARRAY);
     Instruction NOP = new Instruction("NOP", Codes.NOP);
     Instruction POP = new Instruction("POP", Codes.POP);
     Instruction POP2 = new Instruction("POP2", Codes.POP2);
