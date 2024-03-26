@@ -55,7 +55,7 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
      * @param slot the upper register slot
      */
     public void notifyMaxLocalIndex(int slot) {
-        if (maxLocals < slot) maxLocals = slot;
+        if (maxLocals < slot + 1) maxLocals = slot + 1;
     }
 
     /**

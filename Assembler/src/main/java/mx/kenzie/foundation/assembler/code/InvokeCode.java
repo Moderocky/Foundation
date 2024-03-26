@@ -1,8 +1,13 @@
 package mx.kenzie.foundation.assembler.code;
 
+import mx.kenzie.foundation.assembler.tool.CodeBuilder;
 import mx.kenzie.foundation.assembler.tool.PoolReference;
 import mx.kenzie.foundation.detail.Member;
+import mx.kenzie.foundation.detail.Type;
+import org.valross.constantine.RecordConstant;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.invoke.TypeDescriptor;
 
 /**
@@ -26,8 +31,19 @@ public record InvokeCode(String mnemonic, byte code) implements OpCode {
         return this.method(new Member(owner, returnType, name, parameters));
     }
 
+    @SafeVarargs
+    public final <Klass extends java.lang.reflect.Type & TypeDescriptor> UnboundedElement constructor(Klass owner,
+                                                                                                      Klass... parameters) {
+        return this.method(new Member(owner, void.class, "<init>", parameters));
+    }
+
     public UnboundedElement method(Member member) {
-        return storage -> CodeElement.vector(code, storage.constant(member));
+        int taken = Type.parameterSize(member);
+        if (code != Codes.INVOKESTATIC) ++taken; // caller obj is first 1-wide "parameter"
+        final Type returnType = Type.fromDescriptor(member);
+        taken -= returnType.width(); // we're returning something
+        final int count = taken;
+        return storage -> new Invocation(code, storage.constant(member), count);
     }
 
     @Override
@@ -38,6 +54,26 @@ public record InvokeCode(String mnemonic, byte code) implements OpCode {
     @Override
     public int length() {
         return 3;
+    }
+
+    private record Invocation(byte code, PoolReference reference, int width) implements CodeElement, RecordConstant {
+
+        @Override
+        public int length() {
+            return 3;
+        }
+
+        @Override
+        public void write(OutputStream stream) throws IOException {
+            stream.write(code);
+            this.reference.write(stream);
+        }
+
+        @Override
+        public void notify(CodeBuilder builder) {
+            builder.notifyStack(width);
+        }
+
     }
 
 }

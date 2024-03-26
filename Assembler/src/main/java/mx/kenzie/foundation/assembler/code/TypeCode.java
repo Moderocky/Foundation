@@ -29,6 +29,11 @@ public record TypeCode(String mnemonic, byte code) implements OpCode {
         return storage -> new Typed(code, storage.constant(ConstantPoolInfo.TYPE, value));
     }
 
+    @Override
+    public String toString() {
+        return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
+    }
+
     private record Typed(byte code, PoolReference reference) implements RecordConstant, CodeElement {
 
         @Override
@@ -42,11 +47,6 @@ public record TypeCode(String mnemonic, byte code) implements OpCode {
             this.reference.write(stream);
         }
 
-    }
-
-    @Override
-    public String toString() {
-        return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
     }
 
     //</editor-fold>

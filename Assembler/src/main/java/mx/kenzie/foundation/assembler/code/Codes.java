@@ -208,6 +208,7 @@ public final class Codes {
         SWAP = (byte) 0x5f, // 95
         TABLESWITCH = (byte) 0xaa, // 170
         WIDE = (byte) 0xc4; // 196
+    private static OpCode[] opCodes;
 
     static OpCode[] getAllOpcodes() {
         if (opCodes == null) {
@@ -419,7 +420,5 @@ public final class Codes {
         }
         return opCodes;
     }
-
-    private static OpCode[] opCodes;
 
 }

@@ -1,11 +1,15 @@
 package mx.kenzie.foundation.assembler.code;
 
+import mx.kenzie.foundation.assembler.tool.CodeBuilder;
 import mx.kenzie.foundation.assembler.tool.PoolReference;
 import mx.kenzie.foundation.assembler.vector.U1;
 import mx.kenzie.foundation.assembler.vector.UVec;
 import mx.kenzie.foundation.detail.Member;
 import mx.kenzie.foundation.detail.Type;
+import org.valross.constantine.RecordConstant;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.invoke.TypeDescriptor;
 
 /**
@@ -42,7 +46,8 @@ public record InvokeInterfaceCode(String mnemonic, byte code) implements OpCode 
 
     public UnboundedElement method(Member member) {
         final int count = Type.parameterSize(member) + 1;
-        return storage -> this.method(storage.constant(member), count);
+        final int width = count - Type.fromDescriptor(member).width(); // we're returning something
+        return storage -> new Invocation(code, storage.constant(member), count, width);
     }
 
     @Override
@@ -53,6 +58,29 @@ public record InvokeInterfaceCode(String mnemonic, byte code) implements OpCode 
     @Override
     public int length() {
         return 5;
+    }
+
+    private record Invocation(byte code, PoolReference reference, int count, int width)
+        implements CodeElement, RecordConstant {
+
+        @Override
+        public int length() {
+            return 5;
+        }
+
+        @Override
+        public void write(OutputStream stream) throws IOException {
+            stream.write(code);
+            this.reference.write(stream);
+            U1.valueOf(count).write(stream);
+            stream.write(0);
+        }
+
+        @Override
+        public void notify(CodeBuilder builder) {
+            builder.notifyStack(width);
+        }
+
     }
 
 }

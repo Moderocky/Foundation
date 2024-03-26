@@ -291,7 +291,8 @@ public record Type(String getTypeName, String descriptorString, String internalN
     }
 
     public int width() {
-        if (this.equals(Type.LONG) || this.equals(Type.DOUBLE)) return 2;
+        if (this.equals(LONG) || this.equals(DOUBLE)) return 2;
+        if (this.equals(VOID)) return 0; // for the purposes of calculating method width
         return 1;
     }
 

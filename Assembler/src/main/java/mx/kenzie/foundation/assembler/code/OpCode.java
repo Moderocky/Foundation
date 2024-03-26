@@ -310,7 +310,7 @@ public interface OpCode {
     Instruction MONITORENTER = new Instruction("MONITORENTER", Codes.MONITORENTER);
     Instruction MONITOREXIT = new Instruction("MONITOREXIT", Codes.MONITOREXIT);
     UncheckedCode MULTIANEWARRAY = new UncheckedCode("MULTIANEWARRAY", Codes.MULTIANEWARRAY);
-    UncheckedCode NEW = new UncheckedCode("NEW", Codes.NEW);
+    TypeCode NEW = new TypeCode("NEW", Codes.NEW);
     UncheckedCode NEWARRAY = new UncheckedCode("NEWARRAY", Codes.NEWARRAY);
     Instruction NOP = new Instruction("NOP", Codes.NOP);
     Instruction POP = new Instruction("POP", Codes.POP);

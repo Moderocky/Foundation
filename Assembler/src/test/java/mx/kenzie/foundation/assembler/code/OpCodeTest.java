@@ -1,15 +1,40 @@
 package mx.kenzie.foundation.assembler.code;
 
+import mx.kenzie.foundation.Loader;
+import mx.kenzie.foundation.assembler.ClassFile;
+import mx.kenzie.foundation.assembler.tool.ClassFileBuilder;
+import mx.kenzie.foundation.assembler.tool.MethodBuilder;
 import mx.kenzie.foundation.assembler.tool.MethodBuilderTest;
+import mx.kenzie.foundation.detail.Type;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 
-import static mx.kenzie.foundation.assembler.code.OpCode.BIPUSH;
-import static mx.kenzie.foundation.assembler.code.OpCode.SIPUSH;
+import static mx.kenzie.foundation.assembler.code.OpCode.*;
+import static mx.kenzie.foundation.assembler.tool.Access.PUBLIC;
+import static mx.kenzie.foundation.assembler.tool.Access.STATIC;
+import static mx.kenzie.foundation.detail.Version.JAVA_21;
+import static mx.kenzie.foundation.detail.Version.RELEASE;
 
 public class OpCodeTest extends MethodBuilderTest {
+
+    protected MethodBuilder method() {
+        return new ClassFileBuilder(JAVA_21, RELEASE).setType(Type.of("org.example", "Test")).method().setModifiers(PUBLIC, STATIC).named("test");
+    }
+
+    protected Method compileForTest(MethodBuilder builder) throws NoSuchMethodException {
+        final Loader loader = Loader.createDefault();
+        final ClassFile file = builder.exit().build();
+        final Class<?> done = this.load(loader, file, Type.of("org.example", "Test"));
+        assert done != null;
+        assert done.getDeclaredMethods().length > 0;
+        final Method found = done.getDeclaredMethod("test");
+        found.setAccessible(true);
+        return found;
+    }
 
     @Test
     public void mnemonic() throws NoSuchFieldException, IllegalAccessException {
@@ -54,71 +79,175 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     @Test
-    public void testAALOAD() {
+    public void testAALOAD() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(ICONST_1, ANEWARRAY.type(Object.class), DUP, ICONST_0, LDC.value("foo"), AASTORE);
+        builder.code().write(ICONST_0, AALOAD, ARETURN);
+        builder.returns(Object.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals("foo");
     }
 
     @Test
-    public void testAASTORE() {
+    public void testAASTORE() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(ICONST_2, ANEWARRAY.type(Object.class), DUP, ICONST_0, LDC.value("foo"), AASTORE);
+        builder.code().write(DUP, ICONST_1, LDC.value("bar"), AASTORE);
+        builder.code().write(ICONST_1, AALOAD, ARETURN);
+        builder.returns(Object.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals("bar");
     }
 
     @Test
-    public void testACONSTNULL() {
+    public void testACONSTNULL() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(ACONST_NULL, ARETURN);
+        builder.returns(Object.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null) == null;
     }
 
     @Test
-    public void testALOAD0() {
+    public void testALOAD0() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(LDC.value("blob"), ASTORE_0);
+        builder.code().write(ALOAD_0, ARETURN);
+        builder.returns(Object.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals("blob");
     }
 
     @Test
-    public void testALOAD1() {
+    public void testALOAD1() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(LDC.value("test"), ASTORE_1);
+        builder.code().write(ALOAD_1, ARETURN);
+        builder.returns(Object.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals("test");
     }
 
     @Test
-    public void testALOAD2() {
+    public void testALOAD2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(LDC.value("test"), ASTORE_2);
+        builder.code().write(ALOAD_2, ARETURN);
+        builder.returns(Object.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals("test");
     }
 
     @Test
-    public void testALOAD3() {
+    public void testALOAD3() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(LDC.value("test"), ASTORE_3);
+        builder.code().write(ALOAD_3, ARETURN);
+        builder.returns(Object.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals("test");
     }
 
     @Test
-    public void testALOAD() {
+    public void testALOAD() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(LDC.value("test"), DUP, ASTORE.var(4), ASTORE.var(0));
+        builder.code().write(ALOAD.var(4), ARETURN);
+        builder.returns(Object.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals("test");
     }
 
     @Test
-    public void testANEWARRAY() {
+    public void testANEWARRAY() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(LDC.value(2), ANEWARRAY.type(int[].class));
+        builder.code().write(ARETURN);
+        builder.returns(Object.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null) instanceof int[][] ints && ints.length == 2;
     }
 
     @Test
-    public void testARETURN() {
+    public void testARETURN() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(LDC.value("test"), ARETURN);
+        builder.returns(Object.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals("test");
     }
 
     @Test
-    public void testARRAYLENGTH() {
+    public void testARRAYLENGTH() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(LDC.value(2), ANEWARRAY.type(int[].class));
+        builder.code().write(ARRAYLENGTH, IRETURN);
+        builder.returns(int.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals(2);
     }
 
     @Test
-    public void testASTORE0() {
+    public void testASTORE0() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(LDC.value("test"), ASTORE_0);
+        builder.code().write(ALOAD_0, ARETURN);
+        builder.returns(Object.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals("test");
     }
 
     @Test
-    public void testASTORE1() {
+    public void testASTORE1() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(LDC.value("test"), ASTORE_1);
+        builder.code().write(ALOAD_1, ARETURN);
+        builder.returns(Object.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals("test");
     }
 
     @Test
-    public void testASTORE2() {
+    public void testASTORE2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(LDC.value("test"), ASTORE_2);
+        builder.code().write(ALOAD_2, ARETURN);
+        builder.returns(Object.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals("test");
     }
 
     @Test
-    public void testASTORE3() {
+    public void testASTORE3() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(LDC.value("test"), ASTORE_3);
+        builder.code().write(ALOAD_3, ARETURN);
+        builder.returns(Object.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals("test");
     }
 
     @Test
-    public void testASTORE() {
+    public void testASTORE() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final MethodBuilder builder = this.method();
+        builder.code().write(LDC.value("test"), DUP, ASTORE.var(4), ASTORE.var(0));
+        builder.code().write(ALOAD.var(4), ARETURN);
+        builder.returns(Object.class);
+        final Method method = this.compileForTest(builder);
+        assert method.invoke(null).equals("test");
     }
 
-    @Test
-    public void testATHROW() {
+    @Test(expected = Error.class)
+    public void testATHROW() throws Throwable {
+        final MethodBuilder builder = this.method();
+        builder.code().write(NEW.type(Error.class), DUP, INVOKESPECIAL.constructor(Error.class));
+        builder.code().write(ATHROW);
+        final Method method = this.compileForTest(builder);
+        try {
+            method.invoke(null);
+        } catch (InvocationTargetException ex) {
+            throw ex.getCause();
+        }
     }
 
     @Test
