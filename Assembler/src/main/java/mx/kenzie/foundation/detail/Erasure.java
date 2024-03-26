@@ -60,12 +60,17 @@ public interface Erasure extends Descriptor, TypeDescriptor {
         return !this.isMethod();
     }
 
-    default Erasure asFieldErasure() {
+    default Signature asFieldErasure() {
         return new Signature(this.name(), this.returnType());
     }
 
     default Erasure asMethodErasure() {
-        return new Signature(this.returnType(), this.name(), this.parameters());
+        return new Simple(this.returnType(), this.name(), this.parameters());
+    }
+
+    default Signature getSignature() {
+        if (this instanceof Signature signature) return signature;
+        return new Signature(this);
     }
 
     default boolean overloads(Erasure other) {

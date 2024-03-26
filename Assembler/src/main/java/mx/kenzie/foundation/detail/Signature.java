@@ -28,8 +28,8 @@ public record Signature(String name, Descriptor descriptor) implements RecordCon
         this(method.getReturnType(), method.getName(), method.getParameterTypes());
     }
 
-    public Signature(Erasure method) {
-        this(method.returnType(), method.name(), method.parameters());
+    public Signature(Erasure member) {
+        this(member.name(), Descriptor.of(member.descriptorString()));
     }
 
     public Signature(String name, TypeDescriptor descriptor) {
