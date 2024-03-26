@@ -21,15 +21,16 @@ public record Code(PoolReference attribute_name_index, U4 attribute_length, U2 m
         final U4 codeLength = U4.valueOf(code.length());
         final U2 exceptionsLength = U2.valueOf(exception_table.length), attributeCount = U2.valueOf(attributes.length);
         final U4 length =
-            new U4(2L + 2 + 4 + codeLength.intValue() + 2 + exceptionsLength.shortValue() + (exception_table.length * 8L) + 2 + U4.lengthOf(attributes).intValue());
+            new U4(2L + 2 + 4 + codeLength.intValue() + 2 + exceptionsLength.shortValue() + (exception_table.length * 8L) + 2 + U4.lengthOf(attributes)
+                                                                                                                                  .intValue());
         return new Code(attribute_name_index, length, max_stack, max_locals, codeLength, code,
-            exceptionsLength, exception_table, attributeCount, attributes);
+                        exceptionsLength, exception_table, attributeCount, attributes);
     }
 
     @Override
     public UVec info() {
         return UVec.of(max_stack, max_locals, code_length, code, exception_table_length, UVec.of(exception_table),
-            attributes_count, UVec.of(attributes));
+                       attributes_count, UVec.of(attributes));
     }
 
     @Override

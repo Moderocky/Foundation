@@ -24,7 +24,7 @@ public class CallConstructor {
                 visitor.visitInsn(Opcodes.DUP);
                 for (Instruction.Input<?> argument : arguments) argument.write(visitor);
                 visitor.visitMethodInsn(Opcodes.INVOKESPECIAL, owner.internalName(), "<init>",
-                    Type.methodDescriptor(Type.VOID, parameters), false);
+                                        Type.methodDescriptor(Type.VOID, parameters), false);
             };
 
         }

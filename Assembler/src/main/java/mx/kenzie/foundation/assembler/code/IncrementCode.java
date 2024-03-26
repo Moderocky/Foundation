@@ -19,7 +19,9 @@ public record IncrementCode(String mnemonic, byte code) implements OpCode {
         final boolean wide = slot > 255 || increment > Byte.MAX_VALUE || increment < Byte.MIN_VALUE;
         if (wide)
             return CodeElement.incrementStack(CodeElement.wide(CodeElement.fixed(code, (byte) (slot >>> 8),
-                (byte) (slot), (byte) (increment >> 8), (byte) (increment))), 0);
+                                                                                 (byte) (slot),
+                                                                                 (byte) (increment >> 8),
+                                                                                 (byte) (increment))), 0);
         return CodeElement.fixed(this.code(), (byte) slot, (byte) increment);
     }
 

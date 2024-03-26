@@ -1,11 +1,11 @@
 package mx.kenzie.foundation.assembler.tool;
 
 import mx.kenzie.foundation.Loader;
-import mx.kenzie.foundation.detail.Signature;
-import mx.kenzie.foundation.detail.Type;
 import mx.kenzie.foundation.assembler.ClassFile;
 import mx.kenzie.foundation.assembler.attribute.ConstantValue;
 import mx.kenzie.foundation.assembler.attribute.Synthetic;
+import mx.kenzie.foundation.detail.Signature;
+import mx.kenzie.foundation.detail.Type;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -43,7 +43,7 @@ public class FieldBuilderTest extends ClassFileBuilderTest {
         final Type type = Type.of("org.example", "Test");
         final ClassFileBuilder builder =
             new ClassFileBuilder(JAVA_21, type).field().named("test").ofType(Object.class).deprecated()
-                .synthetic().exit();
+                                               .synthetic().exit();
         final ClassFile file = builder.build();
         final Class<?> done = this.load(loader, file, type);
         assert done != null;
@@ -117,7 +117,11 @@ public class FieldBuilderTest extends ClassFileBuilderTest {
         final FieldBuilder field = builder.field().signature(new Signature("test", String.class));
         field.constantValue(STRING, "boo");
         assert field.attributes.size() == 1;
-        assert field.attributes.getFirst().build() instanceof ConstantValue value && value.attribute_name_index().ensure().is("ConstantValue") && value.constantvalue_index().ensure().is("boo");
+        assert field.attributes.getFirst().build() instanceof ConstantValue value && value.attribute_name_index()
+                                                                                          .ensure()
+                                                                                          .is("ConstantValue") && value.constantvalue_index()
+                                                                                                                       .ensure()
+                                                                                                                       .is("boo");
     }
 
     @Test
@@ -129,8 +133,13 @@ public class FieldBuilderTest extends ClassFileBuilderTest {
         assert field.attributes.size() == 1;
         field.attribute(Synthetic::new);
         assert field.attributes.size() == 2;
-        assert field.attributes.getFirst().build() instanceof ConstantValue value && value.attribute_name_index().ensure().is("ConstantValue") && value.constantvalue_index().ensure().is("boo");
-        assert field.attributes.getLast().build() instanceof Synthetic value && value.attribute_name_index().ensure().is("Synthetic");
+        assert field.attributes.getFirst().build() instanceof ConstantValue value && value.attribute_name_index()
+                                                                                          .ensure()
+                                                                                          .is("ConstantValue") && value.constantvalue_index()
+                                                                                                                       .ensure()
+                                                                                                                       .is("boo");
+        assert field.attributes.getLast().build() instanceof Synthetic value && value.attribute_name_index().ensure()
+                                                                                     .is("Synthetic");
     }
 
     @Test

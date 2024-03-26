@@ -1,7 +1,7 @@
 package mx.kenzie.foundation;
 
-import mx.kenzie.foundation.detail.Type;
 import mx.kenzie.foundation.detail.Modifier;
+import mx.kenzie.foundation.detail.Type;
 import org.junit.Test;
 
 import java.lang.annotation.ElementType;

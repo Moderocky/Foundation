@@ -46,7 +46,7 @@ public abstract class VariableCode implements OpCode {
         };
         if (slot > 255)
             return CodeElement.incrementStack(CodeElement.wide(CodeElement.fixed(code, (byte) (slot >>> 8),
-                (byte) (slot))), increment);
+                                                                                 (byte) (slot))), increment);
         return CodeElement.fixed(code, (byte) slot);
     }
 

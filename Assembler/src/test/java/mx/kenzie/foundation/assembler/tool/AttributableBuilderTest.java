@@ -1,11 +1,11 @@
 package mx.kenzie.foundation.assembler.tool;
 
 import mx.kenzie.foundation.Loader;
-import mx.kenzie.foundation.detail.Type;
 import mx.kenzie.foundation.assembler.ClassFile;
 import mx.kenzie.foundation.assembler.attribute.AttributeInfo;
 import mx.kenzie.foundation.assembler.attribute.Deprecated;
 import mx.kenzie.foundation.assembler.attribute.Synthetic;
+import mx.kenzie.foundation.detail.Type;
 import org.junit.Test;
 
 import java.io.File;

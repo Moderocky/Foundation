@@ -12,6 +12,7 @@ import java.io.OutputStream;
 public record U1(short value) implements UVec, Data, RecordConstant {
 
     private static final U1[] unsignedCache = new U1[256];
+    public static final U1 ZERO = U1.valueOf(0);
 
     public U1(byte value) {
         this((short) (((short) value) & 0xFF));
@@ -31,8 +32,6 @@ public record U1(short value) implements UVec, Data, RecordConstant {
         if (current == null) return unsignedCache[i] = new U1(i);
         return current;
     }
-
-    public static final U1 ZERO = U1.valueOf(0);
 
     @Override
     public int length() {

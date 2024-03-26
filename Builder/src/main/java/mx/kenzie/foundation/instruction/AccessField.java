@@ -1,5 +1,6 @@
 package mx.kenzie.foundation.instruction;
 
+import mx.kenzie.foundation.detail.Erasure;
 import mx.kenzie.foundation.detail.Member;
 import mx.kenzie.foundation.detail.Signature;
 import mx.kenzie.foundation.detail.Type;
@@ -18,18 +19,18 @@ public class AccessField {
         return new ConstantStub(Type.of(owner), Type.of(type), name);
     }
 
-    public interface Stub {
+    public interface Stub extends Erasure {
 
         default <Result> Instruction.Input<Result> get() {
             return visitor -> visitor.visitFieldInsn(GETSTATIC, this.owner().internalName(), this.name(),
-                this.type().descriptorString());
+                                                     this.type().descriptorString());
         }
 
         default <Result> Instruction.Input<Result> get(Instruction.Input<Object> object) {
             return visitor -> {
                 object.write(visitor);
                 visitor.visitFieldInsn(GETFIELD, this.owner().internalName(), this.name(),
-                    this.type().descriptorString());
+                                       this.type().descriptorString());
             };
         }
 
@@ -37,7 +38,7 @@ public class AccessField {
             return visitor -> {
                 value.write(visitor);
                 visitor.visitFieldInsn(PUTSTATIC, this.owner().internalName(), this.name(),
-                    this.type().descriptorString());
+                                       this.type().descriptorString());
             };
         }
 
@@ -46,7 +47,7 @@ public class AccessField {
                 object.write(visitor);
                 value.write(visitor);
                 visitor.visitFieldInsn(PUTFIELD, this.owner().internalName(), this.name(),
-                    this.type().descriptorString());
+                                       this.type().descriptorString());
             };
         }
 
@@ -54,7 +55,22 @@ public class AccessField {
 
         Type type();
 
+        @Override
+        default Type returnType() {
+            return this.type();
+        }
+
         String name();
+
+        @Override
+        default Type[] parameters() {
+            return new Type[0];
+        }
+
+        @Override
+        default String descriptorString() {
+            return this.returnType().descriptorString();
+        }
 
         default Signature asSignature() {
             return new Signature(name(), type());
@@ -62,6 +78,16 @@ public class AccessField {
 
         default Member asMember() {
             return new Member(owner(), asSignature());
+        }
+
+        @Override
+        default boolean isMethod() {
+            return false;
+        }
+
+        @Override
+        default boolean isField() {
+            return true;
         }
 
     }

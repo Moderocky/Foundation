@@ -1,8 +1,8 @@
 package mx.kenzie.foundation.assembler.tool;
 
 import mx.kenzie.foundation.Loader;
-import mx.kenzie.foundation.detail.Type;
 import mx.kenzie.foundation.assembler.ClassFile;
+import mx.kenzie.foundation.detail.Type;
 import org.junit.Test;
 
 import static mx.kenzie.foundation.assembler.tool.Access.*;

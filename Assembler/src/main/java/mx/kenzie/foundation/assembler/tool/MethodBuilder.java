@@ -5,7 +5,7 @@ import mx.kenzie.foundation.assembler.attribute.AttributeInfo;
 import mx.kenzie.foundation.assembler.code.CodeVector;
 import mx.kenzie.foundation.assembler.error.ClassBuilderException;
 import mx.kenzie.foundation.detail.Descriptor;
-import mx.kenzie.foundation.detail.MethodErasure;
+import mx.kenzie.foundation.detail.Erasure;
 import mx.kenzie.foundation.detail.Signature;
 import mx.kenzie.foundation.detail.Type;
 import org.jetbrains.annotations.Contract;
@@ -16,7 +16,7 @@ import java.util.function.Function;
 
 import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.UTF8;
 
-public class MethodBuilder extends ModifiableBuilder implements Constantive, MethodErasure {
+public class MethodBuilder extends ModifiableBuilder implements Constantive, Erasure {
 
     private static final int HAS_NAME = 0x0001, HAS_RETURN = 0x0010, HAS_PARAMETERS = 0x0100;
     protected final ClassFileBuilder.Storage storage;
@@ -41,7 +41,7 @@ public class MethodBuilder extends ModifiableBuilder implements Constantive, Met
         return this.named(signature.name());
     }
 
-    public MethodBuilder erasure(MethodErasure erasure) {
+    public MethodBuilder erasure(Erasure erasure) {
         this.details |= HAS_NAME | HAS_PARAMETERS | HAS_RETURN;
         return this.named(erasure.name()).type(erasure.returnType(), erasure.parameters());
     }
@@ -156,6 +156,10 @@ public class MethodBuilder extends ModifiableBuilder implements Constantive, Met
         }
         if (name == null) throw new ClassBuilderException("Method name is missing");
         for (AttributeBuilder attribute : attributes) attribute.finalise();
+    }
+
+    public CodeBuilder code(boolean ignoreStack, boolean ignoreFrames) {
+        return this.code().setTrackStack(!ignoreStack).setTrackFrames(!ignoreFrames);
     }
 
     public CodeBuilder code() {

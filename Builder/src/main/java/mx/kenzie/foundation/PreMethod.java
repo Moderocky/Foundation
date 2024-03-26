@@ -1,8 +1,8 @@
 package mx.kenzie.foundation;
 
-import mx.kenzie.foundation.detail.Type;
-import mx.kenzie.foundation.detail.MethodErasure;
+import mx.kenzie.foundation.detail.Erasure;
 import mx.kenzie.foundation.detail.Modifier;
+import mx.kenzie.foundation.detail.Type;
 import mx.kenzie.foundation.instruction.CallMethod;
 import mx.kenzie.foundation.instruction.Instruction;
 import org.objectweb.asm.ClassWriter;
@@ -11,7 +11,7 @@ import org.objectweb.asm.MethodVisitor;
 import java.lang.invoke.TypeDescriptor;
 import java.util.*;
 
-public class PreMethod extends BuildElement implements CodeBody, CallMethod.Stub, MethodErasure {
+public class PreMethod extends BuildElement implements CodeBody, CallMethod.Stub, Erasure {
 
     protected transient PreClass owner;
     protected int stack, locals;

@@ -81,11 +81,6 @@ public record Type(String getTypeName, String descriptorString, String internalN
         return count;
     }
 
-    public static final Type BYTE = Type.of(byte.class), SHORT = Type.of(short.class), INT = Type.of(int.class),
-        LONG = Type.of(long.class), FLOAT = Type.of(float.class), DOUBLE = Type.of(double.class), BOOLEAN =
-        Type.of(boolean.class), CHAR = Type.of(char.class), VOID = Type.of(void.class), OBJECT =
-        Type.of(Object.class), STRING = Type.of(String.class);
-
     public static Type[] parameters(TypeDescriptor value) {
         if (value instanceof java.lang.reflect.Type) return new Type[0];
         var string = value.descriptorString();
@@ -126,7 +121,10 @@ public record Type(String getTypeName, String descriptorString, String internalN
         }
         assert !list.isEmpty();
         return list.toArray(new Type[0]);
-    }
+    }    public static final Type BYTE = Type.of(byte.class), SHORT = Type.of(short.class), INT = Type.of(int.class),
+        LONG = Type.of(long.class), FLOAT = Type.of(float.class), DOUBLE = Type.of(double.class), BOOLEAN =
+        Type.of(boolean.class), CHAR = Type.of(char.class), VOID = Type.of(void.class), OBJECT =
+        Type.of(Object.class), STRING = Type.of(String.class);
 
     public static Type of(java.lang.reflect.Type value) {
         if (value instanceof Type type) return type;
@@ -308,5 +306,7 @@ public record Type(String getTypeName, String descriptorString, String internalN
         for (int i = 0; i < Short.MAX_VALUE; i++) if (descriptorString.charAt(i) != '[') return i;
         throw new IllegalStateException("Type " + this + " is too big?");
     }
+
+
 
 }

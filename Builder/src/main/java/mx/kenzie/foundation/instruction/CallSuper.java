@@ -1,6 +1,6 @@
 package mx.kenzie.foundation.instruction;
 
-import mx.kenzie.foundation.detail.MethodErasure;
+import mx.kenzie.foundation.detail.Erasure;
 import mx.kenzie.foundation.detail.Type;
 import org.objectweb.asm.Opcodes;
 
@@ -24,7 +24,7 @@ public class CallSuper {
     }
 
     public final <Klass extends java.lang.reflect.Type & TypeDescriptor>
-    Stub of(Klass owner, MethodErasure erasure) {
+    Stub of(Klass owner, Erasure erasure) {
         return new Stub(Type.of(owner), erasure.returnType(), erasure.name(), erasure.parameters());
     }
 
@@ -35,7 +35,7 @@ public class CallSuper {
                 object.write(visitor);
                 for (Instruction.Input<?> argument : arguments) argument.write(visitor);
                 visitor.visitMethodInsn(Opcodes.INVOKESPECIAL, owner.internalName(), name,
-                    Type.methodDescriptor(returnType, parameters), false);
+                                        Type.methodDescriptor(returnType, parameters), false);
                 if (returnType != Type.VOID) visitor.visitInsn(Opcodes.POP);
             };
         }
@@ -46,7 +46,7 @@ public class CallSuper {
                 object.write(visitor);
                 for (Instruction.Input<?> argument : arguments) argument.write(visitor);
                 visitor.visitMethodInsn(Opcodes.INVOKESPECIAL, owner.internalName(), name,
-                    Type.methodDescriptor(returnType, parameters), false);
+                                        Type.methodDescriptor(returnType, parameters), false);
                 if (returnType == Type.VOID) visitor.visitInsn(Opcodes.ACONST_NULL);
             };
         }

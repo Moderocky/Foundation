@@ -39,7 +39,7 @@ public abstract class FoundationTest {
     public void dump(PreClass thing) {
         try {
             final File file = new File("target/test-generation/" + this.getClass()
-                .getSimpleName() + "/" + thing.type.getTypeName() + ".class");
+                                                                       .getSimpleName() + "/" + thing.type.getTypeName() + ".class");
             if (!file.exists()) {
                 file.getParentFile().mkdirs();
                 file.createNewFile();

@@ -1,10 +1,10 @@
 package mx.kenzie.foundation.assembler.tool;
 
 import mx.kenzie.foundation.Loader;
-import mx.kenzie.foundation.detail.MethodErasure;
+import mx.kenzie.foundation.assembler.ClassFile;
+import mx.kenzie.foundation.detail.Erasure;
 import mx.kenzie.foundation.detail.Signature;
 import mx.kenzie.foundation.detail.Type;
-import mx.kenzie.foundation.assembler.ClassFile;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -48,7 +48,7 @@ public class MethodBuilderTest extends ClassFileBuilderTest {
     public void signature() {
         final ClassFileBuilder builder = new ClassFileBuilder(JAVA_21, RELEASE);
         final MethodBuilder method = builder.method().signature(new Signature(boolean[].class, "test", String.class,
-            int.class));
+                                                                              int.class));
         assert method.name != null;
         assert method.name.ensure().is("test");
         assert method.descriptor != null;
@@ -67,8 +67,8 @@ public class MethodBuilderTest extends ClassFileBuilderTest {
     @Test
     public void erasure() {
         final ClassFileBuilder builder = new ClassFileBuilder(JAVA_21, RELEASE);
-        final MethodBuilder method = builder.method().erasure(MethodErasure.of(boolean[].class, "test", String.class,
-            int.class));
+        final MethodBuilder method = builder.method().erasure(Erasure.of(boolean[].class, "test", String.class,
+                                                                         int.class));
         assert method.name != null;
         assert method.name.ensure().is("test");
         assert method.descriptor != null;
@@ -101,7 +101,7 @@ public class MethodBuilderTest extends ClassFileBuilderTest {
     public void parameters() {
         final ClassFileBuilder builder = new ClassFileBuilder(JAVA_21, RELEASE);
         final MethodBuilder method = builder.method().parameters(String[].class,
-            int.class);
+                                                                 int.class);
         assert method.name == null;
         assert method.descriptor == null;
         assert Arrays.equals(method.parameters(), Type.array(String[].class, int.class));

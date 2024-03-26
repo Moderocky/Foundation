@@ -1,7 +1,7 @@
 package mx.kenzie.foundation;
 
-import mx.kenzie.foundation.detail.Type;
 import mx.kenzie.foundation.detail.Modifier;
+import mx.kenzie.foundation.detail.Type;
 import mx.kenzie.foundation.detail.UnloadedClass;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -75,7 +75,7 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
             interfaces.add(anInterface.internalName());
         }
         writer.visit(version, this.modifierCode(), type.internalName(), null, parent.internalName(),
-            interfaces.toArray(new String[0]));
+                     interfaces.toArray(new String[0]));
         for (PreAnnotation annotation : annotations) annotation.write(writer);
         for (PreField field : fields) field.build(writer);
         for (PreMethod method : methods) method.build(writer);

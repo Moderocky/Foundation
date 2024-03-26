@@ -41,7 +41,7 @@ public class FieldBuilder extends ModifiableBuilder implements Constantive {
 
     public <Value extends Constable> FieldBuilder constantValue(ConstantType<?, Value> type, Value value) {
         return this.attribute(new ConstantValue(storage.constant(UTF8, ConstantValue.ATTRIBUTE_NAME),
-            this.storage.constant(type, value)));
+                                                this.storage.constant(type, value)));
     }
 
     public FieldBuilder attribute(AttributeInfo.FieldAttribute attribute) {
@@ -77,7 +77,7 @@ public class FieldBuilder extends ModifiableBuilder implements Constantive {
     public FieldInfo constant() {
         this.finalise();
         return new FieldInfo(access_flags, name, descriptor, U2.valueOf(attributes.size()),
-            attributes.toArray(new AttributeInfo[0]));
+                             attributes.toArray(new AttributeInfo[0]));
     }
 
     public FieldBuilder setModifiers(Access.Field... flags) {

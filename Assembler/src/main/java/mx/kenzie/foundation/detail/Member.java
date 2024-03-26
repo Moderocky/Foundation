@@ -17,7 +17,7 @@ import java.util.Objects;
  * @param owner     The class the invocation comes from
  * @param signature The invocation's signature
  */
-public record Member(Type owner, Signature signature) implements Descriptor, RecordConstant {
+public record Member(Type owner, Signature signature) implements Erasure, Descriptor, RecordConstant {
 
     public <Klass extends java.lang.reflect.Type & TypeDescriptor> Member(Klass owner, Signature signature) {
         this(Type.of(owner), signature);
@@ -63,13 +63,33 @@ public record Member(Type owner, Signature signature) implements Descriptor, Rec
             case MethodTypeReference.NEW_INVOKE_SPECIAL:
                 if (!Objects.equals(signature.name(), "<init>"))
                     throw new IllegalArgumentException("Type 8 (NEW_INVOKE_SPECIAL) is reserved for constructor " +
-                        "<init>");
+                                                           "<init>");
             case MethodTypeReference.INVOKE_VIRTUAL, MethodTypeReference.INVOKE_STATIC,
                  MethodTypeReference.INVOKE_SPECIAL, MethodTypeReference.INVOKE_INTERFACE:
                 if (Objects.equals(signature.name(), "<clinit>"))
                     throw new IllegalArgumentException("Cannot call the <clinit> class initializer");
         }
         return new Invocation(this, type, isInterface);
+    }
+
+    @Override
+    public Type returnType() {
+        return Type.fromDescriptor(this);
+    }
+
+    @Override
+    public String name() {
+        return signature.name();
+    }
+
+    @Override
+    public Type[] parameters() {
+        return Type.parameters(this);
+    }
+
+    @Override
+    public Member constant() {
+        return this;
     }
 
     @Override

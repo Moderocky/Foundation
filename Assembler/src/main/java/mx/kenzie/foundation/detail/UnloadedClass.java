@@ -17,12 +17,12 @@ public record UnloadedClass(Type type, byte[] bytecode) implements RecordConstan
 
     public UnloadedClass(String path, File file) throws IOException {
         this(Type.of(path, file.getName()
-            .substring(0, file.getName().length() - 6)), Files.readAllBytes(file.toPath()));
+                               .substring(0, file.getName().length() - 6)), Files.readAllBytes(file.toPath()));
     }
 
     private static byte[] getBytecode(Class<?> loaded) {
         try (final InputStream stream = ClassLoader.getSystemResourceAsStream(loaded.getName()
-            .replace('.', '/') + ".class")) {
+                                                                                    .replace('.', '/') + ".class")) {
             assert stream != null;
             return stream.readAllBytes();
         } catch (IOException ex) {

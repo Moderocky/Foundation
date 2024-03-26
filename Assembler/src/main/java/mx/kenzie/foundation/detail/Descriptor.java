@@ -1,6 +1,7 @@
 package mx.kenzie.foundation.detail;
 
 import org.valross.constantine.Constant;
+import org.valross.constantine.Constantive;
 import org.valross.constantine.RecordConstant;
 
 import java.lang.invoke.TypeDescriptor;
@@ -8,7 +9,7 @@ import java.lang.invoke.TypeDescriptor;
 /**
  * A descriptor, used for method types, field types, etc.
  */
-public interface Descriptor extends TypeDescriptor, Constant {
+public interface Descriptor extends TypeDescriptor, Constantive {
 
     static Descriptor of(String string) {
         return new Method(string);

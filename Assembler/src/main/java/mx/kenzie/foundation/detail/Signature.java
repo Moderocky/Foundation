@@ -12,7 +12,7 @@ import java.lang.reflect.Field;
  * @param name       the invocation name (e.g. field name, method name)
  * @param descriptor the invocation descriptor (field = type descriptor, method = method descriptor)
  */
-public record Signature(String name, Descriptor descriptor) implements RecordConstant, Descriptor {
+public record Signature(String name, Descriptor descriptor) implements RecordConstant, Descriptor, Erasure {
 
     @SafeVarargs
     public <Klass extends java.lang.reflect.Type & TypeDescriptor> Signature(Klass returnType, String name,
@@ -28,7 +28,7 @@ public record Signature(String name, Descriptor descriptor) implements RecordCon
         this(method.getReturnType(), method.getName(), method.getParameterTypes());
     }
 
-    public Signature(MethodErasure method) {
+    public Signature(Erasure method) {
         this(method.returnType(), method.name(), method.parameters());
     }
 
@@ -37,8 +37,23 @@ public record Signature(String name, Descriptor descriptor) implements RecordCon
     }
 
     @Override
+    public Type returnType() {
+        return Type.fromDescriptor(this);
+    }
+
+    @Override
+    public Type[] parameters() {
+        return Type.parameters(this);
+    }
+
+    @Override
     public String descriptorString() {
         return descriptor.descriptorString();
+    }
+
+    @Override
+    public Signature constant() {
+        return this;
     }
 
 }

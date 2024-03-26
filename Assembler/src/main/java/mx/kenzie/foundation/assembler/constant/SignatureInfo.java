@@ -25,7 +25,9 @@ public record SignatureInfo(PoolReference name_index,
 
     @Override
     public boolean is(Constable object) {
-        return object instanceof Signature signature && name_index.ensure().is(signature.name()) && descriptor_index.ensure().is(signature.descriptorString());
+        return object instanceof Signature signature
+            && name_index.ensure().is(signature.name())
+            && descriptor_index.ensure().is(signature.descriptorString());
     }
 
     @Override

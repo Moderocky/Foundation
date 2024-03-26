@@ -98,8 +98,9 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
     public ClassFile build() throws ClassBuilderException {
         this.finalise();
         return new ClassFile(magic, minor_version, major_version, constantPoolCount(), constantPool(), access_flags,
-            this_class, super_class, interfacesCount(), interfaces.toArray(new PoolReference[0]), fieldsCount(),
-            fields(), methodsCount(), methods(), attributesCount(), attributes());
+                             this_class, super_class, interfacesCount(), interfaces.toArray(new PoolReference[0]),
+                             fieldsCount(),
+                             fields(), methodsCount(), methods(), attributesCount(), attributes());
     }
 
     private MethodInfo[] methods() {
@@ -262,7 +263,7 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
 
         public ReferenceInfo valueOf(ConstantType<ReferenceInfo, Member> tag, Member member) {
             return new ReferenceInfo(tag, this.constant(TYPE, member.owner()), this.constant(NAME_AND_TYPE,
-                member.signature()));
+                                                                                             member.signature()));
         }
 
         public NumberInfo<Integer> valueOf(Integer i) {
@@ -285,26 +286,30 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
 
         public DynamicInfo constantDynamic(Signature signature, Member.Invocation invocation, Constable... arguments) {
             return new DynamicInfo(DYNAMIC, bootstrapTable().registerMethod(invocation, arguments),
-                this.constant(NAME_AND_TYPE, signature));
+                                   this.constant(NAME_AND_TYPE, signature));
         }
 
         public DynamicInfo invokeDynamic(Signature signature, Member.Invocation invocation, Constable... arguments) {
             return new DynamicInfo(INVOKE_DYNAMIC, bootstrapTable().registerMethod(invocation, arguments),
-                this.constant(NAME_AND_TYPE, signature));
+                                   this.constant(NAME_AND_TYPE, signature));
         }
 
         public MethodHandleInfo valueOf(Member.Invocation invocation) {
             return new MethodHandleInfo(METHOD_HANDLE, invocation, U1.valueOf(invocation.type()),
-                switch (invocation.type()) {
-                    case GET_FIELD, GET_STATIC, PUT_FIELD, PUT_STATIC ->
-                        this.constant(FIELD_REFERENCE, invocation.member());
-                    case INVOKE_INTERFACE -> this.constant(INTERFACE_METHOD_REFERENCE, invocation.member());
-                    case INVOKE_STATIC, INVOKE_SPECIAL ->
-                        this.constant(invocation.isInterface() ? INTERFACE_METHOD_REFERENCE : METHOD_REFERENCE,
-                            invocation.member());
-                    case INVOKE_VIRTUAL, NEW_INVOKE_SPECIAL -> this.constant(METHOD_REFERENCE, invocation.member());
-                    default -> throw new IllegalArgumentException("Unknown dynamic instruction " + invocation.type());
-                });
+                                        switch (invocation.type()) {
+                                            case GET_FIELD, GET_STATIC, PUT_FIELD, PUT_STATIC ->
+                                                this.constant(FIELD_REFERENCE, invocation.member());
+                                            case INVOKE_INTERFACE ->
+                                                this.constant(INTERFACE_METHOD_REFERENCE, invocation.member());
+                                            case INVOKE_STATIC, INVOKE_SPECIAL ->
+                                                this.constant(invocation.isInterface() ? INTERFACE_METHOD_REFERENCE :
+                                                                  METHOD_REFERENCE,
+                                                              invocation.member());
+                                            case INVOKE_VIRTUAL, NEW_INVOKE_SPECIAL ->
+                                                this.constant(METHOD_REFERENCE, invocation.member());
+                                            default ->
+                                                throw new IllegalArgumentException("Unknown dynamic instruction " + invocation.type());
+                                        });
         }
 
         public DescriptorInfo valueOf(Descriptor descriptor) {

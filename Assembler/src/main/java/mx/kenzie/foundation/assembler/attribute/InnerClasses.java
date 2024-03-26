@@ -10,9 +10,7 @@ import org.valross.constantine.RecordConstant;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public record InnerClasses(PoolReference attribute_name_index,
-                           U4 attribute_length,
-                           Classes[] classes)
+public record InnerClasses(PoolReference attribute_name_index, U4 attribute_length, Classes[] classes)
     implements AttributeInfo, UVec, RecordConstant {
 
     public U2 number_of_classes() {
@@ -37,10 +35,9 @@ public record InnerClasses(PoolReference attribute_name_index,
         for (Data reference : classes) reference.write(stream);
     }
 
-    public record Classes(PoolReference inner_class_info_index,
-                          PoolReference outer_class_info_index,
-                          PoolReference inner_name_index,
-                          U2 inner_class_access_flags) implements Data, UVec, RecordConstant {
+    public record Classes(PoolReference inner_class_info_index, PoolReference outer_class_info_index,
+                          PoolReference inner_name_index, U2 inner_class_access_flags)
+        implements Data, UVec, RecordConstant {
 
         @Override
         public int length() {

@@ -47,7 +47,7 @@ public abstract class AttributableBuilder implements Builder {
     @SuppressWarnings("unchecked")
     protected <Type extends AttributeInfo> Type[] attributes(Type... array) {
         final AttributeInfo[] infos = (AttributeInfo[]) Array.newInstance(array.getClass().componentType(),
-            attributes.size());
+                                                                          attributes.size());
         for (int i = 0; i < infos.length; i++) infos[i] = attributes.get(i).build();
         return (Type[]) infos;
     }
