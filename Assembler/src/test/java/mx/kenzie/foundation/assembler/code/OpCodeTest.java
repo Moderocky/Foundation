@@ -1064,7 +1064,11 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     @Test
-    public void testSWAP() {
+    public void testSWAP() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(float.class).code()
+            .write(LDC.value(1.5F), ICONST_3, SWAP, FRETURN).exit()).invoke(null).equals(1.5F);
+        assert this.compileForTest(this.method().returns(String.class).code()
+            .write(LDC.value("hello"), ICONST_M1, SWAP, ARETURN).exit()).invoke(null).equals("hello");
     }
 
     @Test
