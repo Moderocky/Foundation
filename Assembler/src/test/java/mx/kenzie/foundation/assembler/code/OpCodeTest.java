@@ -6,6 +6,7 @@ import mx.kenzie.foundation.assembler.tool.ClassFileBuilder;
 import mx.kenzie.foundation.assembler.tool.MethodBuilder;
 import mx.kenzie.foundation.assembler.tool.MethodBuilderTest;
 import mx.kenzie.foundation.detail.Type;
+import org.jetbrains.annotations.Contract;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -21,10 +22,13 @@ import static mx.kenzie.foundation.detail.Version.RELEASE;
 
 public class OpCodeTest extends MethodBuilderTest {
 
+    @Contract(pure = true)
     protected MethodBuilder method() {
-        return new ClassFileBuilder(JAVA_21, RELEASE).setType(Type.of("org.example", "Test")).method().setModifiers(PUBLIC, STATIC).named("test");
+        return new ClassFileBuilder(JAVA_21, RELEASE).setType(Type.of("org.example", "Test")).method()
+                                                     .setModifiers(PUBLIC, STATIC).named("test");
     }
 
+    @Contract(pure = true)
     protected Method compileForTest(MethodBuilder builder) throws NoSuchMethodException {
         final Loader loader = Loader.createDefault();
         final ClassFile file = builder.exit().build();
@@ -326,38 +330,38 @@ public class OpCodeTest extends MethodBuilderTest {
 
     @Test
     public void testD2F() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(float.class).code()
-            .write(DCONST_0, D2F, FRETURN).exit()).invoke(null).equals(0F);
-        assert this.compileForTest(this.method().returns(float.class).code()
-            .write(DCONST_1, D2F, FRETURN).exit()).invoke(null).equals(1.0F);
-        assert this.compileForTest(this.method().returns(float.class).code()
-            .write(LDC.value(1.5D), D2F, FRETURN).exit()).invoke(null).equals(1.5F);
-        assert this.compileForTest(this.method().returns(float.class).code()
-            .write(LDC.value(-4.1D), D2F, FRETURN).exit()).invoke(null).equals(-4.1F);
+        assert this.compileForTest(this.method().returns(float.class).code().write(DCONST_0, D2F, FRETURN).exit())
+                   .invoke(null).equals(0F);
+        assert this.compileForTest(this.method().returns(float.class).code().write(DCONST_1, D2F, FRETURN).exit())
+                   .invoke(null).equals(1.0F);
+        assert this.compileForTest(this.method().returns(float.class).code().write(LDC.value(1.5D), D2F, FRETURN)
+                                       .exit()).invoke(null).equals(1.5F);
+        assert this.compileForTest(this.method().returns(float.class).code().write(LDC.value(-4.1D), D2F, FRETURN)
+                                       .exit()).invoke(null).equals(-4.1F);
     }
 
     @Test
     public void testD2I() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(int.class).code()
-            .write(DCONST_0, D2I, IRETURN).exit()).invoke(null).equals(0);
-        assert this.compileForTest(this.method().returns(int.class).code()
-            .write(DCONST_1, D2I, IRETURN).exit()).invoke(null).equals(1);
-        assert this.compileForTest(this.method().returns(int.class).code()
-            .write(LDC.value(1.5D), D2I, IRETURN).exit()).invoke(null).equals(1);
-        assert this.compileForTest(this.method().returns(int.class).code()
-            .write(LDC.value(-4.1D), D2I, IRETURN).exit()).invoke(null).equals(-4);
+        assert this.compileForTest(this.method().returns(int.class).code().write(DCONST_0, D2I, IRETURN).exit())
+                   .invoke(null).equals(0);
+        assert this.compileForTest(this.method().returns(int.class).code().write(DCONST_1, D2I, IRETURN).exit())
+                   .invoke(null).equals(1);
+        assert this.compileForTest(this.method().returns(int.class).code().write(LDC.value(1.5D), D2I, IRETURN).exit())
+                   .invoke(null).equals(1);
+        assert this.compileForTest(this.method().returns(int.class).code().write(LDC.value(-4.1D), D2I, IRETURN).exit())
+                   .invoke(null).equals(-4);
     }
 
     @Test
     public void testD2L() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(long.class).code()
-            .write(DCONST_0, D2L, LRETURN).exit()).invoke(null).equals(0L);
-        assert this.compileForTest(this.method().returns(long.class).code()
-            .write(DCONST_1, D2L, LRETURN).exit()).invoke(null).equals(1L);
-        assert this.compileForTest(this.method().returns(long.class).code()
-            .write(LDC.value(1.5D), D2L, LRETURN).exit()).invoke(null).equals(1L);
-        assert this.compileForTest(this.method().returns(long.class).code()
-            .write(LDC.value(-4.1D), D2L, LRETURN).exit()).invoke(null).equals(-4L);
+        assert this.compileForTest(this.method().returns(long.class).code().write(DCONST_0, D2L, LRETURN).exit())
+                   .invoke(null).equals(0L);
+        assert this.compileForTest(this.method().returns(long.class).code().write(DCONST_1, D2L, LRETURN).exit())
+                   .invoke(null).equals(1L);
+        assert this.compileForTest(this.method().returns(long.class).code().write(LDC.value(1.5D), D2L, LRETURN).exit())
+                   .invoke(null).equals(1L);
+        assert this.compileForTest(this.method().returns(long.class).code().write(LDC.value(-4.1D), D2L, LRETURN)
+                                       .exit()).invoke(null).equals(-4L);
     }
 
     @Test
@@ -1013,15 +1017,33 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     @Test
-    public void testNOP() {
+    public void testNOP() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(String.class).code()
+                                       .write(NOP, NOP, LDC.value("hello"), NOP, NOP, ARETURN).exit()).invoke(null)
+                   .equals("hello");
     }
 
     @Test
-    public void testPOP() {
+    public void testPOP() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(float.class).code()
+                                       .write(LDC.value(1.5F), ICONST_3, POP, FRETURN).exit()).invoke(null)
+                   .equals(1.5F);
+        assert this.compileForTest(this.method().returns(String.class).code()
+                                       .write(LDC.value("hello"), LDC.value("goodbye"), ICONST_M1, POP, POP, ARETURN)
+                                       .exit()).invoke(null).equals("hello");
     }
 
     @Test
-    public void testPOP2() {
+    public void testPOP2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(float.class).code()
+                                       .write(LDC.value(1.5F), ICONST_3, FCONST_0, POP2, FRETURN).exit()).invoke(null)
+                   .equals(1.5F);
+        assert this.compileForTest(this.method().returns(String.class).code()
+                                       .write(LDC.value("hello"), LDC.value("goodbye"), ICONST_M1, POP2, ARETURN)
+                                       .exit()).invoke(null).equals("hello");
+        assert this.compileForTest(this.method().returns(String.class).code()
+                                       .write(LDC.value("hello"), LCONST_0, POP2, ARETURN).exit()).invoke(null)
+                   .equals("hello");
     }
 
     @Test
@@ -1037,7 +1059,9 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     @Test
-    public void testRETURN() {
+    public void testRETURN() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().code()
+                                       .write(RETURN).exit()).invoke(null) == null;
     }
 
     @Test
@@ -1066,9 +1090,11 @@ public class OpCodeTest extends MethodBuilderTest {
     @Test
     public void testSWAP() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         assert this.compileForTest(this.method().returns(float.class).code()
-            .write(LDC.value(1.5F), ICONST_3, SWAP, FRETURN).exit()).invoke(null).equals(1.5F);
+                                       .write(LDC.value(1.5F), ICONST_3, SWAP, FRETURN).exit()).invoke(null)
+                   .equals(1.5F);
         assert this.compileForTest(this.method().returns(String.class).code()
-            .write(LDC.value("hello"), ICONST_M1, SWAP, ARETURN).exit()).invoke(null).equals("hello");
+                                       .write(LDC.value("hello"), ICONST_M1, SWAP, ARETURN).exit()).invoke(null)
+                   .equals("hello");
     }
 
     @Test
