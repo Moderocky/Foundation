@@ -19,8 +19,8 @@ import java.util.Objects;
  */
 public record Member(Type owner, Signature signature) implements Erasure, Descriptor, RecordConstant {
 
-    public <Klass extends java.lang.reflect.Type & TypeDescriptor> Member(Klass owner, Signature signature) {
-        this(Type.of(owner), signature);
+    public <Klass extends java.lang.reflect.Type & TypeDescriptor> Member(Klass owner, Erasure erasure) {
+        this(Type.of(owner), erasure.getSignature());
     }
 
     @SafeVarargs
