@@ -59,7 +59,7 @@ public interface CodeElement extends Data, UVec, UnboundedElement {
     static int knownStackIncrement(int opcode) {
         switch ((byte) opcode) {
             case NOP, SWAP, IINC, GOTO, GOTO_W, RET, RETURN, GETFIELD, NEWARRAY, ANEWARRAY, ARRAYLENGTH, CHECKCAST,
-                 INSTANCEOF:
+                 INSTANCEOF, WIDE:
                 return 0;
             case ACONST_NULL, LDC, LDC_W, DUP, DUP_X1, DUP_X2, I2L, I2D, F2D, F2L, JSR, JSR_W, GETSTATIC, NEW:
                 return 1;
@@ -75,7 +75,7 @@ public interface CodeElement extends Data, UVec, UnboundedElement {
                 return -3;
             case INVOKEVIRTUAL, INVOKESPECIAL, INVOKESTATIC, INVOKEINTERFACE, INVOKEDYNAMIC:
                 throw new IllegalArgumentException("Invoke opcode requires dynamic stack size calculation");
-            case WIDE, MULTIANEWARRAY:
+            case MULTIANEWARRAY:
                 throw new IllegalArgumentException("Opcode requires dynamic stack size calculation");
         }
         if (opcode < 9) return 1;
@@ -139,6 +139,7 @@ public interface CodeElement extends Data, UVec, UnboundedElement {
             public byte[] binary() {
                 return element.binary();
             }
+
         }
         //</editor-fold>
         return new WrapperElement(element, increment);
@@ -181,6 +182,7 @@ public interface CodeElement extends Data, UVec, UnboundedElement {
             public byte[] binary() {
                 return element.binary();
             }
+
         }
         //</editor-fold>
         return new WrapperElement(element, slot);
