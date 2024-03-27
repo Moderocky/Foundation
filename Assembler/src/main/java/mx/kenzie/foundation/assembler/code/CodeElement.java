@@ -135,6 +135,10 @@ public interface CodeElement extends Data, UVec, UnboundedElement {
                 return element.constant();
             }
 
+            @Override
+            public byte[] binary() {
+                return element.binary();
+            }
         }
         //</editor-fold>
         return new WrapperElement(element, increment);
@@ -173,6 +177,10 @@ public interface CodeElement extends Data, UVec, UnboundedElement {
                 return element.constant();
             }
 
+            @Override
+            public byte[] binary() {
+                return element.binary();
+            }
         }
         //</editor-fold>
         return new WrapperElement(element, slot);
