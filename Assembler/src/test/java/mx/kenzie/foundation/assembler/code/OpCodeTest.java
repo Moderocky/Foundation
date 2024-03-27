@@ -9,6 +9,7 @@ import mx.kenzie.foundation.detail.Type;
 import org.jetbrains.annotations.Contract;
 import org.junit.Test;
 
+import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -374,7 +375,15 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     @Test
-    public void testDADD() {
+    public void testDADD() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Random random = new Random();
+        for (int i = 0; i < 100; i++) {
+            final double a = random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE), b =
+                random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+            assert this.compileForTest(this.method().returns(double.class).code()
+                                           .write(LDC.value(a), LDC.value(b), DADD, DRETURN).exit()).invoke(null)
+                       .equals(a + b);
+        }
     }
 
     @Test
@@ -398,83 +407,185 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     @Test
-    public void testDCMPG() {
+    public void testDCMPG() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Random random = new Random();
+        for (int i = 0; i < 100; i++) {
+            final double a = random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE), b =
+                random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+            assert this.compileForTest(this.method().returns(int.class).code()
+                                           .write(LDC.value(a), LDC.value(b), DCMPG, IRETURN).exit()).invoke(null)
+                       .equals(Double.compare(a, b));
+        }
     }
 
     @Test
-    public void testDCMPL() {
+    public void testDCMPL() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Random random = new Random();
+        for (int i = 0; i < 100; i++) {
+            final double a = random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE), b =
+                random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+            assert this.compileForTest(this.method().returns(int.class).code()
+                                           .write(LDC.value(a), LDC.value(b), DCMPL, IRETURN).exit()).invoke(null)
+                       .equals(Double.compare(a, b));
+        }
     }
 
     @Test
-    public void testDCONST0() {
+    public void testDCONST0() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(double.class).code().write(DCONST_0, DRETURN).exit())
+                   .invoke(null).equals(0D);
     }
 
     @Test
-    public void testDCONST1() {
+    public void testDCONST1() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(double.class).code().write(DCONST_1, DRETURN).exit())
+                   .invoke(null).equals(1D);
     }
 
     @Test
-    public void testDDIV() {
+    public void testDDIV() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Random random = new Random();
+        for (int i = 0; i < 100; i++) {
+            final double a = random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE), b =
+                random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+            assert this.compileForTest(this.method().returns(double.class).code()
+                                           .write(LDC.value(a), LDC.value(b), DDIV, DRETURN).exit()).invoke(null)
+                       .equals(a / b);
+        }
     }
 
     @Test
-    public void testDLOAD0() {
+    public void testDLOAD0() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().parameters(double.class, double.class, double.class, double.class)
+                                       .returns(double.class).code().write(DLOAD_0, DRETURN).exit())
+                   .invoke(null, 0D, 1D, 2D, 3D).equals(0D);
+        assert this.compileForTest(this.method().returns(double.class).code()
+                                       .write(DCONST_1, DSTORE_0, DLOAD_0, DRETURN).exit()).invoke(null).equals(1D);
     }
 
     @Test
-    public void testDLOAD1() {
+    public void testDLOAD1() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().parameters(int.class, double.class, double.class, double.class)
+                                       .returns(double.class).code().write(DLOAD_1, DRETURN).exit())
+                   .invoke(null, 0, 1D, 2D, 3D).equals(1D);
+        assert this.compileForTest(this.method().returns(double.class).code()
+                                       .write(DCONST_1, DSTORE_1, DLOAD_1, DRETURN).exit()).invoke(null).equals(1D);
     }
 
     @Test
-    public void testDLOAD2() {
+    public void testDLOAD2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().parameters(double.class, double.class, double.class, double.class)
+                                       .returns(double.class).code().write(DLOAD_2, DRETURN).exit())
+                   .invoke(null, 0D, 1D, 2D, 3D).equals(1D);
+        assert this.compileForTest(this.method().returns(double.class).code()
+                                       .write(DCONST_1, DSTORE_2, DLOAD_2, DRETURN).exit()).invoke(null).equals(1D);
     }
 
     @Test
-    public void testDLOAD3() {
+    public void testDLOAD3() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().parameters(int.class, double.class, double.class, double.class)
+                                       .returns(double.class).code().write(DLOAD_3, DRETURN).exit())
+                   .invoke(null, 0, 1D, 2D, 3D).equals(2D);
+        assert this.compileForTest(this.method().returns(double.class).code()
+                                       .write(DCONST_1, DSTORE_3, DLOAD_3, DRETURN).exit()).invoke(null).equals(1D);
     }
 
     @Test
-    public void testDLOAD() {
+    public void testDLOAD() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Random random = new Random();
+        for (int i = 0; i < 10; i++) {
+            final double value = random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+            assert this.compileForTest(this.method().returns(double.class).code()
+                                           .write(LDC.value(value), DSTORE.var(i), DLOAD.var(i), DRETURN).exit())
+                       .invoke(null).equals(value);
+        }
     }
 
     @Test
-    public void testDMUL() {
+    public void testDMUL() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Random random = new Random();
+        for (int i = 0; i < 100; i++) {
+            final double a = random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE), b =
+                random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+            assert this.compileForTest(this.method().returns(double.class).code()
+                                           .write(LDC.value(a), LDC.value(b), DMUL, DRETURN).exit()).invoke(null)
+                       .equals(a * b);
+        }
     }
 
     @Test
-    public void testDNEG() {
+    public void testDNEG() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Random random = new Random();
+        for (int i = 0; i < 100; i++) {
+            final double value = random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+            assert this.compileForTest(this.method().returns(double.class).code().write(LDC.value(value), DNEG, DRETURN)
+                                           .exit()).invoke(null).equals(-value);
+        }
     }
 
     @Test
-    public void testDREM() {
+    public void testDREM() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Random random = new Random();
+        for (int i = 0; i < 100; i++) {
+            final double a = random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE), b =
+                random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+            assert this.compileForTest(this.method().returns(double.class).code()
+                                           .write(LDC.value(a), LDC.value(b), DREM, DRETURN).exit()).invoke(null)
+                       .equals(a % b);
+        }
     }
 
     @Test
-    public void testDRETURN() {
+    public void testDRETURN() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(double.class).code().write(DCONST_1, DRETURN).exit())
+                   .invoke(null).equals(1D);
     }
 
     @Test
-    public void testDSTORE0() {
+    public void testDSTORE0() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(double.class).code()
+                                       .write(DCONST_1, DSTORE_0, DLOAD_0, DRETURN).exit()).invoke(null).equals(1D);
     }
 
     @Test
-    public void testDSTORE1() {
+    public void testDSTORE1() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(double.class).code()
+                                       .write(DCONST_1, DSTORE_1, DLOAD_1, DRETURN).exit()).invoke(null).equals(1D);
     }
 
     @Test
-    public void testDSTORE2() {
+    public void testDSTORE2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(double.class).code()
+                                       .write(DCONST_1, DSTORE_2, DLOAD_2, DRETURN).exit()).invoke(null).equals(1D);
     }
 
     @Test
-    public void testDSTORE3() {
+    public void testDSTORE3() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(double.class).code()
+                                       .write(DCONST_1, DSTORE_3, DLOAD_3, DRETURN).exit()).invoke(null).equals(1D);
     }
 
     @Test
-    public void testDSTORE() {
+    public void testDSTORE() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Random random = new Random();
+        for (int i = 0; i < 10; i++) {
+            final double value = random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+            assert this.compileForTest(this.method().returns(double.class).code()
+                                           .write(LDC.value(value), DSTORE.var(i), DLOAD.var(i), DRETURN).exit())
+                       .invoke(null).equals(value);
+        }
     }
 
     @Test
-    public void testDSUB() {
+    public void testDSUB() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Random random = new Random();
+        for (int i = 0; i < 100; i++) {
+            final double a = random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE), b =
+                random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+            assert this.compileForTest(this.method().returns(double.class).code()
+                                           .write(LDC.value(a), LDC.value(b), DSUB, DRETURN).exit()).invoke(null)
+                       .equals(a - b);
+        }
     }
 
     @Test
@@ -484,17 +595,15 @@ public class OpCodeTest extends MethodBuilderTest {
                                               ARETURN)
                                        .exit()).invoke(null) != null;
         assert this.compileForTest(this.method().returns(Object.class).code()
-                                       .write(LDC.value("hello"), DUP, POP,
-                                              ARETURN)
-                                       .exit()).invoke(null).equals("hello");
+                                       .write(LDC.value("hello"), DUP, POP, ARETURN).exit()).invoke(null)
+                   .equals("hello");
     }
 
     @Test
     public void testDUPX1() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         assert this.compileForTest(this.method().returns(Object.class).code()
-                                       .write(LDC.value("goodbye"), LDC.value("hello"), DUP_X1, POP2,
-                                              ARETURN)
-                                       .exit()).invoke(null).equals("hello");
+                                       .write(LDC.value("goodbye"), LDC.value("hello"), DUP_X1, POP2, ARETURN).exit())
+                   .invoke(null).equals("hello");
     }
 
     @Test
@@ -504,29 +613,44 @@ public class OpCodeTest extends MethodBuilderTest {
                                               ARETURN)
                                        .exit()).invoke(null).equals("hello");
         assert this.compileForTest(this.method().returns(Object.class).code()
-                                       .write(LCONST_0, LDC.value("hello"), DUP_X2, POP, POP2,
-                                              ARETURN)
-                                       .exit()).invoke(null).equals("hello");
+                                       .write(LCONST_0, LDC.value("hello"), DUP_X2, POP, POP2, ARETURN).exit())
+                   .invoke(null).equals("hello");
     }
 
     @Test
     public void testDUP2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         assert this.compileForTest(this.method().returns(Object.class).code()
-                                       .write(LDC.value("hello"), LDC.value("there"), DUP2, POP2, POP,
-                                              ARETURN)
-                                       .exit()).invoke(null).equals("hello");
+                                       .write(LDC.value("hello"), LDC.value("there"), DUP2, POP2, POP, ARETURN).exit())
+                   .invoke(null).equals("hello");
+        assert this.compileForTest(this.method().returns(long.class).code().write(LCONST_1, DUP2, POP2, LRETURN).exit())
+                   .invoke(null).equals(1L);
+    }
+
+    @Test
+    public void testDUP2X1() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(int.class).code()
+                                       .write(BIPUSH.value(5), LCONST_1, DUP2_X1, POP2, IRETURN).exit()).invoke(null)
+                   .equals(5);
         assert this.compileForTest(this.method().returns(long.class).code()
-                                       .write(LCONST_1, DUP2, POP2,
-                                              LRETURN)
-                                       .exit()).invoke(null).equals(1L);
+                                       .write(BIPUSH.value(5), LCONST_1, DUP2_X1, POP2, POP, LRETURN).exit())
+                   .invoke(null).equals(1L);
+        assert this.compileForTest(this.method().returns(int.class).code()
+                                       .write(BIPUSH.value(3), BIPUSH.value(5), LCONST_1, DUP2_X1, POP2, POP, POP2,
+                                              IRETURN)
+                                       .exit()).invoke(null).equals(3);
     }
 
     @Test
-    public void testDUP2X1() {
-    }
-
-    @Test
-    public void testDUP2X2() {
+    public void testDUP2X2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(long.class).code()
+                                       .write(LCONST_0, LCONST_1, DUP2_X2, POP2, LRETURN).exit()).invoke(null)
+                   .equals(0L);
+        assert this.compileForTest(this.method().returns(long.class).code()
+                                       .write(LCONST_0, LCONST_1, DUP2_X2, POP2, POP2, LRETURN).exit()).invoke(null)
+                   .equals(1L);
+        assert this.compileForTest(this.method().returns(int.class).code()
+                                       .write(ICONST_M1, LCONST_0, LCONST_1, DUP2_X2, POP2, POP2, POP2, IRETURN).exit())
+                   .invoke(null).equals(-1);
     }
 
     @Test
@@ -816,7 +940,10 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     @Test
-    public void testGETSTATIC() {
+    public void testGETSTATIC() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(PrintStream.class).code()
+                                       .write(GETSTATIC.field(System.class, "out", PrintStream.class), ARETURN).exit())
+                   .invoke(null).equals(System.out);
     }
 
     @Test

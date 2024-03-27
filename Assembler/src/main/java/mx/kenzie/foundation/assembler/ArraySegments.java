@@ -5,7 +5,14 @@ import sun.misc.Unsafe;
 import java.lang.reflect.Field;
 
 /**
- * This is where we keep our unsafe things.
+ * A utility for copying and managing arrays according to their octet length,
+ * rather than their unit length.
+ * An array's octet length is the number of (8-bit) bytes needed to represent it, even if it is an array of
+ * something other than bytes.
+ * The octet length is used for copying raw, binary data directly between arrays rather than the actual units of data.
+ * The best implementation {@link UnsafeArraySegments} uses Java's Unsafe to perform 'memcpy' directly, however,
+ * for environments where Unsafe is unavailable, a slower version {@link SlightlyRubbishArraySegments} is also
+ * available.
  */
 public abstract class ArraySegments {
 
@@ -33,10 +40,10 @@ public abstract class ArraySegments {
     protected int octetLength(Object array) {
         return switch (array) {
             case byte[] data -> data.length;
-            case short[] data -> data.length * 2;
-            case char[] data -> data.length * 2;
-            case int[] data -> data.length * 4;
-            case long[] data -> data.length * 8;
+            case short[] data -> data.length * Short.BYTES;
+            case char[] data -> data.length * Character.BYTES;
+            case int[] data -> data.length * Integer.BYTES;
+            case long[] data -> data.length * Long.BYTES;
             default -> throw new IllegalStateException("Unexpected array: " + array);
         };
     }

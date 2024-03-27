@@ -3,6 +3,10 @@ package mx.kenzie.foundation.assembler.tool;
 import mx.kenzie.foundation.assembler.vector.U2;
 import mx.kenzie.foundation.assembler.vector.UVec;
 
+/**
+ * Represents an access modifier.
+ * These interfaces are used to make sure an incompatible modifier is not added to a class member by mistake.
+ */
 @FunctionalInterface
 public interface Access extends UVec {
 

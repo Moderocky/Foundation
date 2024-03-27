@@ -56,10 +56,6 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
     ConstantType<MethodHandleInfo, Member.Invocation> METHOD_HANDLE = new ConstantType<>(15, MethodHandleInfo.class,
         Member.Invocation.class, ClassFileBuilder.Storage::valueOf);
 
-    static ConstantPoolInfo of(String string) {
-        return Utf8Info.of(string);
-    }
-
     ConstantType<?, ?> tag();
 
     UVec info();
