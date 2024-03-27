@@ -211,7 +211,7 @@ record FixedCodeElement(byte[] binary) implements CodeElement, RecordConstant {
     private static byte[] join(byte b, byte[] binary) {
         final byte[] array = new byte[binary.length + 1];
         array[0] = b;
-        System.arraycopy(binary, 1, array, 0, binary.length);
+        System.arraycopy(binary, 0, array, 1, binary.length);
         return array;
     }
 
