@@ -40,8 +40,7 @@ public record InvokeCode(String mnemonic, byte code) implements OpCode {
     public UnboundedElement method(Member member) {
         int taken = Type.parameterSize(member);
         if (code != Codes.INVOKESTATIC) ++taken; // caller obj is first 1-wide "parameter"
-        final Type returnType = Type.fromDescriptor(member);
-        taken -= returnType.width(); // we're returning something
+        if (taken == 0) taken += Type.fromDescriptor(member).width(); // it might be a 0-args method returning wide type
         final int count = taken;
         return storage -> new Invocation(code, storage.constant(member), count);
     }

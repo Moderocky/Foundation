@@ -46,8 +46,7 @@ public record InvokeInterfaceCode(String mnemonic, byte code) implements OpCode 
 
     public UnboundedElement method(Member member) {
         final int count = Type.parameterSize(member) + 1;
-        final int width = count - Type.fromDescriptor(member).width(); // we're returning something
-        return storage -> new Invocation(code, storage.constant(member), count, width);
+        return storage -> new Invocation(code, storage.constant(member), count);
     }
 
     @Override
@@ -60,7 +59,7 @@ public record InvokeInterfaceCode(String mnemonic, byte code) implements OpCode 
         return 5;
     }
 
-    private record Invocation(byte code, PoolReference reference, int count, int width)
+    private record Invocation(byte code, PoolReference reference, int count)
         implements CodeElement, RecordConstant {
 
         @Override
@@ -78,7 +77,7 @@ public record InvokeInterfaceCode(String mnemonic, byte code) implements OpCode 
 
         @Override
         public void notify(CodeBuilder builder) {
-            builder.notifyStack(width);
+            builder.notifyStack(count);
         }
 
     }
