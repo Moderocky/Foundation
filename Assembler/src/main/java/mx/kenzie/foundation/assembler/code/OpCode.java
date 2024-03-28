@@ -163,8 +163,8 @@ public interface OpCode {
     Instruction FSUB = new Instruction("FSUB", Codes.FSUB);
     FieldCode GETFIELD = new FieldCode("GETFIELD", Codes.GETFIELD);
     FieldCode GETSTATIC = new FieldCode("GETSTATIC", Codes.GETSTATIC);
-    UncheckedCode GOTO = new UncheckedCode("GOTO", Codes.GOTO);
-    UncheckedCode GOTO_W = new UncheckedCode("GOTO_W", Codes.GOTO_W);
+    JumpCode GOTO = new JumpCode("GOTO", Codes.GOTO);
+    JumpCode GOTO_W = new JumpCode("GOTO_W", Codes.GOTO_W);
     Instruction I2B = new Instruction("I2B", Codes.I2B);
     Instruction I2C = new Instruction("I2C", Codes.I2C);
     Instruction I2D = new Instruction("I2D", Codes.I2D);

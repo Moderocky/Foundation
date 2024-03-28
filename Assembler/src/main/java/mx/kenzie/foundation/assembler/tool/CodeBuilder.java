@@ -197,4 +197,8 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
         return this;
     }
 
+    public CodeVector vector() {
+        return vector;
+    }
+
 }
