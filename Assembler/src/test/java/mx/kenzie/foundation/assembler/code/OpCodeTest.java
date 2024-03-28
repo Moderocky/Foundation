@@ -63,8 +63,8 @@ public class OpCodeTest extends MethodBuilderTest {
 
     @Test
     public void code() {
-        assert OpCode.opcodes().length == 202;
-        for (OpCode code : OpCode.opcodes()) {
+        assert opcodes().length == 202;
+        for (OpCode code : opcodes()) {
             assert code != null;
             assert Byte.toUnsignedInt(code.code()) < 202;
         }
@@ -72,7 +72,7 @@ public class OpCodeTest extends MethodBuilderTest {
 
     @Test
     public void length() {
-        for (OpCode code : OpCode.opcodes()) {
+        for (OpCode code : opcodes()) {
             assert code != null;
             assert (code.hasFixedLength() && code.length() > 0) || code.length() == -1;
         }
@@ -945,16 +945,14 @@ public class OpCodeTest extends MethodBuilderTest {
         final Loader loader = Loader.createDefault();
         final Type type = Type.of("org.example", "Test");
 
-        ClassFileBuilder builder = new ClassFileBuilder(JAVA_21, type).addModifiers(PUBLIC)
-                                                                      .field().addModifiers(PUBLIC).named("test")
-                                                                      .ofType(Object.class).exit()
+        ClassFileBuilder builder = new ClassFileBuilder(JAVA_21, type).addModifiers(PUBLIC).field().addModifiers(PUBLIC)
+                                                                      .named("test").ofType(Object.class).exit()
                                                                       .constructor().addModifiers(PUBLIC).code()
                                                                       .write(ALOAD_0,
                                                                              INVOKESPECIAL.constructor(Object.class),
                                                                              RETURN)
-                                                                      .exit().exit()
-                                                                      .method().named("test").addModifiers(PUBLIC)
-                                                                      .returns(Object.class).code()
+                                                                      .exit().exit().method().named("test")
+                                                                      .addModifiers(PUBLIC).returns(Object.class).code()
                                                                       .write(ALOAD_0, GETFIELD.field(type, "test",
                                                                                                      Object.class),
                                                                              ARETURN)
@@ -1215,33 +1213,34 @@ public class OpCodeTest extends MethodBuilderTest {
             final int value = random.nextInt(Byte.MIN_VALUE, Byte.MAX_VALUE);
             assert this.compileForTest(this.method().returns(int.class).parameters(int.class).code()
                                            .write(IINC.var(0, value), ILOAD_0, IRETURN).exit()).invoke(null, 0)
-                       .equals(value): this.compileForTest(this.method().returns(int.class).parameters(int.class).code()
-                                                               .write(IINC.var(0, value), ILOAD_0, IRETURN).exit()).invoke(null, 0);
+                       .equals(value) : this.compileForTest(this.method().returns(int.class).parameters(int.class)
+                                                                .code().write(IINC.var(0, value), ILOAD_0, IRETURN)
+                                                                .exit()).invoke(null, 0);
         }
     }
 
     @Test
     public void testILOAD0() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_0, ISTORE_0, ILOAD_0, IRETURN).exit())
-                   .invoke(null).equals(0);
+        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_0, ISTORE_0, ILOAD_0, IRETURN)
+                                       .exit()).invoke(null).equals(0);
     }
 
     @Test
     public void testILOAD1() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_1, ISTORE_1, ILOAD_1, IRETURN).exit())
-                   .invoke(null).equals(1);
+        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_1, ISTORE_1, ILOAD_1, IRETURN)
+                                       .exit()).invoke(null).equals(1);
     }
 
     @Test
     public void testILOAD2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_2, ISTORE_2, ILOAD_2, IRETURN).exit())
-                   .invoke(null).equals(2);
+        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_2, ISTORE_2, ILOAD_2, IRETURN)
+                                       .exit()).invoke(null).equals(2);
     }
 
     @Test
     public void testILOAD3() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_3, ISTORE_3, ILOAD_3, IRETURN).exit())
-                   .invoke(null).equals(3);
+        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_3, ISTORE_3, ILOAD_3, IRETURN)
+                                       .exit()).invoke(null).equals(3);
     }
 
     @Test
@@ -1282,16 +1281,15 @@ public class OpCodeTest extends MethodBuilderTest {
         final Loader loader = Loader.createDefault();
         final Type type = Type.of("org.example", "Test");
 
-        ClassFileBuilder builder = new ClassFileBuilder(JAVA_21, type).addModifiers(PUBLIC)
-                                                                      .field().addModifiers(PUBLIC).named("test")
-                                                                      .ofType(Object.class).exit()
+        ClassFileBuilder builder = new ClassFileBuilder(JAVA_21, type).addModifiers(PUBLIC).field().addModifiers(PUBLIC)
+                                                                      .named("test").ofType(Object.class).exit()
                                                                       .constructor().addModifiers(PUBLIC).code()
                                                                       .write(ALOAD_0,
                                                                              INVOKESPECIAL.constructor(Object.class),
                                                                              RETURN)
-                                                                      .exit().exit()
-                                                                      .method().named("test").addModifiers(PUBLIC)
-                                                                      .returns(boolean.class).code()
+                                                                      .exit().exit().method().named("test")
+                                                                      .addModifiers(PUBLIC).returns(boolean.class)
+                                                                      .code()
                                                                       .write(ALOAD_0, INSTANCEOF.type(type), IRETURN)
                                                                       .exit().exit();
 
@@ -1313,9 +1311,8 @@ public class OpCodeTest extends MethodBuilderTest {
         assert this.compileForTest(this.method().code().setTrackStack(false).stackSize(2)
                                        .write(NEW.type(ArrayList.class), DUP,
                                               INVOKESPECIAL.constructor(ArrayList.class),
-                                              INVOKEINTERFACE.method(List.class, int.class, "size"),
-                                              IRETURN
-                                             ).exit().returns(int.class)).invoke(null).equals(0);
+                                              INVOKEINTERFACE.method(List.class, int.class, "size"), IRETURN)
+                                       .exit().returns(int.class)).invoke(null).equals(0);
     }
 
     @Test
@@ -1330,8 +1327,7 @@ public class OpCodeTest extends MethodBuilderTest {
     public void testINVOKESTATIC() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         assert this.compileForTest(this.method().returns(Runtime.class).code().setTrackStack(false).stackSize(1)
                                        .write(INVOKESTATIC.method(Runtime.class, Runtime.class, "getRuntime"), ARETURN)
-                                       .exit())
-                   .invoke(null).equals(Runtime.getRuntime());
+                                       .exit()).invoke(null).equals(Runtime.getRuntime());
     }
 
     @Test
@@ -1352,8 +1348,7 @@ public class OpCodeTest extends MethodBuilderTest {
                                        .setTrackStack(false).stackSize(1)
                                        .write(ALOAD_0, INVOKEVIRTUAL.method(Object.class, String.class, "toString"),
                                               ARETURN)
-                                       .exit())
-                   .invoke(null, new Thing()).equals(expected);
+                                       .exit()).invoke(null, new Thing()).equals(expected);
     }
 
     @Test
@@ -1380,8 +1375,8 @@ public class OpCodeTest extends MethodBuilderTest {
 
     @Test
     public void testIRETURN() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_2, IRETURN).exit())
-                   .invoke(null).equals(2);
+        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_2, IRETURN).exit()).invoke(null)
+                   .equals(2);
     }
 
     @Test
@@ -1408,26 +1403,26 @@ public class OpCodeTest extends MethodBuilderTest {
 
     @Test
     public void testISTORE0() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_0, ISTORE_0, ILOAD_0, IRETURN).exit())
-                   .invoke(null).equals(0);
+        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_0, ISTORE_0, ILOAD_0, IRETURN)
+                                       .exit()).invoke(null).equals(0);
     }
 
     @Test
     public void testISTORE1() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_1, ISTORE_1, ILOAD_1, IRETURN).exit())
-                   .invoke(null).equals(1);
+        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_1, ISTORE_1, ILOAD_1, IRETURN)
+                                       .exit()).invoke(null).equals(1);
     }
 
     @Test
     public void testISTORE2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_2, ISTORE_2, ILOAD_2, IRETURN).exit())
-                   .invoke(null).equals(2);
+        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_2, ISTORE_2, ILOAD_2, IRETURN)
+                                       .exit()).invoke(null).equals(2);
     }
 
     @Test
     public void testISTORE3() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_3, ISTORE_3, ILOAD_3, IRETURN).exit())
-                   .invoke(null).equals(3);
+        assert this.compileForTest(this.method().returns(int.class).code().write(ICONST_3, ISTORE_3, ILOAD_3, IRETURN)
+                                       .exit()).invoke(null).equals(3);
     }
 
     @Test
@@ -1487,9 +1482,8 @@ public class OpCodeTest extends MethodBuilderTest {
         final Random random = new Random();
         for (int i = 0; i < 100; i++) {
             final long value = random.nextLong(Long.MIN_VALUE, Long.MAX_VALUE);
-            assert this.compileForTest(this.method().returns(double.class).code()
-                                           .write(LDC.value(value), L2D, DRETURN).exit()).invoke(null)
-                       .equals((double) value);
+            assert this.compileForTest(this.method().returns(double.class).code().write(LDC.value(value), L2D, DRETURN)
+                                           .exit()).invoke(null).equals((double) value);
         }
     }
 
@@ -1498,9 +1492,8 @@ public class OpCodeTest extends MethodBuilderTest {
         final Random random = new Random();
         for (int i = 0; i < 100; i++) {
             final long value = random.nextLong(Long.MIN_VALUE, Long.MAX_VALUE);
-            assert this.compileForTest(this.method().returns(float.class).code()
-                                           .write(LDC.value(value), L2F, FRETURN).exit()).invoke(null)
-                       .equals((float) value);
+            assert this.compileForTest(this.method().returns(float.class).code().write(LDC.value(value), L2F, FRETURN)
+                                           .exit()).invoke(null).equals((float) value);
         }
     }
 
@@ -1509,9 +1502,8 @@ public class OpCodeTest extends MethodBuilderTest {
         final Random random = new Random();
         for (int i = 0; i < 100; i++) {
             final long value = random.nextLong(Long.MIN_VALUE, Long.MAX_VALUE);
-            assert this.compileForTest(this.method().returns(int.class).code()
-                                           .write(LDC.value(value), L2I, IRETURN).exit()).invoke(null)
-                       .equals((int) value);
+            assert this.compileForTest(this.method().returns(int.class).code().write(LDC.value(value), L2I, IRETURN)
+                                           .exit()).invoke(null).equals((int) value);
         }
     }
 
@@ -1584,8 +1576,8 @@ public class OpCodeTest extends MethodBuilderTest {
 
     @Test
     public void testLDC() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(int.class).code()
-                                       .write(LDC.value(1), IRETURN).exit()).invoke(null).equals(1);
+        assert this.compileForTest(this.method().returns(int.class).code().write(LDC.value(1), IRETURN).exit())
+                   .invoke(null).equals(1);
     }
 
     @Test
@@ -1594,8 +1586,8 @@ public class OpCodeTest extends MethodBuilderTest {
         final ClassFileBuilder classBuilder = methodBuilder.exit();
         final var storage = classBuilder.helper();
         for (int i = 0; i < 1024; storage.constant(i++)) ;
-        assert this.compileForTest(methodBuilder.returns(int.class).code()
-                                                .write(LDC.value(-1), IRETURN).exit()).invoke(null).equals(-1);
+        assert this.compileForTest(methodBuilder.returns(int.class).code().write(LDC.value(-1), IRETURN).exit())
+                   .invoke(null).equals(-1);
     }
 
     @Test
@@ -1617,26 +1609,28 @@ public class OpCodeTest extends MethodBuilderTest {
 
     @Test
     public void testLLOAD0() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(long.class).code().write(LCONST_0, LSTORE_0, LLOAD_0, LRETURN).exit())
-                   .invoke(null).equals(0L);
+        assert this.compileForTest(this.method().returns(long.class).code().write(LCONST_0, LSTORE_0, LLOAD_0, LRETURN)
+                                       .exit()).invoke(null).equals(0L);
     }
 
     @Test
     public void testLLOAD1() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(long.class).code().write(LCONST_1, LSTORE_1, LLOAD_1, LRETURN).exit())
-                   .invoke(null).equals(1L);
+        assert this.compileForTest(this.method().returns(long.class).code().write(LCONST_1, LSTORE_1, LLOAD_1, LRETURN)
+                                       .exit()).invoke(null).equals(1L);
     }
 
     @Test
     public void testLLOAD2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(long.class).code().write(LDC.value(2L), LSTORE_2, LLOAD_2, LRETURN).exit())
-                   .invoke(null).equals(2L);
+        assert this.compileForTest(this.method().returns(long.class).code()
+                                       .write(LDC.value(2L), LSTORE_2, LLOAD_2, LRETURN).exit()).invoke(null)
+                   .equals(2L);
     }
 
     @Test
     public void testLLOAD3() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(long.class).code().write(LDC.value(3L), LSTORE_3, LLOAD_3, LRETURN).exit())
-                   .invoke(null).equals(3L);
+        assert this.compileForTest(this.method().returns(long.class).code()
+                                       .write(LDC.value(3L), LSTORE_3, LLOAD_3, LRETURN).exit()).invoke(null)
+                   .equals(3L);
     }
 
     @Test
@@ -1727,26 +1721,28 @@ public class OpCodeTest extends MethodBuilderTest {
 
     @Test
     public void testLSTORE0() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(long.class).code().write(LCONST_0, LSTORE_0, LLOAD_0, LRETURN).exit())
-                   .invoke(null).equals(0L);
+        assert this.compileForTest(this.method().returns(long.class).code().write(LCONST_0, LSTORE_0, LLOAD_0, LRETURN)
+                                       .exit()).invoke(null).equals(0L);
     }
 
     @Test
     public void testLSTORE1() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(long.class).code().write(LCONST_1, LSTORE_1, LLOAD_1, LRETURN).exit())
-                   .invoke(null).equals(1L);
+        assert this.compileForTest(this.method().returns(long.class).code().write(LCONST_1, LSTORE_1, LLOAD_1, LRETURN)
+                                       .exit()).invoke(null).equals(1L);
     }
 
     @Test
     public void testLSTORE2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(long.class).code().write(LDC.value(2L), LSTORE_2, LLOAD_2, LRETURN).exit())
-                   .invoke(null).equals(2L);
+        assert this.compileForTest(this.method().returns(long.class).code()
+                                       .write(LDC.value(2L), LSTORE_2, LLOAD_2, LRETURN).exit()).invoke(null)
+                   .equals(2L);
     }
 
     @Test
     public void testLSTORE3() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().returns(long.class).code().write(LDC.value(3L), LSTORE_3, LLOAD_3, LRETURN).exit())
-                   .invoke(null).equals(3L);
+        assert this.compileForTest(this.method().returns(long.class).code()
+                                       .write(LDC.value(3L), LSTORE_3, LLOAD_3, LRETURN).exit()).invoke(null)
+                   .equals(3L);
     }
 
     @Test
@@ -1814,7 +1810,29 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     @Test
-    public void testNEWARRAY() {
+    public void testNEWARRAY() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().code()
+                                       .write(ICONST_1, NEWARRAY.type(int.class), DUP, ICONST_0, ICONST_M1, IASTORE,
+                                              ARETURN)
+                                       .exit().returns(int[].class))
+                   .invoke(null) instanceof int[] ints && ints.length == 1 && ints[0] == -1;
+        for (int i = 4; i < 12; i++) {
+            final Object result = this.compileForTest(this.method().code()
+                                                          .write(ICONST_1, NEWARRAY.primitive(i), ARETURN).exit()
+                                                          .returns(Object.class)).invoke(null);
+            assert result != null && result.getClass().isArray() && result.getClass().componentType().isPrimitive();
+            assert result.getClass().componentType() == switch (i) {
+                case 4 -> boolean.class;
+                case 5 -> char.class;
+                case 6 -> float.class;
+                case 7 -> double.class;
+                case 8 -> byte.class;
+                case 9 -> short.class;
+                case 10 -> int.class;
+                case 11 -> long.class;
+                default -> throw new AssertionError(i);
+            };
+        }
     }
 
     @Test
@@ -1854,18 +1872,14 @@ public class OpCodeTest extends MethodBuilderTest {
         final Type type = Type.of("org.example", "Test");
         final ClassFileBuilder classBuilder = new ClassFileBuilder(JAVA_21, type).addModifiers(PUBLIC);
 
-        classBuilder
-            .field().addModifiers(PUBLIC).named("hash").ofType(int.class).exit()
-            .constructor().addModifiers(PUBLIC).code().write(ALOAD_0, INVOKESPECIAL.constructor(Object.class), RETURN)
-            .exit().exit()
-            .method().named("test").setModifiers(PUBLIC)
-            .code().write(
-                ALOAD_0, DUP, ICONST_1,
-                PUTFIELD.field(type, "hash", int.class),
-                GETFIELD.field(type, "hash", int.class),
-                IRETURN
-                         ).exit()
-            .returns(int.class);
+        classBuilder.field().addModifiers(PUBLIC).named("hash").ofType(int.class).exit().constructor()
+                    .addModifiers(PUBLIC).code().write(ALOAD_0, INVOKESPECIAL.constructor(Object.class), RETURN).exit()
+                    .exit().method().named("test").setModifiers(PUBLIC).code()
+                    .write(ALOAD_0, DUP, ICONST_1, PUTFIELD.field(type, "hash", int.class), GETFIELD.field(type,
+                                                                                                           "hash",
+                                                                                                           int.class)
+                        , IRETURN)
+                    .exit().returns(int.class);
 
         final ClassFile classFile = classBuilder.build();
         final Class<?> clazz = loader.loadClass(type.getTypeName(), classFile.binary());
@@ -1878,14 +1892,11 @@ public class OpCodeTest extends MethodBuilderTest {
         final Type type = Type.of("org.example", "Test");
         final ClassFileBuilder classBuilder = new ClassFileBuilder(JAVA_21, type).addModifiers(PUBLIC);
 
-        classBuilder
-            .field().addModifiers(PUBLIC, STATIC).named("hash").ofType(int.class).exit()
-            .method().named("test").setModifiers(PUBLIC, STATIC)
-            .code().write(
-                ICONST_1, PUTSTATIC.field(type, "hash", int.class),
-                GETSTATIC.field(type, "hash", int.class), IRETURN
-                         ).exit()
-            .returns(int.class);
+        classBuilder.field().addModifiers(PUBLIC, STATIC).named("hash").ofType(int.class).exit().method().named("test")
+                    .setModifiers(PUBLIC, STATIC).code()
+                    .write(ICONST_1, PUTSTATIC.field(type, "hash", int.class), GETSTATIC.field(type, "hash",
+                                                                                               int.class), IRETURN)
+                    .exit().returns(int.class);
 
         final ClassFile classFile = classBuilder.build();
         final Class<?> clazz = loader.loadClass(type.getTypeName(), classFile.binary());
@@ -1903,20 +1914,18 @@ public class OpCodeTest extends MethodBuilderTest {
 
     @Test
     public void testSALOAD() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().code().write(
-            ICONST_1, NEWARRAY.type(short.class), DUP,
-            ICONST_0, LDC.value((short) 3), SASTORE,
-            ICONST_0, SALOAD, IRETURN
-                                                             ).exit().returns(int.class)).invoke(null).equals(3);
+        assert this.compileForTest(this.method().code()
+                                       .write(ICONST_1, NEWARRAY.type(short.class), DUP, ICONST_0,
+                                              LDC.value((short) 3), SASTORE, ICONST_0, SALOAD, IRETURN)
+                                       .exit().returns(int.class)).invoke(null).equals(3);
     }
 
     @Test
     public void testSASTORE() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        assert this.compileForTest(this.method().code().write(
-            ICONST_1, NEWARRAY.type(short.class), DUP,
-            ICONST_0, LDC.value((short) 3), SASTORE,
-            ICONST_0, SALOAD, IRETURN
-                                                             ).exit().returns(int.class)).invoke(null).equals(3);
+        assert this.compileForTest(this.method().code()
+                                       .write(ICONST_1, NEWARRAY.type(short.class), DUP, ICONST_0,
+                                              LDC.value((short) 3), SASTORE, ICONST_0, SALOAD, IRETURN)
+                                       .exit().returns(int.class)).invoke(null).equals(3);
     }
 
     @Test
