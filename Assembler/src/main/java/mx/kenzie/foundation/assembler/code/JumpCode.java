@@ -80,4 +80,24 @@ public record JumpCode(String mnemonic, byte code, BiFunction<Branch, Byte, Jump
 
     }
 
+    public record Jump(Branch target, byte code) implements JumpInstruction {
+
+        @Override
+        public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+            stream.write(code);
+            this.target.getJump(this).write(stream);
+        }
+
+        @Override
+        public int length() {
+            return 3;
+        }
+
+        @Override
+        public Constant constant() {
+            return UVec.of(this.binary());
+        }
+
+    }
+
 }
