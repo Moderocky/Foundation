@@ -20,7 +20,7 @@ public record LocalVariableTable(PoolReference attribute_name_index, U2 local_va
 
     @Override
     public UVec info() {
-        return UVec.of(local_variable_table, UVec.of(local_variable_table));
+        return UVec.of(local_variable_table_length, UVec.of(local_variable_table));
     }
 
     public record LocalVariable(U2 start_pc, U2 code_length, // length

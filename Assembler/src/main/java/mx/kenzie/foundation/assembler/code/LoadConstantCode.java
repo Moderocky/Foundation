@@ -35,7 +35,7 @@ public record LoadConstantCode(String mnemonic, byte code) implements OpCode {
 
     @Override
     public String toString() {
-        return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
+        return this.mnemonic.toLowerCase() + "/" + Byte.toUnsignedInt(code);
     }
 
     private record NarrowType(PoolReference reference) implements CodeElement, RecordConstant {

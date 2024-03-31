@@ -8,8 +8,8 @@ public interface Loader {
         return (Maker) DEFAULT;
     }
 
-    static SimpleClassLoader createDefault() {
-        return new SimpleClassLoader();
+    static <Maker extends ClassLoader & Loader> Maker createDefault() {
+        return (Maker) new SimpleClassLoader();
     }
 
     Class<?> loadClass(String name, byte[] bytecode);

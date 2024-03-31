@@ -8,9 +8,18 @@ import org.valross.constantine.Constantive;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.ref.Reference;
 import java.util.Objects;
 
 public abstract class TableReference<Element> implements UVec, Data, Constantive {
+
+    protected final Iterable<Element> pool;
+    protected final Reference<Element> reference;
+
+    protected TableReference(Iterable<Element> pool, Reference<Element> reference) {
+        this.pool = pool;
+        this.reference = reference;
+    }
 
     public abstract int index();
 
@@ -37,7 +46,9 @@ public abstract class TableReference<Element> implements UVec, Data, Constantive
         return new byte[] {(byte) (value >>> 8), (byte) (value)};
     }
 
-    public abstract Element get();
+    public Element get() {
+        return reference.get();
+    }
 
     public @NotNull Element ensure() {
         return Objects.requireNonNull(this.get());

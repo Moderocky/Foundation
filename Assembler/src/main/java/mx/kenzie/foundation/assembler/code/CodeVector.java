@@ -6,9 +6,10 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class CodeVector implements UVec {
+public class CodeVector implements UVec, Iterable<CodeElement> {
 
     protected List<CodeElement> code;
 
@@ -59,6 +60,46 @@ public class CodeVector implements UVec {
     @Override
     public ConVec constant() {
         return UVec.of(this.binary());
+    }
+
+    @NotNull
+    @Override
+    public Iterator<CodeElement> iterator() {
+        return code.iterator();
+    }
+
+    public List<CodeElement> getLast(int instructions) {
+        return code.subList(code.size() - instructions, code.size());
+    }
+
+    @Override
+    public String toString() {
+        if (code.isEmpty()) return "[]";
+        final StringBuilder builder = new StringBuilder("[");
+        boolean first = true;
+        for (CodeElement element : code) {
+            final byte[] binary = element.binary();
+            if (first) first = false;
+            else builder.append(", ");
+            if (binary.length == 0) {
+                if (element instanceof Branch)
+                    builder.append("<branch> ");
+                first = true;
+                continue;
+            }
+            boolean opcode = true;
+            for (byte b : binary) {
+                if (opcode) {
+                    opcode = false;
+                    builder.append(OpCode.getCode(Byte.toUnsignedInt(b)).toString());
+                } else builder.append(" ").append(b);
+            }
+        }
+        return builder.append("]").toString();
+    }
+
+    public boolean isEmpty() {
+        return code.isEmpty();
     }
 
 }

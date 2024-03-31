@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
+import java.lang.constant.Constable;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -20,6 +21,36 @@ import java.util.Arrays;
  * As such, the data can be interpreted as any unsigned type, by dividing the data length by the unit length.
  */
 public interface UVec extends Data, Constantive {
+
+    static ConVec of() {
+        //<editor-fold desc="Empty vector" defaultstate="collapsed">
+        return new ConVec() {
+            @Override
+            public int length() {
+                return 0;
+            }
+
+            @Override
+            public byte[] binary() {
+                return new byte[0];
+            }
+
+            @Override
+            public void write(OutputStream stream) {
+            }
+
+            @Override
+            public Constable[] serial() {
+                return new Constable[0];
+            }
+
+            @Override
+            public Class<?>[] canonicalParameters() {
+                return new Class[0];
+            }
+        };
+        //</editor-fold>
+    }
 
     static ConVec of(byte[] bytes) {
         return new UnsignedVector(copy(bytes));

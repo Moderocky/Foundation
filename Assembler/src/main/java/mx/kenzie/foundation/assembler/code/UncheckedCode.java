@@ -20,7 +20,7 @@ public record UncheckedCode(String mnemonic, byte code, int length) implements O
 
     @Override
     public String toString() {
-        return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
+        return this.mnemonic.toLowerCase() + "/" + Byte.toUnsignedInt(code);
     }
     //</editor-fold>
 

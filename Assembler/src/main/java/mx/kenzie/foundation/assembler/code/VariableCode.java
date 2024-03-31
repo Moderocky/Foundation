@@ -52,7 +52,7 @@ public abstract class VariableCode implements OpCode {
 
     @Override
     public String toString() {
-        return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
+        return this.mnemonic.toLowerCase() + "/" + Byte.toUnsignedInt(code);
     }
     //</editor-fold>
 

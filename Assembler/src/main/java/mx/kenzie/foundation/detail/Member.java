@@ -73,6 +73,11 @@ public record Member(Type owner, Signature signature) implements Erasure, Descri
     }
 
     @Override
+    public Member constant() {
+        return this;
+    }
+
+    @Override
     public Type returnType() {
         return Type.fromDescriptor(this);
     }
@@ -85,11 +90,6 @@ public record Member(Type owner, Signature signature) implements Erasure, Descri
     @Override
     public Type[] parameters() {
         return Type.parameters(this);
-    }
-
-    @Override
-    public Member constant() {
-        return this;
     }
 
     @Override

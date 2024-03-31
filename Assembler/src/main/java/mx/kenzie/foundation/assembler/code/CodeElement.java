@@ -131,13 +131,13 @@ public interface CodeElement extends Data, UVec, UnboundedElement {
             }
 
             @Override
-            public Constant constant() {
-                return element.constant();
+            public byte[] binary() {
+                return element.binary();
             }
 
             @Override
-            public byte[] binary() {
-                return element.binary();
+            public Constant constant() {
+                return element.constant();
             }
 
         }
@@ -174,13 +174,13 @@ public interface CodeElement extends Data, UVec, UnboundedElement {
             }
 
             @Override
-            public Constant constant() {
-                return element.constant();
+            public byte[] binary() {
+                return element.binary();
             }
 
             @Override
-            public byte[] binary() {
-                return element.binary();
+            public Constant constant() {
+                return element.constant();
             }
 
         }

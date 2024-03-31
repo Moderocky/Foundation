@@ -66,7 +66,7 @@ public class TypeCode implements OpCode {
 
     @Override
     public String toString() {
-        return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
+        return this.mnemonic.toLowerCase() + "/" + Byte.toUnsignedInt(code);
     }
 
     private record Typed(byte code, PoolReference reference) implements RecordConstant, CodeElement {

@@ -23,14 +23,13 @@ import java.util.Random;
 import static mx.kenzie.foundation.assembler.code.OpCode.*;
 import static mx.kenzie.foundation.assembler.tool.Access.PUBLIC;
 import static mx.kenzie.foundation.assembler.tool.Access.STATIC;
-import static mx.kenzie.foundation.detail.Version.JAVA_21;
-import static mx.kenzie.foundation.detail.Version.RELEASE;
+import static mx.kenzie.foundation.detail.Version.*;
 
 public class OpCodeTest extends MethodBuilderTest {
 
     @Contract(pure = true)
     protected MethodBuilder method() {
-        return new ClassFileBuilder(JAVA_21, RELEASE).setType(Type.of("org.example", "Test")).method()
+        return new ClassFileBuilder(JAVA_22, RELEASE).setType(Type.of("org.example", "Test")).method()
                                                      .setModifiers(PUBLIC, STATIC).named("test");
     }
 
@@ -975,8 +974,19 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     @Test
-    public void testGOTO() {
-        // FIXME: impl GOTO
+    public void testGOTO() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Branch to = new Branch();
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(GOTO.jump(to), LDC.value("hello"), ARETURN, to,
+                                              LDC.value("there"), ARETURN)
+                                       .exit())
+                   .invoke(null).equals("there");
+        final Branch a = new Branch(), b = new Branch();
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(GOTO.jump(a), b, LDC.value("there"), ARETURN, a,
+                                              GOTO.jump(b), ACONST_NULL, ATHROW)
+                                       .exit())
+                   .invoke(null).equals("there");
     }
 
     @Test
@@ -1342,7 +1352,6 @@ public class OpCodeTest extends MethodBuilderTest {
             }
 
         }
-        ;
 
         assert this.compileForTest(this.method().parameters(Thing.class).returns(String.class).code()
                                        .setTrackStack(false).stackSize(1)

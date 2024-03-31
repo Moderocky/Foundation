@@ -2,15 +2,16 @@ package mx.kenzie.foundation.assembler.tool;
 
 import mx.kenzie.foundation.assembler.attribute.AttributeInfo;
 import mx.kenzie.foundation.assembler.attribute.Code;
+import mx.kenzie.foundation.assembler.code.Branch;
 import mx.kenzie.foundation.assembler.code.CodeElement;
 import mx.kenzie.foundation.assembler.code.CodeVector;
 import mx.kenzie.foundation.assembler.code.UnboundedElement;
+import mx.kenzie.foundation.assembler.error.IncompatibleBranchError;
 import mx.kenzie.foundation.assembler.vector.U2;
-import mx.kenzie.foundation.detail.Type;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Stack;
+import java.util.LinkedList;
 
 import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.UTF8;
 
@@ -19,11 +20,10 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
     protected final ClassFileBuilder.Storage storage;
     protected final MethodBuilder method;
     protected final PoolReference attributeName;
-    private final Stack<Type> stack = new Stack<>();
+    private final StackTracker tracker = new StackTracker();
     private CodeVector vector;
     private int maxStack;
     private int maxLocals;
-    private int stackCounter;
     private boolean trackStack = true, trackFrames = true;
 
     public CodeBuilder(MethodBuilder builder) {
@@ -93,14 +93,25 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
      */
     public void notifyStack(int increment) {
         if (!this.trackStack()) return;
-        this.stackCounter += increment;
-        if (stackCounter > maxStack) maxStack = stackCounter;
+        this.tracker.stackCounter += increment;
+        if (tracker.stackCounter > maxStack) maxStack = tracker.stackCounter;
     }
 
     public CodeBuilder write(@NotNull UnboundedElement element) {
         final CodeElement bound = element.bound(storage);
         this.vector.append(bound);
         bound.notify(this);
+        if (bound instanceof Branch branch && this.trackFrames()) {
+            this.tracker.branches.add(branch);
+            final var last = vector.getLast(2);
+            final CodeElement previous = last.getFirst();
+            if (previous instanceof Branch.UnconditionalBranch) {
+                last.removeFirst();
+                this.tracker.branches.remove(previous);
+            } else if (previous instanceof Branch) {
+                throw new IncompatibleBranchError("You have two branches at the same index " + vector.length());
+            }
+        }
         return this;
     }
 
@@ -117,6 +128,7 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
         final CodeElement bound = element.bound(storage);
         this.vector.insertAfter(target, bound);
         bound.notify(this);
+        if (bound instanceof Branch branch && this.trackFrames()) tracker.branches.add(branch);
         return this;
     }
 
@@ -124,6 +136,7 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
         final CodeElement bound = element.bound(storage);
         this.vector.insertBefore(target, bound);
         bound.notify(this);
+        if (bound instanceof Branch branch && this.trackFrames()) tracker.branches.add(branch);
         return this;
     }
 
@@ -149,6 +162,25 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
 
     @Override
     public void finalise() {
+        frames:
+        if (this.trackFrames()) {
+            if (!vector.isEmpty() && vector.getLast(1) instanceof Branch branch) {
+                this.vector.getLast(1).remove(branch);
+                this.tracker.branches.remove(branch);
+            }
+            if (tracker.branches.isEmpty() || !(tracker.branches.getFirst() instanceof Branch.ImplicitBranch))
+                this.tracker.branches.addFirst(new Branch.ImplicitBranch(this.exit().parameters()));
+            if (this.tracker.branches.size() == 1) break frames;
+            this.tracker.builder = new StackMapTableBuilder(this.helper());
+            Branch previous = null;
+            for (Branch current : this.tracker.branches) {
+                if (previous != null)
+                    this.tracker.builder.addFrame(this.helper(), previous, current);
+                previous = current;
+            }
+            this.attributes.removeIf(attribute -> attribute instanceof StackMapTableBuilder);
+            this.attributes.add(tracker.builder);
+        }
         for (AttributeBuilder attribute : attributes) attribute.finalise();
     }
 
@@ -163,8 +195,18 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
      *
      * @return The stack model
      */
-    public Stack<Type> stack() {
-        return stack;
+    public ProgramStack stack() {
+        return tracker.stack;
+    }
+
+    /**
+     * A model of the program's register based on the instructions (and inputs) given.
+     * This is used by element tracker to determine how to process context-dependent elements.
+     *
+     * @return The register model
+     */
+    public ProgramStack register() {
+        return tracker.register;
     }
 
     /**
@@ -199,6 +241,16 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
 
     public CodeVector vector() {
         return vector;
+    }
+
+    protected static class StackTracker {
+
+        private final ProgramStack stack = new ProgramStack();
+        private final ProgramStack register = new ProgramStack();
+        private final LinkedList<Branch> branches = new LinkedList<>();
+        private int stackCounter;
+        private StackMapTableBuilder builder;
+
     }
 
 }

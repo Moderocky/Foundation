@@ -51,7 +51,7 @@ public record InvokeInterfaceCode(String mnemonic, byte code) implements OpCode 
 
     @Override
     public String toString() {
-        return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
+        return this.mnemonic.toLowerCase() + "/" + Byte.toUnsignedInt(code);
     }
 
     @Override

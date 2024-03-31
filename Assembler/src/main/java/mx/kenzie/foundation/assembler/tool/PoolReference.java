@@ -4,19 +4,14 @@ import mx.kenzie.foundation.assembler.constant.ConstantPoolInfo;
 import mx.kenzie.foundation.assembler.constant.DeadSpaceInfo;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 
 public class PoolReference extends TableReference<ConstantPoolInfo> {
 
     public static final PoolReference ZERO = new Zero();
 
-    private final Iterable<ConstantPoolInfo> pool;
-    private final Reference<ConstantPoolInfo> reference;
-
     public PoolReference(Iterable<ConstantPoolInfo> pool, ConstantPoolInfo value) {
-        this.pool = pool;
-        this.reference = new WeakReference<>(value);
+        super(pool, new WeakReference<>(value));
     }
 
     @Override
@@ -29,11 +24,6 @@ public class PoolReference extends TableReference<ConstantPoolInfo> {
             index += value.tag().indices();
         }
         return -1; // was it ever there in the first place?
-    }
-
-    @Override
-    public ConstantPoolInfo get() {
-        return reference.get();
     }
 
     @Override

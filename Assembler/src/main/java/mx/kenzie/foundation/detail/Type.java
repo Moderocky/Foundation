@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 public record Type(String getTypeName, String descriptorString, String internalName)
-    implements java.lang.reflect.Type, Descriptor, Constable, TypeDescriptor, RecordConstant {
+    implements java.lang.reflect.Type, TypeHint, Descriptor, Constable, TypeDescriptor, RecordConstant {
 
     private static final Map<Class<?>, SoftReference<Type>> CACHE = new WeakHashMap<>();
 
@@ -121,10 +121,7 @@ public record Type(String getTypeName, String descriptorString, String internalN
         }
         assert !list.isEmpty();
         return list.toArray(new Type[0]);
-    }    public static final Type BYTE = Type.of(byte.class), SHORT = Type.of(short.class), INT = Type.of(int.class),
-        LONG = Type.of(long.class), FLOAT = Type.of(float.class), DOUBLE = Type.of(double.class), BOOLEAN =
-        Type.of(boolean.class), CHAR = Type.of(char.class), VOID = Type.of(void.class), OBJECT =
-        Type.of(Object.class), STRING = Type.of(String.class);
+    }
 
     public static Type of(java.lang.reflect.Type value) {
         if (value instanceof Type type) return type;
@@ -139,7 +136,10 @@ public record Type(String getTypeName, String descriptorString, String internalN
             CACHE.put(thing, new SoftReference<>(result));
             return result;
         } else return new Type(value.getTypeName(), Type.descriptorString(value), Type.internalName(value));
-    }
+    }    public static final Type BYTE = Type.of(byte.class), SHORT = Type.of(short.class), INT = Type.of(int.class),
+        LONG = Type.of(long.class), FLOAT = Type.of(float.class), DOUBLE = Type.of(double.class), BOOLEAN =
+        Type.of(boolean.class), CHAR = Type.of(char.class), VOID = Type.of(void.class), OBJECT =
+        Type.of(Object.class), STRING = Type.of(String.class);
 
     private static Type of(Class<?> value) {
         final Type type = new Type(value.getTypeName(), value.descriptorString(), Type.internalName(value));
@@ -252,10 +252,6 @@ public record Type(String getTypeName, String descriptorString, String internalN
         return toClass(descriptorString, getTypeName);
     }
 
-    public boolean isPrimitive() {
-        return isPrimitive(descriptorString);
-    }
-
     public boolean isKnown() {
         return this.toClass() != null;
     }
@@ -289,10 +285,31 @@ public record Type(String getTypeName, String descriptorString, String internalN
         return new Type(typeName, sub, sub);
     }
 
+    @Override
     public int width() {
         if (this.equals(LONG) || this.equals(DOUBLE)) return 2;
         if (this.equals(VOID)) return 0; // for the purposes of calculating method width
         return 1;
+    }
+
+    @Override
+    public boolean isPrimitive() {
+        return isPrimitive(descriptorString);
+    }
+
+    @Override
+    public boolean isInitialisedType() {
+        return true;
+    }
+
+    @Override
+    public boolean isRealType() {
+        return true;
+    }
+
+    @Override
+    public boolean isTypeKnown() {
+        return true;
     }
 
     /**

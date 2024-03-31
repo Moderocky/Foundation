@@ -2,17 +2,12 @@ package mx.kenzie.foundation.assembler.tool;
 
 import mx.kenzie.foundation.assembler.attribute.BootstrapMethods;
 
-import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 
 public class BootstrapReference extends TableReference<BootstrapMethods.BootstrapMethod> {
 
-    private final Iterable<BootstrapMethods.BootstrapMethod> pool;
-    private final Reference<BootstrapMethods.BootstrapMethod> reference;
-
     public BootstrapReference(Iterable<BootstrapMethods.BootstrapMethod> pool, BootstrapMethods.BootstrapMethod value) {
-        this.pool = pool;
-        this.reference = new WeakReference<>(value);
+        super(pool, new WeakReference<>(value));
     }
 
     @Override
@@ -25,11 +20,6 @@ public class BootstrapReference extends TableReference<BootstrapMethods.Bootstra
             ++index;
         }
         return -1; // was it ever there in the first place?
-    }
-
-    @Override
-    public BootstrapMethods.BootstrapMethod get() {
-        return reference.get();
     }
 
     @Override

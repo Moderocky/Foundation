@@ -1,19 +1,25 @@
 package mx.kenzie.foundation.assembler.code;
 
+import mx.kenzie.foundation.assembler.error.IncompatibleBranchError;
 import mx.kenzie.foundation.assembler.tool.CodeBuilder;
+import mx.kenzie.foundation.assembler.tool.ProgramStack;
+import mx.kenzie.foundation.assembler.vector.U2;
 import mx.kenzie.foundation.assembler.vector.UVec;
+import mx.kenzie.foundation.detail.Type;
+import mx.kenzie.foundation.detail.TypeHint;
 import org.valross.constantine.Constant;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 public class Branch implements CodeElement {
 
     protected Handle handle = new Handle();
+    protected TypeHint[] stack, register;
 
-    @Override
-    public byte[] binary() {
-        return new byte[0];
+    public Frame.Map toStackMap() {
+        return new Frame.Map(register, stack);
     }
 
     @Override
@@ -22,17 +28,27 @@ public class Branch implements CodeElement {
     }
 
     @Override
+    public byte[] binary() {
+        return new byte[0];
+    }
+
+    @Override
     public void write(OutputStream stream) {
+    }
+
+    @Override
+    public void notify(CodeBuilder builder) {
+        this.handle.setVector(builder);
+        if (builder.trackFrames()) this.checkFrame(builder.stack(), builder.register());
+        if (builder.trackStack()) {
+            builder.stack().reframe(this.stack);
+            builder.register().reframe(this.register);
+        }
     }
 
     @Override
     public byte code() {
         return -1;
-    }
-
-    @Override
-    public void notify(CodeBuilder builder) {
-        this.handle.setVector(builder.vector());
     }
 
     @Override
@@ -44,20 +60,67 @@ public class Branch implements CodeElement {
         return handle;
     }
 
+    protected UVec getJump(CodeElement source) {
+        final int target = this.getHandle().index();
+        int index = 0;
+        for (CodeElement element : this.handle.vector.code) {
+            if (element == source) break;
+            else index += element.length();
+        }
+        final short jump = (short) (target - index);
+        return U2.valueOf(jump);
+    }
+
+    public void checkFrame(ProgramStack stack, ProgramStack register) {
+        if (this.stack == null) {
+            this.stack = stack.toArray();
+        } else if (!stack.isEmpty() && !Arrays.equals(this.stack, stack.toArray()))
+            throw new IncompatibleBranchError("Expected stack to be " + Arrays.toString(this.stack) + " entering" +
+                                                  " " +
+                                                  this + " but found " + Arrays.toString(stack.toArray()));
+        if (this.register == null) {
+            this.register = register.toArray();
+        } else if (!stack.isEmpty() && !Arrays.equals(this.register, register.toArray()))
+            throw new IncompatibleBranchError("Expected register to be " + Arrays.toString(this.register) + " " +
+                                                  "entering " +
+                                                  this + " but found " + Arrays.toString(register.toArray()));
+    }
+
+    @Override
+    public String toString() {
+        if (handle.vector == null) return "Branch";
+        return "Branch[index=" + handle.index() + "]";
+    }
+
+    public static class ImplicitBranch extends Branch {
+
+        public ImplicitBranch(Type... parameters) {
+            this.register = parameters;
+        }
+
+    }
+
+    public static class UnconditionalBranch extends Branch {
+
+    }
+
     protected class Handle implements UVec {
 
+        protected CodeBuilder builder;
         protected CodeVector vector;
 
-        protected Handle(CodeVector vector) {
-            this.vector = vector;
+        protected Handle(CodeBuilder builder) {
+            this.setVector(builder);
         }
 
         protected Handle() {
             this(null);
         }
 
-        public void setVector(CodeVector vector) {
-            this.vector = vector;
+        public void setVector(CodeBuilder builder) {
+            this.builder = builder;
+            if (builder != null) vector = builder.vector();
+            else vector = null;
         }
 
         public int index() {
@@ -71,16 +134,8 @@ public class Branch implements CodeElement {
         }
 
         public boolean wide() {
-            return this.index() > 65565;
-        }
-
-        @Override
-        public byte[] binary() {
-            final short value = (short) this.index();
-            return new byte[] {
-                (byte) (value >>> 8),
-                (byte) (value)
-            };
+            return false; // wide jumps aren't supported by the jvm (yet)
+            // return this.index() > 65565;
         }
 
         @Override
@@ -96,8 +151,18 @@ public class Branch implements CodeElement {
         }
 
         @Override
+        public byte[] binary() {
+            final short value = (short) this.index();
+            return new byte[] {(byte) (value >>> 8), (byte) (value)};
+        }
+
+        @Override
         public Constant constant() {
             return UVec.of(this.binary());
+        }
+
+        public Branch branch() {
+            return Branch.this;
         }
 
     }

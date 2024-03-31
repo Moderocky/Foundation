@@ -7,6 +7,24 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.function.Consumer;
 
+interface SingleInstruction extends OpCode, CodeElement {
+
+    default byte[] binary() {
+        return new byte[] {this.code()};
+    }
+
+    default void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+        stream.write(this.code());
+    }
+
+    byte code();
+
+    default int length() {
+        return 1;
+    }
+
+}
+
 /**
  * A simple, single-byte instruction, containing only its operation code.
  * Since no additional parameters are needed for this instruction it may be used as-is.
@@ -16,36 +34,21 @@ import java.util.function.Consumer;
  *                 caution.
  */
 public record Instruction(String mnemonic, byte code, Consumer<CodeBuilder> notifier)
-    implements OpCode, CodeElement, RecordConstant {
+    implements RecordConstant, SingleInstruction {
 
     public Instruction(String mnemonic, int code) {
         this(mnemonic, (byte) code, null);
     }
 
     @Override
-    public int length() {
-        return 1;
-    }
-
-    @Override
-    public byte[] binary() {
-        return new byte[] {code};
-    }
-
-    @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
-        stream.write(code);
-    }
-
-    @Override
     public void notify(CodeBuilder builder) {
         if (notifier != null) notifier.accept(builder);
-        else CodeElement.super.notify(builder);
+        else SingleInstruction.super.notify(builder);
     }
 
     @Override
     public String toString() {
-        return this.mnemonic.toLowerCase() + "/" + Integer.toUnsignedString(code);
+        return this.mnemonic.toLowerCase() + "/" + Byte.toUnsignedInt(code);
     }
 
 }
