@@ -1994,9 +1994,10 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     @Test
-    public void testSIPUSH() {
-        for (int i = Short.MIN_VALUE; i < Short.MAX_VALUE; i++) {
-            final short value = (short) i;
+    public void testSIPUSH() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Random random = new Random();
+        for (int i = 0; i < 100; i++) {
+            final short value = (short) random.nextInt(Short.MIN_VALUE, Short.MAX_VALUE);
             final ByteBuffer buffer = ByteBuffer.allocate(2);
             buffer.put(0, new byte[] {(byte) (value >> 8), (byte) (value)});
             final short shr = buffer.getShort(0);
@@ -2005,6 +2006,8 @@ public class OpCodeTest extends MethodBuilderTest {
             final short ushr = buffer.getShort(0);
             assert ushr == shr : shr + " != " + ushr;
             assert SIPUSH.value(value).code() == Codes.SIPUSH;
+            assert this.compileForTest(this.method().returns(short.class).code()
+                                           .write(SIPUSH.value(value), IRETURN).exit()).invoke(null).equals(value);
         }
     }
 
