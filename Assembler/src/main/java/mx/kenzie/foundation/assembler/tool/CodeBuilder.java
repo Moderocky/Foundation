@@ -172,8 +172,6 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
             for (CodeElement element : this.vector) element.notify(this);
             this.maxStack = this.stack().maximum();
             this.maxLocals = this.register().maximum();
-//            System.out.println(this.stack()); // todo
-//            System.out.println(this.register()); // todo
         }
         frames:
         if (this.trackFrames()) {
