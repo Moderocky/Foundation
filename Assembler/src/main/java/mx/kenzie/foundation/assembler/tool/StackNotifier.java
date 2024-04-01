@@ -3,7 +3,6 @@ package mx.kenzie.foundation.assembler.tool;
 import mx.kenzie.foundation.detail.TypeHint;
 import org.valross.constantine.RecordConstant;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public record StackNotifier(Consumer<ProgramStack> consumer) implements Consumer<CodeBuilder>, RecordConstant {
@@ -22,19 +21,10 @@ public record StackNotifier(Consumer<ProgramStack> consumer) implements Consumer
         return new StackNotifier(stack -> stack.pop(Math.abs(increment)));
     }
 
-    @Override
-    public void accept(CodeBuilder builder) {
-        if (!builder.trackStack()) return;
-        final int before = builder.stack().size();
-        this.consumer.accept(builder.stack());
-        builder.notifyStack(builder.stack().size() - before);
-    }
-
     public static Consumer<CodeBuilder> pushVariable(int slot) {
         return builder -> {
             if (!builder.trackStack()) return;
             final TypeHint hint = builder.register().get(slot);
-            builder.notifyStack(hint.width());
             builder.stack().push(hint);
         };
     }
@@ -62,6 +52,13 @@ public record StackNotifier(Consumer<ProgramStack> consumer) implements Consumer
             stack.pop(TypeHint.width(types));
             stack.push(types);
         });
+    }
+
+    @Override
+    public void accept(CodeBuilder builder) {
+        if (!builder.trackStack()) return;
+        final int before = builder.stack().size();
+        this.consumer.accept(builder.stack());
     }
 
 }

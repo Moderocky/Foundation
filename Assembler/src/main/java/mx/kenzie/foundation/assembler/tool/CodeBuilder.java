@@ -76,28 +76,6 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
         return this;
     }
 
-    /**
-     * Tells the code block we're using a variable in this slot.
-     * Used by parameters/store+load instructions to keep track of the register size.
-     * This should be slot+1 for wide types.
-     *
-     * @param slot the upper register slot
-     */
-    public void notifyMaxLocalIndex(int slot) {
-        if (maxLocals < slot + 1) maxLocals = slot + 1;
-    }
-
-    /**
-     * Notifies the stack counter about any changes.
-     *
-     * @param increment The amount to increment (or reduce) by
-     */
-    public void notifyStack(int increment) {
-        if (!this.trackStack()) return;
-        this.tracker.stackCounter += increment;
-        if (tracker.stackCounter > maxStack) maxStack = tracker.stackCounter;
-    }
-
     public CodeBuilder write(@NotNull UnboundedElement element) {
         final CodeElement bound = element.bound(storage);
         this.vector.append(bound);
@@ -166,8 +144,7 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
         if (this.trackStack()) {
             this.stack().clear();
             this.register().clear();
-            if (!Access.is(exit().access_flags, Access.STATIC))
-                this.register().put(0, method.exit());
+            if (!Access.is(exit().access_flags, Access.STATIC)) this.register().put(0, method.exit());
             for (Type parameter : this.exit().parameters()) this.register().putNext(parameter);
             for (CodeElement element : this.vector) element.notify(this);
             this.maxStack = this.stack().maximum();
@@ -258,7 +235,6 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
         private final ProgramStack stack = new ProgramStack();
         private final ProgramRegister register = new ProgramRegister();
         private final LinkedList<Branch> branches = new LinkedList<>();
-        private int stackCounter;
         private StackMapTableBuilder builder;
 
     }

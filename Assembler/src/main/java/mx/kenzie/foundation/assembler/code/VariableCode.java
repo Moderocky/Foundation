@@ -46,12 +46,18 @@ public abstract class VariableCode implements OpCode {
             default -> code < Codes.ISTORE ? 1 : -1;
         };
         if (slot > 255)
-            return CodeElement.notify(CodeElement.wide(CodeElement.fixed(code,
-                                                                         (byte) (slot >>> 8), (byte) (slot))),
-                                      StackNotifier.pushVariable(slot));
+            return increment > 0 ? CodeElement.notify(CodeElement.wide(CodeElement.fixed(code, (byte) (slot >>> 8),
+                                                                                         (byte) (slot))),
+                                                      StackNotifier.pushVariable(slot)) :
+                CodeElement.notify(CodeElement.wide(CodeElement.fixed(code, (byte) (slot >>> 8), (byte) (slot))),
+                                   builder -> builder.register()
+                                                     .put(slot, builder.stack()
+                                                                       .popSafe()));
         return increment > 0 ? CodeElement.notify(CodeElement.fixed(code, (byte) slot),
                                                   StackNotifier.pushVariable(slot)) :
-            CodeElement.notify(CodeElement.fixed(code, (byte) slot), builder -> builder.register().put(slot, builder.stack().popSafe()));
+            CodeElement.notify(CodeElement.fixed(code, (byte) slot), builder -> builder.register()
+                                                                                       .put(slot, builder.stack()
+                                                                                                         .popSafe()));
     }
 
     @Override

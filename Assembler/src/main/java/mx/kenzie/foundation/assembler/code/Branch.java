@@ -38,6 +38,12 @@ public class Branch implements CodeElement {
     }
 
     @Override
+    public void insert(CodeBuilder builder) {
+        this.handle.setVector(builder);
+        CodeElement.super.insert(builder);
+    }
+
+    @Override
     public void notify(CodeBuilder builder) {
         this.handle.setVector(builder);
         if (builder.trackFrames()) this.checkFrame(builder.stack(), builder.register());
@@ -45,12 +51,6 @@ public class Branch implements CodeElement {
             builder.stack().reframe(this.stack);
             builder.register().reframe(this.register);
         }
-    }
-
-    @Override
-    public void insert(CodeBuilder builder) {
-        this.handle.setVector(builder);
-        CodeElement.super.insert(builder);
     }
 
     @Override

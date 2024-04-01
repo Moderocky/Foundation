@@ -113,4 +113,8 @@ public class ProgramRegister implements Iterable<TypeHint> {
             ']';
     }
 
+    public void notifyMaximum(int slot) {
+        this.maximum = Math.max(maximum, slot);
+    }
+
 }

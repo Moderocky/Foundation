@@ -36,14 +36,14 @@ public interface TypeHint extends Descriptor, Type {
         return mx.kenzie.foundation.detail.Type.VOID_WRAPPER;
     }
 
-    default int width() {
-        return 1;
-    }
-
     static int width(TypeHint... types) {
         int width = 0;
         for (TypeHint type : types) width += type.width();
         return width;
+    }
+
+    default int width() {
+        return 1;
     }
 
     default boolean isPrimitive() {

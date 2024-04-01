@@ -62,12 +62,6 @@ public class ProgramStack extends Stack<TypeHint> {
         this.consume(erasure, false);
     }
 
-    @Override
-    public TypeHint peek() {
-        if (this.isEmpty()) throw new UnsupportedOperationException();
-        return this.elementAt(super.size() - 1);
-    }
-
     public TypeHint peek(int down) {
         return super.get((super.size() - 1) - down);
     }
@@ -317,6 +311,22 @@ public class ProgramStack extends Stack<TypeHint> {
         return this.push0(item);
     }
 
+    @Override
+    public TypeHint pop() {
+        return switch (this.peek().width()) {
+            case 1 -> this.pop0();
+            case 2 -> throw new UnsupportedOperationException("The type on top of the stack is WIDE (" + this.peek()
+                                                                                                             .getTypeName() + ") so must use POP2");
+            default -> throw new IllegalStateException("Unexpected type " + this.peek() + " on stack.");
+        };
+    }
+
+    @Override
+    public TypeHint peek() {
+        if (this.isEmpty()) throw new UnsupportedOperationException();
+        return this.elementAt(super.size() - 1);
+    }
+
     private TypeHint push0(TypeHint item) {
         final TypeHint push = super.push(item);
         this.maximum = Math.max(maximum, this.size());
@@ -327,16 +337,6 @@ public class ProgramStack extends Stack<TypeHint> {
         final TypeHint push = this.peek();
         this.removeElementAt(super.size() - 1);
         return push;
-    }
-
-    @Override
-    public TypeHint pop() {
-        return switch (this.peek().width()) {
-            case 1 -> this.pop0();
-            case 2 -> throw new UnsupportedOperationException("The type on top of the stack is WIDE (" + this.peek()
-                                                                                                             .getTypeName() + ") so must use POP2");
-            default -> throw new IllegalStateException("Unexpected type " + this.peek() + " on stack.");
-        };
     }
 
     /**
@@ -363,6 +363,20 @@ public class ProgramStack extends Stack<TypeHint> {
         return Arrays.copyOf(array, array.length, TypeHint[].class);
     }
 
+    @Override
+    public void clear() {
+        this.dirty = 0;
+        this.maximum = 0;
+        super.clear();
+    }
+
+    @Override
+    public String toString() {
+        return "ProgramStack[" +
+            "maximum=" + maximum + ", elements=" + super.toString() +
+            ']';
+    }
+
     /**
      * Re-frames the model from a snapshot.
      * This is used at a branch when we came from somewhere else with a different stack.
@@ -381,26 +395,12 @@ public class ProgramStack extends Stack<TypeHint> {
         this.maximum = Math.max(maximum, this.size());
     }
 
-    @Override
-    public void clear() {
-        this.dirty = 0;
-        this.maximum = 0;
-        super.clear();
-    }
-
     public void push(TypeHint... hints) {
         for (TypeHint hint : hints) this.push(hint);
     }
 
     public int maximum() {
         return maximum;
-    }
-
-    @Override
-    public String toString() {
-        return "ProgramStack[" +
-            "maximum=" + maximum + ", elements=" + super.toString() +
-            ']';
     }
 
 }

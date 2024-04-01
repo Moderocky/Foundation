@@ -61,7 +61,6 @@ public record LoadConstantCode(String mnemonic, byte code) implements OpCode {
         public void notify(CodeBuilder builder) {
             if (!builder.trackStack()) return;
             builder.stack().push(hint);
-            builder.notifyStack(1);
         }
 
         @Override
@@ -88,7 +87,6 @@ public record LoadConstantCode(String mnemonic, byte code) implements OpCode {
         public void notify(CodeBuilder builder) {
             if (!builder.trackStack()) return;
             builder.stack().push(hint);
-            builder.notifyStack(2);
         }
 
         @Override

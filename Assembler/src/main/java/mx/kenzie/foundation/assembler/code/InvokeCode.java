@@ -2,6 +2,7 @@ package mx.kenzie.foundation.assembler.code;
 
 import mx.kenzie.foundation.assembler.tool.CodeBuilder;
 import mx.kenzie.foundation.assembler.tool.PoolReference;
+import mx.kenzie.foundation.assembler.tool.ProgramStack;
 import mx.kenzie.foundation.detail.Member;
 import mx.kenzie.foundation.detail.Type;
 import org.valross.constantine.RecordConstant;
@@ -42,7 +43,7 @@ public record InvokeCode(String mnemonic, byte code) implements OpCode {
         if (code != Codes.INVOKESTATIC) ++taken; // caller obj is first 1-wide "parameter"
         if (taken == 0) taken += Type.fromDescriptor(member).width(); // it might be a 0-args method returning wide type
         final int count = taken;
-        return storage -> new Invocation(code, storage.constant(member), count);
+        return storage -> new Invocation(code, member, storage.constant(member), count);
     }
 
     @Override
@@ -55,7 +56,8 @@ public record InvokeCode(String mnemonic, byte code) implements OpCode {
         return 3;
     }
 
-    private record Invocation(byte code, PoolReference reference, int width) implements CodeElement, RecordConstant {
+    private record Invocation(byte code, Member member, PoolReference reference, int width)
+        implements CodeElement, RecordConstant {
 
         @Override
         public int length() {
@@ -70,7 +72,18 @@ public record InvokeCode(String mnemonic, byte code) implements OpCode {
 
         @Override
         public void notify(CodeBuilder builder) {
-            builder.notifyStack(width);
+            if (!builder.trackStack()) return;
+            final ProgramStack stack = builder.stack();
+            for (int i = member.parameters().length - 1; i >= 0; i--) stack.pop(member.parameters()[i].width());
+            switch (code) {
+                case Codes.INVOKESTATIC:
+                    break;
+                case Codes.INVOKESPECIAL:
+                    // todo initialise the type duplicate in memory!
+                default:
+                    stack.pop();
+            }
+            if (member.returnType().width() > 0) stack.push(member.returnType());
         }
 
     }

@@ -2,6 +2,7 @@ package mx.kenzie.foundation.assembler.code;
 
 import mx.kenzie.foundation.assembler.tool.CodeBuilder;
 import mx.kenzie.foundation.assembler.tool.PoolReference;
+import mx.kenzie.foundation.assembler.tool.ProgramStack;
 import mx.kenzie.foundation.assembler.vector.U1;
 import mx.kenzie.foundation.assembler.vector.UVec;
 import mx.kenzie.foundation.detail.Member;
@@ -46,7 +47,7 @@ public record InvokeInterfaceCode(String mnemonic, byte code) implements OpCode 
 
     public UnboundedElement method(Member member) {
         final int count = Type.parameterSize(member) + 1;
-        return storage -> new Invocation(code, storage.constant(member), count);
+        return storage -> new Invocation(code, member, storage.constant(member), count);
     }
 
     @Override
@@ -59,7 +60,7 @@ public record InvokeInterfaceCode(String mnemonic, byte code) implements OpCode 
         return 5;
     }
 
-    private record Invocation(byte code, PoolReference reference, int count)
+    private record Invocation(byte code, Member member, PoolReference reference, int count)
         implements CodeElement, RecordConstant {
 
         @Override
@@ -77,7 +78,11 @@ public record InvokeInterfaceCode(String mnemonic, byte code) implements OpCode 
 
         @Override
         public void notify(CodeBuilder builder) {
-            builder.notifyStack(count);
+            if (!builder.trackStack()) return;
+            final ProgramStack stack = builder.stack();
+            for (int i = member.parameters().length - 1; i >= 0; i--) stack.pop(member.parameters()[i].width());
+            stack.pop(); // caller
+            if (member.returnType().width() > 0) stack.push(member.returnType());
         }
 
     }

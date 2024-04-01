@@ -117,7 +117,6 @@ public interface CodeElement extends Data, UVec, UnboundedElement {
 
             @Override
             public void notify(CodeBuilder builder) {
-                builder.notifyStack(increment);
                 this.element.notify(builder);
             }
 
@@ -192,19 +191,7 @@ public interface CodeElement extends Data, UVec, UnboundedElement {
      * Called for each element in succession to build the stack map.
      */
     default void notify(CodeBuilder builder) {
-        if (builder.trackStack()) {
-            final int stack = knownStackIncrement(Byte.toUnsignedInt(this.code()));
-            builder.notifyStack(stack);
-        }
-        switch (this.code()) {
-            case ALOAD_0, ILOAD_0, FLOAD_0 -> builder.notifyMaxLocalIndex(0);
-            case ALOAD_1, ILOAD_1, FLOAD_1, LLOAD_0, DLOAD_0 -> builder.notifyMaxLocalIndex(1);
-            case ALOAD_2, ILOAD_2, FLOAD_2, LLOAD_1, DLOAD_1 -> builder.notifyMaxLocalIndex(2);
-            case ALOAD_3, ILOAD_3, FLOAD_3, LLOAD_2, DLOAD_2 -> builder.notifyMaxLocalIndex(3);
-            case LLOAD_3, DLOAD_3 -> builder.notifyMaxLocalIndex(4);
-            case ALOAD, ILOAD, FLOAD -> builder.notifyMaxLocalIndex(Byte.toUnsignedInt(this.binary()[1]));
-            case LLOAD, DLOAD -> builder.notifyMaxLocalIndex(Byte.toUnsignedInt(this.binary()[1]) + 1);
-        }
+
     }
 
     byte code();

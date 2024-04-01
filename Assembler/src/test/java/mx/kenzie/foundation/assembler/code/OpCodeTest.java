@@ -1366,7 +1366,7 @@ public class OpCodeTest extends MethodBuilderTest {
                                        .write(NEW.type(ArrayList.class), DUP,
                                               INVOKESPECIAL.constructor(ArrayList.class),
                                               INVOKEINTERFACE.method(List.class
-                                               , int.class, "size"), IRETURN)
+                                                  , int.class, "size"), IRETURN)
                                        .exit().returns(int.class)).invoke(null).equals(0);
     }
 
@@ -1935,7 +1935,8 @@ public class OpCodeTest extends MethodBuilderTest {
                     .exit().method().named("test").setModifiers(PUBLIC).code()
                     .write(ALOAD_0, DUP, ICONST_1, PUTFIELD.field(type, "hash", int.class), GETFIELD.field(type,
                                                                                                            "hash",
-                                                                                                           int.class), IRETURN)
+                                                                                                           int.class)
+                        , IRETURN)
                     .exit().returns(int.class);
 
         final ClassFile classFile = classBuilder.build();
@@ -2017,10 +2018,7 @@ public class OpCodeTest extends MethodBuilderTest {
     @Test
     public void testWIDE() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         final int slot = 7175;
-
-        final CodeBuilder code = this.method().returns(int.class).code().setTrackStack(false).stackSize(1);
-        code.notifyMaxLocalIndex(slot);
-
+        final CodeBuilder code = this.method().returns(int.class).code();
         assert this.compileForTest(code.write(ICONST_1, ISTORE.var(slot), ILOAD.var(slot), IRETURN).exit()).invoke(null)
                    .equals(1);
     }

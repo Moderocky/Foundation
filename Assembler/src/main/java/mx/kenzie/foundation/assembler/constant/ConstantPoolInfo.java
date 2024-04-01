@@ -34,36 +34,30 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
                                                                               Descriptor.class,
                                                                               ClassFileBuilder.Storage::valueOf);
 
-    ConstantType<?, ?> tag();    ConstantType<ReferenceInfo, Member> METHOD_REFERENCE = new ConstantType<>(10, ReferenceInfo.class, Member.class,
-                                                                              ClassFileBuilder.Storage::valueOfMethod);
+    ConstantType<?, ?> tag();
 
-    UVec info();    ConstantType<ReferenceInfo, Member> INTERFACE_METHOD_REFERENCE = new ConstantType<>(11, ReferenceInfo.class,
-                                                                                        Member.class,
-                                                                                        ClassFileBuilder.Storage::valueOfInterfaceMethod);
+    UVec info();    ConstantType<ReferenceInfo, Member> METHOD_REFERENCE = new ConstantType<>(10, ReferenceInfo.class, Member.class,
+                                                                              ClassFileBuilder.Storage::valueOfMethod);
 
     /**
      * Whether this is (probably) storing the given object.
      * This should use a value-based equality check, since the aim is to
      * prevent duplicates being added to the constant pool.
      */
-    boolean is(Constable object);    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
-    ConstantType<NumberInfo<Integer>, Integer> INTEGER = new ConstantType<>(3,
-                                                                            (Class<NumberInfo<Integer>>) (Class) NumberInfo.class, Integer.class, ClassFileBuilder.Storage::valueOf);
+    boolean is(Constable object);
 
     @Override
     default void write(OutputStream stream) throws IOException, ReflectiveOperationException {
         this.tag().write(stream);
         this.info().write(stream);
-    }    ConstantType<DynamicInfo, DynamicReference> DYNAMIC = new ConstantType<>(17, DynamicInfo.class,
-                                                                             DynamicReference.class,
-                                                                             ClassFileBuilder.Storage::valueOf);
+    }    ConstantType<ReferenceInfo, Member> INTERFACE_METHOD_REFERENCE = new ConstantType<>(11, ReferenceInfo.class,
+                                                                                        Member.class,
+                                                                                        ClassFileBuilder.Storage::valueOfInterfaceMethod);
 
     @Override
     default byte[] binary() { // inefficient but subclasses should deal with this
         return UVec.of(this.tag(), this.info()).binary();
-    }    ConstantType<DynamicInfo, DynamicReference> INVOKE_DYNAMIC = new ConstantType<>(18, DynamicInfo.class,
-                                                                                    DynamicReference.class,
-                                                                                    ClassFileBuilder.Storage::valueOf);
+    }
 
     /**
      * @return The sort code of this constant.
@@ -71,12 +65,32 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
     default int sort() {
         return 99;
     }    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
-    ConstantType<NumberInfo<Float>, Float> FLOAT = new ConstantType<>(4,
-                                                                      (Class<NumberInfo<Float>>) (Class) NumberInfo.class, Float.class, ClassFileBuilder.Storage::valueOf);
+    ConstantType<NumberInfo<Integer>, Integer> INTEGER = new ConstantType<>(3,
+                                                                            (Class<NumberInfo<Integer>>) (Class) NumberInfo.class, Integer.class, ClassFileBuilder.Storage::valueOf);
 
     default @Override int compareTo(@NotNull ConstantPoolInfo o) {
         return Integer.compare(this.sort(), o.sort());
-    }    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    }
+
+    ConstantType<DynamicInfo, DynamicReference> DYNAMIC = new ConstantType<>(17, DynamicInfo.class,
+                                                                             DynamicReference.class,
+                                                                             ClassFileBuilder.Storage::valueOf);
+
+
+
+    ConstantType<DynamicInfo, DynamicReference> INVOKE_DYNAMIC = new ConstantType<>(18, DynamicInfo.class,
+                                                                                    DynamicReference.class,
+                                                                                    ClassFileBuilder.Storage::valueOf);
+
+
+
+    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
+    ConstantType<NumberInfo<Float>, Float> FLOAT = new ConstantType<>(4,
+                                                                      (Class<NumberInfo<Float>>) (Class) NumberInfo.class, Float.class, ClassFileBuilder.Storage::valueOf);
+
+
+
+    @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
     ConstantType<LongNumberInfo<Long>, Long> LONG = new ConstantType<>(5,
                                                                        (Class<LongNumberInfo<Long>>) (Class) LongNumberInfo.class, Long.class, ClassFileBuilder.Storage::valueOf);
     @SuppressWarnings({"unchecked", "RawUseOfParameterized"})
@@ -87,20 +101,6 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
     ConstantType<MethodHandleInfo, Member.Invocation> METHOD_HANDLE = new ConstantType<>(15, MethodHandleInfo.class,
                                                                                          Member.Invocation.class,
                                                                                          ClassFileBuilder.Storage::valueOf);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
 

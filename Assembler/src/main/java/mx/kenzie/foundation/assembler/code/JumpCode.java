@@ -23,11 +23,6 @@ public record JumpCode(String mnemonic, byte code, Consumer<CodeBuilder> notifie
     public CodeElement jump(Branch branch) {
         return new JumpInstruction() {
             @Override
-            public byte code() {
-                return code;
-            }
-
-            @Override
             public int length() {
                 return 3;
             }
@@ -62,6 +57,11 @@ public record JumpCode(String mnemonic, byte code, Consumer<CodeBuilder> notifie
                 if (!builder.trackFrames()) return;
                 builder.write(new Branch.UnconditionalBranch()); // goto is an unconditional jump, we need an implicit
                 // branch here
+            }
+
+            @Override
+            public byte code() {
+                return code;
             }
         };
     }

@@ -138,16 +138,14 @@ public record Type(String getTypeName, String descriptorString, String internalN
         } else return new Type(value.getTypeName(), Type.descriptorString(value), Type.internalName(value));
     }
 
-    public static final Type BYTE = Type.of(byte.class), SHORT = Type.of(short.class), INT = Type.of(int.class),
-        LONG = Type.of(long.class), FLOAT = Type.of(float.class), DOUBLE = Type.of(double.class), BOOLEAN =
-        Type.of(boolean.class), CHAR = Type.of(char.class), VOID = Type.of(void.class), OBJECT =
-        Type.of(Object.class), STRING = Type.of(String.class), VOID_WRAPPER = Type.of(Void.class);
-
     private static Type of(Class<?> value) {
         final Type type = new Type(value.getTypeName(), value.descriptorString(), Type.internalName(value));
         CACHE.put(value, new SoftReference<>(type));
         return type;
-    }
+    }    public static final Type BYTE = Type.of(byte.class), SHORT = Type.of(short.class), INT = Type.of(int.class),
+        LONG = Type.of(long.class), FLOAT = Type.of(float.class), DOUBLE = Type.of(double.class), BOOLEAN =
+        Type.of(boolean.class), CHAR = Type.of(char.class), VOID = Type.of(void.class), OBJECT =
+        Type.of(Object.class), STRING = Type.of(String.class), VOID_WRAPPER = Type.of(Void.class);
 
     public static String internalName(java.lang.reflect.Type klass) {
         if (klass instanceof Class<?> thing) return thing.getName().replace('.', '/');
@@ -280,7 +278,8 @@ public record Type(String getTypeName, String descriptorString, String internalN
 
     public Type componentType() {
         if (!descriptorString.startsWith("[") || !getTypeName.endsWith("[]"))
-            throw new UnsupportedOperationException("Cannot get component type of non-array " + descriptorString + " " + getTypeName);
+            throw new UnsupportedOperationException("Cannot get component type of non-array " + descriptorString + " "
+                                                        + getTypeName);
         final String sub = descriptorString.substring(1);
         final String typeName = getTypeName.substring(0, getTypeName.length() - 2);
         if (sub.charAt(0) == 'L') return new Type(typeName, sub, sub.substring(0, sub.length() - 1));
@@ -325,5 +324,7 @@ public record Type(String getTypeName, String descriptorString, String internalN
         for (int i = 0; i < Short.MAX_VALUE; i++) if (descriptorString.charAt(i) != '[') return i;
         throw new IllegalStateException("Type " + this + " is too big?");
     }
+
+
 
 }
