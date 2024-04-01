@@ -58,6 +58,16 @@ public class Branch implements CodeElement {
         return -1;
     }
 
+    public Branch register(TypeHint... locals) {
+        this.register = locals;
+        return this;
+    }
+
+    public Branch stack(TypeHint... stack) {
+        this.stack = stack;
+        return this;
+    }
+
     @Override
     public Constant constant() {
         return UVec.of(this.binary());
@@ -83,14 +93,12 @@ public class Branch implements CodeElement {
             this.stack = stack.toArray();
         } else if (this.stack.length > 0 && !stack.isEmpty() && !Arrays.equals(this.stack, stack.toArray()))
             throw new IncompatibleBranchError("Expected stack to be " + this.printTable(this.stack) + " entering" +
-                                                  " " +
-                                                  this + " but found " + this.printTable(stack.toArray()));
+                                                  " " + this + " but found " + this.printTable(stack.toArray()));
         if (this.register == null || this.register.length == 0) {
             this.register = register.toArray();
         } else if (!stack.isEmpty() && !Arrays.equals(this.register, register.toArray()))
             throw new IncompatibleBranchError("Expected register to be " + this.printTable(this.register) + " " +
-                                                  "entering " +
-                                                  this + " but found " + this.printTable(register.toArray()));
+                                                  "entering " + this + " but found " + this.printTable(register.toArray()));
     }
 
     private String printTable(TypeHint[] array) {
