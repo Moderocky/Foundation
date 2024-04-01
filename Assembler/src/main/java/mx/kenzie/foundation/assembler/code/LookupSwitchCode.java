@@ -20,9 +20,6 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * A simple, single-byte instruction, containing only its operation code.
- * Since no additional parameters are needed for this instruction it may be used as-is.
- *
  * @param mnemonic The operation code's reference name.
  * @param code     The byte code. This is likely to be an UNSIGNED byte in disguise, so should be treated with
  *                 caution.

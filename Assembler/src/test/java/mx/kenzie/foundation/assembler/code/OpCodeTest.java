@@ -2022,7 +2022,16 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     @Test
-    public void testTABLESWITCH() {
+    public void testTABLESWITCH() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Constable test = "hello";
+        final Branch end = new Branch(), def = new Branch(), case2 = new Branch(), case3 = new Branch();
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_3,
+                                              TABLESWITCH.test(def, 2, case2, case3),
+                                              case2, LDC.value("foo"), GOTO.jump(end),
+                                              case3, LDC.value(test), GOTO.jump(end),
+                                              def, ACONST_NULL, end, ARETURN)
+                                       .exit()).invoke(null).equals(test);
     }
 
     @Test

@@ -352,7 +352,7 @@ public interface OpCode {
     Instruction SASTORE = new Instruction("SASTORE", Codes.SASTORE, StackNotifier.pop(3));
     PushCode SIPUSH = new PushCode("SIPUSH", Codes.SIPUSH);
     Instruction SWAP = new Instruction("SWAP", Codes.SWAP, StackNotifier.SWAP);
-    UncheckedCode TABLESWITCH = new UncheckedCode("TABLESWITCH", Codes.TABLESWITCH);
+    TableSwitchCode TABLESWITCH = new TableSwitchCode("TABLESWITCH", Codes.TABLESWITCH);
     WideCode WIDE = new WideCode("WIDE", Codes.WIDE);
 
     static OpCode[] opcodes() {
