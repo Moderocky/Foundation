@@ -10,6 +10,9 @@ import mx.kenzie.foundation.detail.Type;
 import org.jetbrains.annotations.Contract;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -37,6 +40,15 @@ public class OpCodeTest extends MethodBuilderTest {
     protected Method compileForTest(MethodBuilder builder) throws NoSuchMethodException {
         final Loader loader = Loader.createDefault();
         final ClassFile file = builder.exit().build();
+        try {
+            final File file2 = new File("Test.class");
+            file2.createNewFile();
+            try (OutputStream stream = new FileOutputStream(file2)) {
+                stream.write(file.binary());
+            }
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+        }
         final Class<?> done = this.load(loader, file, Type.of("org.example", "Test"));
         assert done != null;
         assert done.getDeclaredMethods().length > 0;
@@ -414,7 +426,7 @@ public class OpCodeTest extends MethodBuilderTest {
         final Random random = new Random();
         for (int i = 0; i < 100; i++) {
             final double a = random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE), b =
-                random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+ random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
             assert this.compileForTest(this.method().returns(int.class).code()
                                            .write(LDC.value(a), LDC.value(b), DCMPG, IRETURN).exit()).invoke(null)
                        .equals(Double.compare(a, b));
@@ -584,7 +596,7 @@ public class OpCodeTest extends MethodBuilderTest {
         final Random random = new Random();
         for (int i = 0; i < 100; i++) {
             final double a = random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE), b =
-                random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
+ random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE);
             assert this.compileForTest(this.method().returns(double.class).code()
                                            .write(LDC.value(a), LDC.value(b), DSUB, DRETURN).exit()).invoke(null)
                        .equals(a - b);
@@ -613,7 +625,7 @@ public class OpCodeTest extends MethodBuilderTest {
     public void testDUPX2() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         assert this.compileForTest(this.method().returns(Object.class).code()
                                        .write(LDC.value("goodbye"), ICONST_0, LDC.value("hello"), DUP_X2, POP2, POP,
-                                              ARETURN)
+                                        ARETURN)
                                        .exit()).invoke(null).equals("hello");
         assert this.compileForTest(this.method().returns(Object.class).code()
                                        .write(LCONST_0, LDC.value("hello"), DUP_X2, POP, POP2, ARETURN).exit())
@@ -703,7 +715,7 @@ public class OpCodeTest extends MethodBuilderTest {
         final Random random = new Random();
         for (int i = 0; i < 100; i++) {
             final float a = random.nextFloat(Float.MIN_VALUE, Float.MAX_VALUE), b = random.nextFloat(Float.MIN_VALUE,
-                                                                                                     Float.MAX_VALUE);
+             Float.MAX_VALUE);
             assert this.compileForTest(this.method().returns(float.class).code()
                                            .write(LDC.value(a), LDC.value(b), FADD, FRETURN).exit()).invoke(null)
                        .equals(a + b);
@@ -735,7 +747,7 @@ public class OpCodeTest extends MethodBuilderTest {
         final Random random = new Random();
         for (int i = 0; i < 100; i++) {
             final float a = random.nextFloat(Float.MIN_VALUE, Float.MAX_VALUE), b = random.nextFloat(Float.MIN_VALUE,
-                                                                                                     Float.MAX_VALUE);
+             Float.MAX_VALUE);
             assert this.compileForTest(this.method().returns(int.class).code()
                                            .write(LDC.value(a), LDC.value(b), FCMPG, IRETURN).exit()).invoke(null)
                        .equals(Float.compare(a, b));
@@ -777,7 +789,7 @@ public class OpCodeTest extends MethodBuilderTest {
         final Random random = new Random();
         for (int i = 0; i < 100; i++) {
             final float a = random.nextFloat(Float.MIN_VALUE, Float.MAX_VALUE), b = random.nextFloat(Float.MIN_VALUE,
-                                                                                                     Float.MAX_VALUE);
+             Float.MAX_VALUE);
             assert this.compileForTest(this.method().returns(float.class).code()
                                            .write(LDC.value(a), LDC.value(b), FDIV, FRETURN).exit()).invoke(null)
                        .equals(a / b);
@@ -836,7 +848,7 @@ public class OpCodeTest extends MethodBuilderTest {
         final Random random = new Random();
         for (int i = 0; i < 100; i++) {
             final float a = random.nextFloat(Float.MIN_VALUE, Float.MAX_VALUE), b = random.nextFloat(Float.MIN_VALUE,
-                                                                                                     Float.MAX_VALUE);
+             Float.MAX_VALUE);
             assert this.compileForTest(this.method().returns(float.class).code()
                                            .write(LDC.value(a), LDC.value(b), FMUL, FRETURN).exit()).invoke(null)
                        .equals(a * b);
@@ -858,7 +870,7 @@ public class OpCodeTest extends MethodBuilderTest {
         final Random random = new Random();
         for (int i = 0; i < 100; i++) {
             final float a = random.nextFloat(Float.MIN_VALUE, Float.MAX_VALUE), b = random.nextFloat(Float.MIN_VALUE,
-                                                                                                     Float.MAX_VALUE);
+             Float.MAX_VALUE);
             assert this.compileForTest(this.method().returns(float.class).code()
                                            .write(LDC.value(a), LDC.value(b), FREM, FRETURN).exit()).invoke(null)
                        .equals(a % b);
@@ -931,7 +943,7 @@ public class OpCodeTest extends MethodBuilderTest {
         final Random random = new Random();
         for (int i = 0; i < 100; i++) {
             final float a = random.nextFloat(Float.MIN_VALUE, Float.MAX_VALUE), b = random.nextFloat(Float.MIN_VALUE,
-                                                                                                     Float.MAX_VALUE);
+             Float.MAX_VALUE);
             assert this.compileForTest(this.method().returns(float.class).code()
                                            .write(LDC.value(a), LDC.value(b), FSUB, FRETURN).exit()).invoke(null)
                        .equals(a - b);
@@ -948,13 +960,11 @@ public class OpCodeTest extends MethodBuilderTest {
                                                                       .named("test").ofType(Object.class).exit()
                                                                       .constructor().addModifiers(PUBLIC).code()
                                                                       .write(ALOAD_0,
-                                                                             INVOKESPECIAL.constructor(Object.class),
-                                                                             RETURN)
+INVOKESPECIAL.constructor(Object.class), RETURN)
                                                                       .exit().exit().method().named("test")
                                                                       .addModifiers(PUBLIC).returns(Object.class).code()
                                                                       .write(ALOAD_0, GETFIELD.field(type, "test",
-                                                                                                     Object.class),
-                                                                             ARETURN)
+                                                                      Object.class), ARETURN)
                                                                       .exit().exit();
 
         final ClassFile file = builder.build();
@@ -977,20 +987,21 @@ public class OpCodeTest extends MethodBuilderTest {
     public void testGOTO() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         final Branch to = new Branch();
         assert this.compileForTest(this.method().returns(Object.class).code()
-                                       .write(GOTO.jump(to), LDC.value("hello"), ARETURN, to,
-                                              LDC.value("there"), ARETURN)
-                                       .exit())
-                   .invoke(null).equals("there");
+                                       .write(GOTO.jump(to), LDC.value("hello"), ARETURN, to, LDC.value("there"),
+                                       ARETURN)
+                                       .exit()).invoke(null).equals("there");
         final Branch a = new Branch(), b = new Branch();
         assert this.compileForTest(this.method().returns(Object.class).code()
-                                       .write(GOTO.jump(a), b, LDC.value("there"), ARETURN, a,
-                                              GOTO.jump(b), ACONST_NULL, ATHROW)
-                                       .exit())
-                   .invoke(null).equals("there");
+                                       .write(GOTO.jump(a), b, LDC.value("there"), ARETURN, a, GOTO.jump(b),
+                                       ACONST_NULL, ATHROW)
+                                       .exit()).invoke(null).equals("there");
     }
 
     @Test
     public void testGOTOW() {
+        /*
+        This opcode can't really be tested since the VM doesn't support wide jumps (currently!)
+         */
         // FIXME: impl GOTOW
     }
 
@@ -1059,7 +1070,7 @@ public class OpCodeTest extends MethodBuilderTest {
         final Random random = new Random();
         for (int i = 0; i < 100; i++) {
             final int a = random.nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE), b = random.nextInt(Integer.MIN_VALUE,
-                                                                                                   Integer.MAX_VALUE);
+             Integer.MAX_VALUE);
             assert this.compileForTest(this.method().returns(int.class).code()
                                            .write(LDC.value(a), LDC.value(b), IADD, IRETURN).exit()).invoke(null)
                        .equals(a + b);
@@ -1081,7 +1092,7 @@ public class OpCodeTest extends MethodBuilderTest {
         final Random random = new Random();
         for (int i = 0; i < 100; i++) {
             final int a = random.nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE), b = random.nextInt(Integer.MIN_VALUE,
-                                                                                                   Integer.MAX_VALUE);
+             Integer.MAX_VALUE);
             assert this.compileForTest(this.method().returns(int.class).code()
                                            .write(LDC.value(a), LDC.value(b), IAND, IRETURN).exit()).invoke(null)
                        .equals(a & b);
@@ -1145,7 +1156,7 @@ public class OpCodeTest extends MethodBuilderTest {
         final Random random = new Random();
         for (int i = 0; i < 100; i++) {
             final int a = random.nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE), b = random.nextInt(Integer.MIN_VALUE,
-                                                                                                   Integer.MAX_VALUE);
+             Integer.MAX_VALUE);
             assert this.compileForTest(this.method().returns(int.class).code()
                                            .write(LDC.value(a), LDC.value(b), IDIV, IRETURN).exit()).invoke(null)
                        .equals(a / b);
@@ -1153,15 +1164,58 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     @Test
-    public void testIFACMPEQ() {
+    public void testIFACMPEQ() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Branch to = new Branch();
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(LDC.value("hello"), LDC.value("there"), IF_ACMPEQ.jump(to), LDC.value(
+                                           "hello"), ARETURN, to, LDC.value("there"), ARETURN)
+                                       .exit()).invoke(null).equals("hello");
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(LDC.value("hello"), LDC.value("hello"), IF_ACMPEQ.jump(to), LDC.value(
+                                           "hello"), ARETURN, to, LDC.value("there"), ARETURN)
+                                       .exit()).invoke(null).equals("there");
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ACONST_NULL, ACONST_NULL, IF_ACMPEQ.jump(to), LDC.value("no"), ARETURN,
+                                       to, LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("yes");
     }
 
     @Test
-    public void testIFACMPNE() {
+    public void testIFACMPNE() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Branch to = new Branch();
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(LDC.value("hello"), LDC.value("there"), IF_ACMPNE.jump(to), LDC.value(
+                                           "hello"), ARETURN, to, LDC.value("there"), ARETURN)
+                                       .exit()).invoke(null).equals("there");
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(LDC.value("hello"), LDC.value("hello"), IF_ACMPNE.jump(to), LDC.value(
+                                           "hello"), ARETURN, to, LDC.value("there"), ARETURN)
+                                       .exit()).invoke(null).equals("hello");
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ACONST_NULL, ACONST_NULL, IF_ACMPNE.jump(to), LDC.value("no"), ARETURN,
+                                        to, LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("no");
     }
 
     @Test
-    public void testIFICMPEQ() {
+    public void testIFICMPEQ() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Branch to = new Branch();
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_1, ICONST_M1, IF_ICMPEQ.jump(to), LDC.value("hello"), ARETURN,
+to, LDC.value("there"), ARETURN)
+                                       .exit()).invoke(null).equals("hello");
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_1, ICONST_1, IF_ICMPEQ.jump(to), LDC.value("hello"), ARETURN, to
+                                       , LDC.value("there"), ARETURN)
+                                       .exit()).invoke(null).equals("there");
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_0, ICONST_0, IF_ICMPEQ.jump(to), LDC.value("no"), ARETURN, to,
+ LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("yes");
+        assert this.compileForTest(this.method().returns(int.class).code()
+                                       .write(ICONST_0, ISTORE_1, to, IINC.var(1, 1), ILOAD_1, ICONST_5,
+                                              IF_ICMPNE.jump(to), ILOAD_1, IRETURN)
+                                       .exit()).invoke(null).equals(5);
     }
 
     @Test
@@ -1295,8 +1349,7 @@ public class OpCodeTest extends MethodBuilderTest {
                                                                       .named("test").ofType(Object.class).exit()
                                                                       .constructor().addModifiers(PUBLIC).code()
                                                                       .write(ALOAD_0,
-                                                                             INVOKESPECIAL.constructor(Object.class),
-                                                                             RETURN)
+                                                                             INVOKESPECIAL.constructor(Object.class), RETURN)
                                                                       .exit().exit().method().named("test")
                                                                       .addModifiers(PUBLIC).returns(boolean.class)
                                                                       .code()
@@ -1320,8 +1373,8 @@ public class OpCodeTest extends MethodBuilderTest {
     public void testINVOKEINTERFACE() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         assert this.compileForTest(this.method().code().setTrackStack(false).stackSize(2)
                                        .write(NEW.type(ArrayList.class), DUP,
-                                              INVOKESPECIAL.constructor(ArrayList.class),
-                                              INVOKEINTERFACE.method(List.class, int.class, "size"), IRETURN)
+INVOKESPECIAL.constructor(ArrayList.class), INVOKEINTERFACE.method(List.class
+                                              , int.class, "size"), IRETURN)
                                        .exit().returns(int.class)).invoke(null).equals(0);
     }
 
@@ -1354,9 +1407,13 @@ public class OpCodeTest extends MethodBuilderTest {
         }
 
         assert this.compileForTest(this.method().parameters(Thing.class).returns(String.class).code()
-                                       .setTrackStack(false).stackSize(1)
+                                       .setTrackStack(false).stackSize(1).registerSize(1)
                                        .write(ALOAD_0, INVOKEVIRTUAL.method(Object.class, String.class, "toString"),
-                                              ARETURN)
+                                       ARETURN)
+                                       .exit()).invoke(null, new Thing()).equals(expected);
+        assert this.compileForTest(this.method().parameters(Thing.class).returns(String.class).code()
+                                       .write(ALOAD_0, INVOKEVIRTUAL.method(Object.class, String.class, "toString"),
+                                        ARETURN)
                                        .exit()).invoke(null, new Thing()).equals(expected);
     }
 
@@ -1822,7 +1879,7 @@ public class OpCodeTest extends MethodBuilderTest {
     public void testNEWARRAY() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         assert this.compileForTest(this.method().code()
                                        .write(ICONST_1, NEWARRAY.type(int.class), DUP, ICONST_0, ICONST_M1, IASTORE,
-                                              ARETURN)
+                                       ARETURN)
                                        .exit().returns(int[].class))
                    .invoke(null) instanceof int[] ints && ints.length == 1 && ints[0] == -1;
         for (int i = 4; i < 12; i++) {
@@ -1885,9 +1942,7 @@ public class OpCodeTest extends MethodBuilderTest {
                     .addModifiers(PUBLIC).code().write(ALOAD_0, INVOKESPECIAL.constructor(Object.class), RETURN).exit()
                     .exit().method().named("test").setModifiers(PUBLIC).code()
                     .write(ALOAD_0, DUP, ICONST_1, PUTFIELD.field(type, "hash", int.class), GETFIELD.field(type,
-                                                                                                           "hash",
-                                                                                                           int.class)
-                        , IRETURN)
+                                                                                                           "hash", int.class), IRETURN)
                     .exit().returns(int.class);
 
         final ClassFile classFile = classBuilder.build();
@@ -1904,7 +1959,7 @@ public class OpCodeTest extends MethodBuilderTest {
         classBuilder.field().addModifiers(PUBLIC, STATIC).named("hash").ofType(int.class).exit().method().named("test")
                     .setModifiers(PUBLIC, STATIC).code()
                     .write(ICONST_1, PUTSTATIC.field(type, "hash", int.class), GETSTATIC.field(type, "hash",
-                                                                                               int.class), IRETURN)
+ int.class), IRETURN)
                     .exit().returns(int.class);
 
         final ClassFile classFile = classBuilder.build();
@@ -1925,7 +1980,7 @@ public class OpCodeTest extends MethodBuilderTest {
     public void testSALOAD() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         assert this.compileForTest(this.method().code()
                                        .write(ICONST_1, NEWARRAY.type(short.class), DUP, ICONST_0,
-                                              LDC.value((short) 3), SASTORE, ICONST_0, SALOAD, IRETURN)
+                                        LDC.value((short) 3), SASTORE, ICONST_0, SALOAD, IRETURN)
                                        .exit().returns(int.class)).invoke(null).equals(3);
     }
 
@@ -1933,7 +1988,7 @@ public class OpCodeTest extends MethodBuilderTest {
     public void testSASTORE() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         assert this.compileForTest(this.method().code()
                                        .write(ICONST_1, NEWARRAY.type(short.class), DUP, ICONST_0,
-                                              LDC.value((short) 3), SASTORE, ICONST_0, SALOAD, IRETURN)
+                                       LDC.value((short) 3), SASTORE, ICONST_0, SALOAD, IRETURN)
                                        .exit().returns(int.class)).invoke(null).equals(3);
     }
 

@@ -19,9 +19,15 @@ public interface StackMapFrame extends UVec, Constant {
             final int ourSize = ours.registerSize(), theirSize = previous.registerSize(), difference =
                 ourSize - theirSize;
             if (ourSize != theirSize && difference > -4 && difference < 4) {
-                final int total = Math.min(ours.register().length, previous.register().length);
-                if (Arrays.equals(ours.register(), 0, total, previous.register(), 0, total))
-                    return new ShiftFrame(offset, difference);
+                final int ourLength = ours.register().length;
+                final int total = Math.min(ourLength, previous.register().length);
+                if (Arrays.equals(ours.register(), 0, total, previous.register(), 0, total)) {
+                    if (difference < 0)
+                        return new ShiftFrame(offset, difference);
+                    else
+                        return new ShiftFrame(offset, difference, VerificationTypeInfo.of(storage,
+                                                                                          Arrays.copyOfRange(ours.register(), ourLength - difference, ourLength)));
+                }
             }
         } else if (stackSize == 1 && Arrays.equals(ours.register(), previous.register()))
             return new SameLocalsOneStackFrame(offset, VerificationTypeInfo.of(storage, ours.stack()[0]));

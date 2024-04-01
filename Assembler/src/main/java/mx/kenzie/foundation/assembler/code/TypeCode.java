@@ -3,13 +3,17 @@ package mx.kenzie.foundation.assembler.code;
 import mx.kenzie.foundation.assembler.constant.ConstantPoolInfo;
 import mx.kenzie.foundation.assembler.tool.CodeBuilder;
 import mx.kenzie.foundation.assembler.tool.PoolReference;
+import mx.kenzie.foundation.assembler.tool.ProgramStack;
+import mx.kenzie.foundation.assembler.tool.StackNotifier;
 import mx.kenzie.foundation.detail.Type;
+import mx.kenzie.foundation.detail.TypeHint;
 import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.invoke.TypeDescriptor;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
 /**
  * An instruction for loading a constant value.
@@ -18,20 +22,26 @@ public class TypeCode implements OpCode {
 
     private final String mnemonic;
     private final byte code;
+    private final BiConsumer<TypeHint, ProgramStack> notifier;
 
     /**
      * @param mnemonic The operation code's reference name.
      * @param code     The byte code. This is likely to be an UNSIGNED byte in disguise, so should be treated with
      *                 caution.
      */
-    public TypeCode(String mnemonic, byte code) {
+    public TypeCode(String mnemonic, byte code, BiConsumer<TypeHint, ProgramStack> notifier) {
         this.mnemonic = mnemonic;
         this.code = code;
+        this.notifier = notifier;
     }
 
     public <Klass extends java.lang.reflect.Type & TypeDescriptor> UnboundedElement type(Klass type) {
         final Type value = Type.of(type);
-        return storage -> new Typed(code, storage.constant(ConstantPoolInfo.TYPE, value));
+        return switch (code) {
+            case Codes.NEW -> storage -> new New(value, storage.constant(ConstantPoolInfo.TYPE, value));
+            default -> storage -> CodeElement.notify(new Typed(code, storage.constant(ConstantPoolInfo.TYPE, value)),
+                                                     builder -> notifier.accept(value, builder.stack()));
+        };
     }
 
     @Override
@@ -84,6 +94,33 @@ public class TypeCode implements OpCode {
 
     }
 
+    public record New(Type value, PoolReference reference) implements CodeElement, RecordConstant {
+
+        @Override
+        public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+            stream.write(this.code());
+            this.reference.write(stream);
+        }
+
+        @Override
+        public void notify(CodeBuilder builder) {
+            if (!builder.trackStack()) return;
+            builder.stack().push(TypeHint.uninitialised(value, this, builder.vector()));
+            CodeElement.super.notify(builder);
+        }
+
+        @Override
+        public byte code() {
+            return Codes.NEW;
+        }
+
+        @Override
+        public int length() {
+            return 3;
+        }
+
+    }
+
     /**
      * A special version of the type instruction for array codes (anewarray, newarray).
      * This will automatically switch to the correct choice out of the primitive/object codes
@@ -97,26 +134,43 @@ public class TypeCode implements OpCode {
          *                 caution.
          */
         public Array(String mnemonic, byte code) {
-            super(mnemonic, code);
+            super(mnemonic, code, null);
         }
 
         public <Klass extends java.lang.reflect.Type & TypeDescriptor> UnboundedElement type(Klass type) {
             final Type value = Type.of(type);
             return switch (value.descriptorString()) {
-                case "Z" -> this.primitive(4);
-                case "C" -> this.primitive(5);
-                case "F" -> this.primitive(6);
-                case "D" -> this.primitive(7);
-                case "B" -> this.primitive(8);
-                case "S" -> this.primitive(9);
-                case "I" -> this.primitive(10);
-                case "J" -> this.primitive(11);
-                default -> storage -> new Typed(Codes.ANEWARRAY, storage.constant(ConstantPoolInfo.TYPE, value));
+                case "Z" -> this.primitive(4, Type.of(boolean[].class));
+                case "C" -> this.primitive(5, Type.of(char[].class));
+                case "F" -> this.primitive(6, Type.of(float[].class));
+                case "D" -> this.primitive(7, Type.of(double[].class));
+                case "B" -> this.primitive(8, Type.of(byte[].class));
+                case "S" -> this.primitive(9, Type.of(short[].class));
+                case "I" -> this.primitive(10, Type.of(int[].class));
+                case "J" -> this.primitive(11, Type.of(long[].class));
+                default ->
+                    storage -> CodeElement.notify(new Typed(Codes.ANEWARRAY, storage.constant(ConstantPoolInfo.TYPE,
+                                                                                              value)),
+                                                  StackNotifier.pop1push(value.arrayType()));
             };
         }
 
+        public CodeElement primitive(int arrayType, TypeHint type) {
+            return CodeElement.notify(CodeElement.fixed(code(), (byte) arrayType), StackNotifier.pop1push(type));
+        }
+
         public CodeElement primitive(int arrayType) {
-            return CodeElement.fixed(code(), (byte) arrayType);
+            return this.primitive(arrayType, switch (arrayType) {
+                case 4 -> Type.of(boolean[].class);
+                case 5 -> Type.of(char[].class);
+                case 6 -> Type.of(float[].class);
+                case 7 -> Type.of(double[].class);
+                case 8 -> Type.of(byte[].class);
+                case 9 -> Type.of(short[].class);
+                case 10 -> Type.of(int[].class);
+                case 11 -> Type.of(long[].class);
+                default -> throw new IllegalArgumentException(arrayType + "");
+            });
         }
 
     }
@@ -132,7 +186,7 @@ public class TypeCode implements OpCode {
          *                 caution.
          */
         public MultiArray(String mnemonic, byte code) {
-            super(mnemonic, code);
+            super(mnemonic, code, null);
         }
 
         public <Klass extends java.lang.reflect.Type & TypeDescriptor> UnboundedElement type(Klass type) {
@@ -145,7 +199,8 @@ public class TypeCode implements OpCode {
             while (check.arrayDepth() < dimensions) check = check.arrayType();
             final Type value = check;
             //<editor-fold desc="Instruction" defaultstate="collapsed">
-            record MultiNewArray(PoolReference reference, int dimensions) implements CodeElement, RecordConstant {
+            record MultiNewArray(PoolReference reference, int dimensions, Type type)
+                implements CodeElement, RecordConstant {
 
                 @Override
                 public int length() {
@@ -161,7 +216,9 @@ public class TypeCode implements OpCode {
 
                 @Override
                 public void notify(CodeBuilder builder) {
-                    builder.notifyStack(1 - MultiNewArray.this.dimensions);
+                    if (!builder.trackStack()) return;
+                    builder.stack().pop(MultiNewArray.this.dimensions);
+                    builder.stack().push(type);
                 }
 
                 @Override
@@ -171,7 +228,7 @@ public class TypeCode implements OpCode {
 
             }
             //</editor-fold>
-            return storage -> new MultiNewArray(storage.constant(ConstantPoolInfo.TYPE, value), dimensions);
+            return storage -> new MultiNewArray(storage.constant(ConstantPoolInfo.TYPE, value), dimensions, value);
         }
 
     }

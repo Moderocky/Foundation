@@ -10,6 +10,7 @@ import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.function.Consumer;
 
 import static mx.kenzie.foundation.assembler.code.Codes.*;
 
@@ -145,21 +146,14 @@ public interface CodeElement extends Data, UVec, UnboundedElement {
         return new WrapperElement(element, increment);
     }
 
-    static CodeElement notifyVariable(final CodeElement element, final int slot) {
+    static CodeElement notify(final CodeElement element, Consumer<CodeBuilder> notifier) {
         //<editor-fold desc="Wrapper" defaultstate="collapsed">
-        class WrapperElement implements CodeElement {
-
-            final CodeElement element;
-            final int slot;
-
-            WrapperElement(CodeElement element, int slot) {
-                this.element = element;
-                this.slot = slot;
-            }
+        record WrapperElement(CodeElement element, Consumer<CodeBuilder> notifier)
+            implements CodeElement, RecordConstant {
 
             @Override
             public void notify(CodeBuilder builder) {
-                builder.notifyMaxLocalIndex(slot);
+                this.notifier.accept(builder);
                 this.element.notify(builder);
             }
 
@@ -178,20 +172,25 @@ public interface CodeElement extends Data, UVec, UnboundedElement {
                 return element.binary();
             }
 
-            @Override
-            public Constant constant() {
-                return element.constant();
-            }
-
         }
         //</editor-fold>
-        return new WrapperElement(element, slot);
+        return new WrapperElement(element, notifier);
     }
 
     default @Override CodeElement bound(ClassFileBuilder.Storage storage) {
         return this;
     }
 
+    /**
+     * Called when this element is inserted into a builder (e.g. if it needs to edit its neighbours)
+     */
+    default void insert(CodeBuilder builder) {
+
+    }
+
+    /**
+     * Called for each element in succession to build the stack map.
+     */
     default void notify(CodeBuilder builder) {
         if (builder.trackStack()) {
             final int stack = knownStackIncrement(Byte.toUnsignedInt(this.code()));

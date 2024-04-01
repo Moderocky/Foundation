@@ -165,13 +165,6 @@ public class MethodBuilder extends ModifiableBuilder implements Constantive, Era
     public CodeBuilder code() {
         if (code != null) return code;
         this.attribute(code = new CodeBuilder(this).writingTo(new CodeVector()));
-        int slots = 0;
-        for (Type parameter : parameters) {
-            if (parameter.equals(Type.LONG) || parameter.equals(Type.DOUBLE)) slots += 2;
-            else ++slots;
-        }
-        if (!Access.is(access_flags, Access.STATIC)) ++slots;
-        this.code.notifyMaxLocalIndex(slots);
         return code;
     }
 

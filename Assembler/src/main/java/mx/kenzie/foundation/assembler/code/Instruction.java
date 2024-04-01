@@ -1,10 +1,13 @@
 package mx.kenzie.foundation.assembler.code;
 
 import mx.kenzie.foundation.assembler.tool.CodeBuilder;
+import mx.kenzie.foundation.assembler.tool.ProgramRegister;
+import mx.kenzie.foundation.assembler.tool.ProgramStack;
 import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 interface SingleInstruction extends OpCode, CodeElement {
@@ -36,8 +39,14 @@ interface SingleInstruction extends OpCode, CodeElement {
 public record Instruction(String mnemonic, byte code, Consumer<CodeBuilder> notifier)
     implements RecordConstant, SingleInstruction {
 
+    public Instruction(String mnemonic, int code, BiConsumer<ProgramStack, ProgramRegister> notifier) {
+        this(mnemonic, (byte) code, builder -> {
+            if (builder.trackStack()) notifier.accept(builder.stack(), builder.register());
+        });
+    }
+
     public Instruction(String mnemonic, int code) {
-        this(mnemonic, (byte) code, null);
+        this(mnemonic, (byte) code, (Consumer<CodeBuilder>) null);
     }
 
     @Override

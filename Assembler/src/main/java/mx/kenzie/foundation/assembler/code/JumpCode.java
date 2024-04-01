@@ -7,7 +7,7 @@ import org.valross.constantine.Constant;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 /**
  * An opcode for jumping to a branch.
@@ -16,16 +16,58 @@ import java.util.function.BiFunction;
  * @param code     The byte code. This is likely to be an UNSIGNED byte in disguise, so should be treated with
  *                 caution.
  */
-public record JumpCode(String mnemonic, byte code, BiFunction<Branch, Byte, JumpInstruction> function)
+public record JumpCode(String mnemonic, byte code, Consumer<CodeBuilder> notifier)
     implements OpCode {
 
-    //<editor-fold desc="Field Reference" defaultstate="collapsed">
+    //<editor-fold desc="Jump" defaultstate="collapsed">
     public CodeElement jump(Branch branch) {
-        return function.apply(branch, code);
+        return new JumpInstruction() {
+            @Override
+            public byte code() {
+                return code;
+            }
+
+            @Override
+            public int length() {
+                return 3;
+            }
+
+            @Override
+            public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+                stream.write(code);
+                branch.getJump(this).write(stream);
+            }
+
+            @Override
+            public Constant constant() {
+                return UVec.of(this.binary());
+            }
+
+            @Override
+            public Branch target() {
+                return branch;
+            }
+
+            @Override
+            public void notify(CodeBuilder builder) {
+                notifier.accept(builder);
+                if (code != Codes.GOTO) return;
+                if (builder.trackStack()) builder.stack().reframe();
+            }
+
+            @Override
+            public void insert(CodeBuilder builder) {
+                JumpInstruction.super.insert(builder);
+                if (code != Codes.GOTO) return;
+                if (!builder.trackFrames()) return;
+                builder.write(new Branch.UnconditionalBranch()); // goto is an unconditional jump, we need an implicit
+                // branch here
+            }
+        };
     }
 
     public CodeElement jump(int bytes) {
-        return CodeElement.vector(code, U2.valueOf((short) bytes));
+        return CodeElement.notify(CodeElement.vector(code, U2.valueOf((short) bytes)), notifier);
     }
 
     @Override
@@ -48,54 +90,6 @@ public record JumpCode(String mnemonic, byte code, BiFunction<Branch, Byte, Jump
             CodeElement.super.notify(builder);
             if (!builder.trackStack()) return;
             this.target().checkFrame(builder.stack(), builder.register());
-        }
-
-    }
-
-    public record Goto(Branch target, byte code) implements JumpInstruction {
-
-        @Override
-        public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
-            stream.write(code);
-            this.target.getJump(this).write(stream);
-        }
-
-        @Override
-        public void notify(CodeBuilder builder) {
-            JumpInstruction.super.notify(builder);
-            builder.stack().reframe();
-            builder.write(new Branch.UnconditionalBranch()); // goto is an unconditional jump, we need an implicit
-            // branch here
-        }
-
-        @Override
-        public int length() {
-            return 3;
-        }
-
-        @Override
-        public Constant constant() {
-            return UVec.of(this.binary());
-        }
-
-    }
-
-    public record Jump(Branch target, byte code) implements JumpInstruction {
-
-        @Override
-        public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
-            stream.write(code);
-            this.target.getJump(this).write(stream);
-        }
-
-        @Override
-        public int length() {
-            return 3;
-        }
-
-        @Override
-        public Constant constant() {
-            return UVec.of(this.binary());
         }
 
     }

@@ -8,6 +8,7 @@ import mx.kenzie.foundation.assembler.code.CodeVector;
 import mx.kenzie.foundation.assembler.code.UnboundedElement;
 import mx.kenzie.foundation.assembler.error.IncompatibleBranchError;
 import mx.kenzie.foundation.assembler.vector.U2;
+import mx.kenzie.foundation.detail.Type;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -100,7 +101,7 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
     public CodeBuilder write(@NotNull UnboundedElement element) {
         final CodeElement bound = element.bound(storage);
         this.vector.append(bound);
-        bound.notify(this);
+        bound.insert(this);
         if (bound instanceof Branch branch && this.trackFrames()) {
             this.tracker.branches.add(branch);
             final var last = vector.getLast(2);
@@ -162,6 +163,18 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
 
     @Override
     public void finalise() {
+        if (this.trackStack()) {
+            this.stack().clear();
+            this.register().clear();
+            if (!Access.is(exit().access_flags, Access.STATIC))
+                this.register().put(0, method.exit());
+            for (Type parameter : this.exit().parameters()) this.register().putNext(parameter);
+            for (CodeElement element : this.vector) element.notify(this);
+            this.maxStack = this.stack().maximum();
+            this.maxLocals = this.register().maximum();
+//            System.out.println(this.stack()); // todo
+//            System.out.println(this.register()); // todo
+        }
         frames:
         if (this.trackFrames()) {
             if (!vector.isEmpty() && vector.getLast(1) instanceof Branch branch) {
@@ -174,8 +187,7 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
             this.tracker.builder = new StackMapTableBuilder(this.helper());
             Branch previous = null;
             for (Branch current : this.tracker.branches) {
-                if (previous != null)
-                    this.tracker.builder.addFrame(this.helper(), previous, current);
+                if (previous != null) this.tracker.builder.addFrame(this.helper(), previous, current);
                 previous = current;
             }
             this.attributes.removeIf(attribute -> attribute instanceof StackMapTableBuilder);
@@ -205,7 +217,7 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
      *
      * @return The register model
      */
-    public ProgramStack register() {
+    public ProgramRegister register() {
         return tracker.register;
     }
 
@@ -246,7 +258,7 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
     protected static class StackTracker {
 
         private final ProgramStack stack = new ProgramStack();
-        private final ProgramStack register = new ProgramStack();
+        private final ProgramRegister register = new ProgramRegister();
         private final LinkedList<Branch> branches = new LinkedList<>();
         private int stackCounter;
         private StackMapTableBuilder builder;

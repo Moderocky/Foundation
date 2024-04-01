@@ -27,7 +27,7 @@ public interface VerificationTypeInfo extends UVec, Constant {
     }
 
     static VerificationTypeInfo of(ClassFileBuilder.Storage storage, TypeHint type) {
-        if (Objects.equals(type, Type.VOID)) return NULL;
+        if (Objects.equals(type, TypeHint.none())) return NULL;
         if (Objects.equals(type, ProgramStack.TOP)) return TOP;
         if (type.isPrimitive()) return switch (type.getTypeName()) {
             case "int", "short", "byte", "boolean", "char" -> INTEGER;

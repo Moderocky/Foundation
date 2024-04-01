@@ -5,7 +5,8 @@ import mx.kenzie.foundation.assembler.vector.U2;
 import mx.kenzie.foundation.assembler.vector.UVec;
 import org.valross.constantine.RecordConstant;
 
-public record ShiftFrame(int offset, int amount) implements StackMapFrame, RecordConstant {
+public record ShiftFrame(int offset, int amount, VerificationTypeInfo... added)
+    implements StackMapFrame, RecordConstant {
 
     @Override
     public U1 frame_type() {
@@ -15,7 +16,9 @@ public record ShiftFrame(int offset, int amount) implements StackMapFrame, Recor
 
     @Override
     public UVec info() {
-        return this.offset_delta();
+        if (amount < 0)
+            return this.offset_delta();
+        else return UVec.of(this.offset_delta(), UVec.of(added));
     }
 
     public U2 offset_delta() {

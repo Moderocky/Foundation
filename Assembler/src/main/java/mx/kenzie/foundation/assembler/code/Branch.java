@@ -2,6 +2,7 @@ package mx.kenzie.foundation.assembler.code;
 
 import mx.kenzie.foundation.assembler.error.IncompatibleBranchError;
 import mx.kenzie.foundation.assembler.tool.CodeBuilder;
+import mx.kenzie.foundation.assembler.tool.ProgramRegister;
 import mx.kenzie.foundation.assembler.tool.ProgramStack;
 import mx.kenzie.foundation.assembler.vector.U2;
 import mx.kenzie.foundation.assembler.vector.UVec;
@@ -47,6 +48,12 @@ public class Branch implements CodeElement {
     }
 
     @Override
+    public void insert(CodeBuilder builder) {
+        this.handle.setVector(builder);
+        CodeElement.super.insert(builder);
+    }
+
+    @Override
     public byte code() {
         return -1;
     }
@@ -71,19 +78,23 @@ public class Branch implements CodeElement {
         return U2.valueOf(jump);
     }
 
-    public void checkFrame(ProgramStack stack, ProgramStack register) {
-        if (this.stack == null) {
+    public void checkFrame(ProgramStack stack, ProgramRegister register) {
+        if (this.stack == null || this.stack.length == 0) {
             this.stack = stack.toArray();
-        } else if (!stack.isEmpty() && !Arrays.equals(this.stack, stack.toArray()))
-            throw new IncompatibleBranchError("Expected stack to be " + Arrays.toString(this.stack) + " entering" +
+        } else if (this.stack.length > 0 && !stack.isEmpty() && !Arrays.equals(this.stack, stack.toArray()))
+            throw new IncompatibleBranchError("Expected stack to be " + this.printTable(this.stack) + " entering" +
                                                   " " +
-                                                  this + " but found " + Arrays.toString(stack.toArray()));
-        if (this.register == null) {
+                                                  this + " but found " + this.printTable(stack.toArray()));
+        if (this.register == null || this.register.length == 0) {
             this.register = register.toArray();
         } else if (!stack.isEmpty() && !Arrays.equals(this.register, register.toArray()))
-            throw new IncompatibleBranchError("Expected register to be " + Arrays.toString(this.register) + " " +
+            throw new IncompatibleBranchError("Expected register to be " + this.printTable(this.register) + " " +
                                                   "entering " +
-                                                  this + " but found " + Arrays.toString(register.toArray()));
+                                                  this + " but found " + this.printTable(register.toArray()));
+    }
+
+    private String printTable(TypeHint[] array) {
+        return '[' + String.join(", ", Arrays.stream(array).map(TypeHint::getTypeName).toList()) + ']';
     }
 
     @Override

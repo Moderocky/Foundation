@@ -26,7 +26,7 @@ public class ProgramStack extends Stack<TypeHint> {
     /**
      * Whether this contains any wide types and requires special calculation.
      */
-    protected int dirty;
+    protected int dirty, maximum;
 
     protected boolean isDirty() {
         return dirty > 0;
@@ -38,11 +38,11 @@ public class ProgramStack extends Stack<TypeHint> {
         this.push(erasure.returnType());
     }
 
-    private TypeHint[] pop(TypeHint[] types) {
+    public TypeHint[] pop(TypeHint... types) {
         final List<TypeHint> popped = new ArrayList<>(types.length);
         try {
             for (TypeHint type : types) {
-                final TypeHint found = super.pop();
+                final TypeHint found = this.pop0();
                 if (found.width() == 2) --dirty;
                 popped.add(found);
                 if (type.width() != found.width())
@@ -50,7 +50,7 @@ public class ProgramStack extends Stack<TypeHint> {
             }
         } catch (RuntimeException | Error ex) {
             for (TypeHint spoiled : popped.reversed()) {
-                super.push(spoiled);
+                this.push0(spoiled);
                 if (spoiled.width() == 2) ++dirty;
             }
             throw ex;
@@ -62,12 +62,28 @@ public class ProgramStack extends Stack<TypeHint> {
         this.consume(erasure, false);
     }
 
+    @Override
+    public TypeHint peek() {
+        if (this.isEmpty()) throw new UnsupportedOperationException();
+        return this.elementAt(super.size() - 1);
+    }
+
+    public TypeHint peek(int down) {
+        return super.get((super.size() - 1) - down);
+    }
+
+    public TypeHint popSafe() {
+        final TypeHint hint = this.pop0();
+        if (hint.width() > 1) --dirty;
+        return hint;
+    }
+
     public TypeHint[] pop(int slots) {
         //<editor-fold desc="Pops N types worth <slots> slots off the stack."
         // defaultstate="collapsed">
         final List<TypeHint> list = new ArrayList<>(slots * 2);
         for (int i = 0; i < slots; i++) {
-            final TypeHint type = super.pop();
+            final TypeHint type = this.pop0();
             if (type.width() == 2) {
                 --this.dirty;
                 ++i;
@@ -84,10 +100,10 @@ public class ProgramStack extends Stack<TypeHint> {
         // defaultstate="collapsed">
         return switch (top.width()) {
             case 1 -> {
-                second = super.pop();
+                second = this.pop0();
                 if (second.width() == 2) { // we tried to duplicate half of a long
-                    super.push(second);
-                    super.push(top);
+                    this.push0(second);
+                    this.push0(top);
                     throw new UnsupportedOperationException("The type below the top of the stack is WIDE (" + this.peek()
                                                                                                                   .getTypeName() + "), cannot pop half");
                 }
@@ -95,7 +111,7 @@ public class ProgramStack extends Stack<TypeHint> {
             }
             case 2 -> {
                 --this.dirty;
-                yield new TypeHint[] {super.pop()};
+                yield new TypeHint[] {this.pop0()};
             }
             default -> new TypeHint[] {};
         };
@@ -103,163 +119,168 @@ public class ProgramStack extends Stack<TypeHint> {
     }
 
     public void replace(TypeHint type) {
-        final TypeHint top = super.pop();
+        final TypeHint top = this.pop0();
         if (top.width() != type.width()) throw new UnsupportedOperationException("Can't switch narrow/wide types.");
+        this.push0(type);
     }
 
     /**
      * Swaps the top two (narrow) types.
      */
     public void swap() {
-        final TypeHint top = super.pop(), second = super.pop();
+        final TypeHint top = this.pop0(), second = this.pop0();
         //<editor-fold desc="Make sure neither is wide." defaultstate="collapsed">
         if (top.width() == 2) {
-            super.push(second);
-            super.push(top);
+            this.push0(second);
+            this.push0(top);
             throw new UnsupportedOperationException("The type on top of the stack is WIDE (" + this.peek()
                                                                                                    .getTypeName() +
                                                         ") so cannot swap");
         }
         if (second.width() == 2) {
-            super.push(second);
-            super.push(top);
+            this.push0(second);
+            this.push0(top);
             throw new UnsupportedOperationException("The type below the top of the stack is WIDE (" + this.peek()
                                                                                                           .getTypeName() + ") so cannot swap");
         }
         //</editor-fold>
-        super.push(top);
-        super.push(second);
+        this.push0(top);
+        this.push0(second);
     }
 
     public void dup() {
         final TypeHint top = this.peek();
         switch (top.width()) {
-            case 1 -> super.push(top);
+            case 1 -> this.push0(top);
             case 2 -> throw new UnsupportedOperationException("The type on top of the stack is WIDE (" + this.peek()
                                                                                                              .getTypeName() + ") so must use DUP2");
         }
+        this.maximum = Math.max(maximum, this.size());
     }
 
     public void dupX1() {
-        final TypeHint top = super.pop(), second = super.pop();
+        final TypeHint top = this.pop0(), second = this.pop0();
         //<editor-fold desc="Make sure neither is wide." defaultstate="collapsed">
         if (top.width() == 2) {
-            super.push(second);
-            super.push(top);
+            this.push0(second);
+            this.push0(top);
             throw this.error(0);
         }
         if (second.width() == 2) {
-            super.push(second);
-            super.push(top);
+            this.push0(second);
+            this.push0(top);
             throw this.error(1);
         }
         //</editor-fold>
         //<editor-fold desc="Duplicate slot 0 below slot 1." defaultstate="collapsed">
-        super.push(top);
-        super.push(second);
-        super.push(top);
+        this.push0(top);
+        this.push0(second);
+        this.push0(top);
         //</editor-fold>
+        this.maximum = Math.max(maximum, this.size());
     }
 
     public void dupX2() {
-        final TypeHint top = super.pop(), second = super.pop(), third;
+        final TypeHint top = this.pop0(), second = this.pop0(), third;
         //<editor-fold desc="Make sure top type is narrow." defaultstate="collapsed">
         if (top.width() == 2) {
-            super.push(second);
-            super.push(top);
+            this.push0(second);
+            this.push0(top);
             throw this.error(0);
         }
         //</editor-fold>
         if (second.width() == 2) {
             //<editor-fold desc="Duplicate top below second." defaultstate="collapsed">
-            super.push(top);
-            super.push(second);
-            super.push(top);
+            this.push0(top);
+            this.push0(second);
+            this.push0(top);
             //</editor-fold>
         } else {
-            third = super.pop();
+            third = this.pop0();
             //<editor-fold desc="Make sure slots 1 & 2 are narrow." defaultstate="collapsed">
             if (third.width() == 2) {
-                super.push(third);
-                super.push(second);
-                super.push(top);
+                this.push0(third);
+                this.push0(second);
+                this.push0(top);
                 throw this.error(2);
             }
             //</editor-fold>
             //<editor-fold desc="Duplicate slot 0 below slot 2." defaultstate="collapsed">
-            super.push(top);
-            super.push(third);
-            super.push(second);
-            super.push(top);
+            this.push0(top);
+            this.push0(third);
+            this.push0(second);
+            this.push0(top);
             //</editor-fold>
         }
     }
 
     public void dup2() {
-        final TypeHint first = super.pop(), second;
+        final TypeHint first = this.pop0(), second;
         //<editor-fold desc="Duplicate top (2 narrow, 1 wide) type(s)." defaultstate="collapsed">
         switch (first.width()) {
             case 1 -> {
-                second = super.pop();
+                second = this.pop0();
                 if (second.width() == 2) { // we tried to duplicate half of a long
-                    super.push(second);
-                    super.push(first);
+                    this.push0(second);
+                    this.push0(first);
                     throw new UnsupportedOperationException("The type below the top of the stack is WIDE (" + this.peek()
                                                                                                                   .getTypeName() + "), cannot duplicate half");
                 }
-                super.push(second);
-                super.push(first);
-                super.push(second);
-                super.push(first);
+                this.push0(second);
+                this.push0(first);
+                this.push0(second);
+                this.push0(first);
             }
             case 2 -> {
-                super.push(first);
-                super.push(first);
+                this.push0(first);
+                this.push0(first);
                 ++this.dirty;
             }
         }
         //</editor-fold>
+        this.maximum = Math.max(maximum, this.size());
     }
 
     public void dup2X1() {
-        final TypeHint first = super.pop(), second, third;
+        final TypeHint first = this.pop0(), second, third;
         //<editor-fold desc="Duplicate top (2 narrow, 1 wide) type(s), insert 3(2) slots down."
         // defaultstate="collapsed">
         switch (first.width()) {
             case 1 -> {
-                second = super.pop();
+                second = this.pop0();
                 if (second.width() == 2) { // we tried to duplicate half of a long
-                    super.push(second);
-                    super.push(first);
+                    this.push0(second);
+                    this.push0(first);
                     throw this.error(1);
                 }
-                third = super.pop();
+                third = this.pop0();
                 if (third.width() == 2) { // we tried to split a long in 2
-                    super.push(third);
-                    super.push(second);
-                    super.push(first);
+                    this.push0(third);
+                    this.push0(second);
+                    this.push0(first);
                     throw this.error(2);
                 }
-                super.push(second);
-                super.push(first);
-                super.push(third);
-                super.push(second);
-                super.push(first);
+                this.push0(second);
+                this.push0(first);
+                this.push0(third);
+                this.push0(second);
+                this.push0(first);
             }
             case 2 -> {
-                third = super.pop();
+                third = this.pop0();
                 if (third.width() == 2) { // we tried to split a long in 2
-                    super.push(third);
-                    super.push(first);
+                    this.push0(third);
+                    this.push0(first);
                     throw this.error(1);
                 }
-                super.push(first);
-                super.push(third);
-                super.push(first);
+                this.push0(first);
+                this.push0(third);
+                this.push0(first);
                 ++this.dirty;
             }
         }
         //</editor-fold>
+        this.maximum = Math.max(maximum, this.size());
     }
 
     public void dup2X2() {
@@ -271,6 +292,7 @@ public class ProgramStack extends Stack<TypeHint> {
         for (TypeHint type : skip) this.push(type); // put the skip back
         for (TypeHint type : copy) this.push(type); // put the original back
         //</editor-fold>
+        this.maximum = Math.max(maximum, this.size());
     }
 
     private RuntimeException error(int index) {
@@ -290,15 +312,27 @@ public class ProgramStack extends Stack<TypeHint> {
     public TypeHint push(TypeHint item) {
         switch (item.width()) {
             case 0 -> throw new IllegalArgumentException("Cannot put a VOID type on the stack.");
-            case 2 -> this.dirty++;
+            case 2 -> ++this.dirty;
         }
-        return super.push(item);
+        return this.push0(item);
+    }
+
+    private TypeHint push0(TypeHint item) {
+        final TypeHint push = super.push(item);
+        this.maximum = Math.max(maximum, this.size());
+        return push;
+    }
+
+    private TypeHint pop0() {
+        final TypeHint push = this.peek();
+        this.removeElementAt(super.size() - 1);
+        return push;
     }
 
     @Override
     public TypeHint pop() {
         return switch (this.peek().width()) {
-            case 1 -> super.pop();
+            case 1 -> this.pop0();
             case 2 -> throw new UnsupportedOperationException("The type on top of the stack is WIDE (" + this.peek()
                                                                                                              .getTypeName() + ") so must use POP2");
             default -> throw new IllegalStateException("Unexpected type " + this.peek() + " on stack.");
@@ -341,9 +375,32 @@ public class ProgramStack extends Stack<TypeHint> {
         this.dirty = 0;
         for (TypeHint type : snapshot) {
             if (type == null) continue;
-            super.push(type);
+            this.push0(type);
             if (type.width() == 2) ++dirty;
         }
+        this.maximum = Math.max(maximum, this.size());
+    }
+
+    @Override
+    public void clear() {
+        this.dirty = 0;
+        this.maximum = 0;
+        super.clear();
+    }
+
+    public void push(TypeHint... hints) {
+        for (TypeHint hint : hints) this.push(hint);
+    }
+
+    public int maximum() {
+        return maximum;
+    }
+
+    @Override
+    public String toString() {
+        return "ProgramStack[" +
+            "maximum=" + maximum + ", elements=" + super.toString() +
+            ']';
     }
 
 }

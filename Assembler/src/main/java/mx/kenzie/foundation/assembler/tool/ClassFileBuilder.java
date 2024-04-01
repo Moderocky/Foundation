@@ -23,7 +23,7 @@ import java.util.function.Function;
 import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.*;
 import static mx.kenzie.foundation.assembler.constant.MethodTypeReference.*;
 
-public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
+public class ClassFileBuilder extends ModifiableBuilder implements Constantive, TypeHint {
 
     private static final U4 MAGIC = U4.valueOf(0xCAFEBABE);
     protected final U4 magic;
@@ -35,6 +35,7 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
     protected List<MethodBuilder> methods; //methods_count
     protected BootstrapTableBuilder bootstrapTable;
     private Storage storage;
+    private TypeHint us;
 
     public ClassFileBuilder(int majorVersion, int minorVersion) {
         this.magic = MAGIC;
@@ -118,6 +119,7 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
     }
 
     public <Klass extends java.lang.reflect.Type & TypeDescriptor> ClassFileBuilder setType(Klass type) {
+        this.us = Type.of(type);
         this.this_class = this.helper().constant(TYPE, Type.of(type));
         return this;
     }
@@ -197,6 +199,16 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
         for (AttributeBuilder attribute : attributes) attribute.finalise();
     }
 
+    @Override
+    public String descriptorString() {
+        return us.descriptorString();
+    }
+
+    @Override
+    public String getTypeName() {
+        return us.getTypeName();
+    }
+
     public class Storage {
 
         public ClassFileBuilder source() {
@@ -211,6 +223,8 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive {
                 case String value -> this.constant(STRING, value);
                 case Float value -> this.constant(FLOAT, value);
                 case Number value -> this.constant(INTEGER, value.intValue());
+                case Character value -> this.constant(INTEGER, (int) value);
+                case Boolean value -> this.constant(INTEGER, value ? 1 : 0);
                 case Class<?> value -> this.constant(TYPE, Type.of(value));
                 case Type value -> this.constant(TYPE, value);
                 case Member value ->

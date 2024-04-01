@@ -1,5 +1,6 @@
 package mx.kenzie.foundation.assembler.code;
 
+import mx.kenzie.foundation.assembler.tool.StackNotifier;
 import mx.kenzie.foundation.assembler.vector.U2;
 
 /**
@@ -45,9 +46,12 @@ public abstract class VariableCode implements OpCode {
             default -> code < Codes.ISTORE ? 1 : -1;
         };
         if (slot > 255)
-            return CodeElement.incrementStack(CodeElement.wide(CodeElement.fixed(code, (byte) (slot >>> 8),
-                                                                                 (byte) (slot))), increment);
-        return CodeElement.fixed(code, (byte) slot);
+            return CodeElement.notify(CodeElement.wide(CodeElement.fixed(code,
+                                                                         (byte) (slot >>> 8), (byte) (slot))),
+                                      StackNotifier.pushVariable(slot));
+        return increment > 0 ? CodeElement.notify(CodeElement.fixed(code, (byte) slot),
+                                                  StackNotifier.pushVariable(slot)) :
+            CodeElement.notify(CodeElement.fixed(code, (byte) slot), builder -> builder.register().put(slot, builder.stack().popSafe()));
     }
 
     @Override

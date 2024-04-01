@@ -5,6 +5,8 @@ import mx.kenzie.foundation.assembler.vector.U2;
 import mx.kenzie.foundation.assembler.vector.UVec;
 import org.valross.constantine.RecordConstant;
 
+import java.util.Arrays;
+
 public record FullFrame(int offset, VerificationTypeInfo[] locals, VerificationTypeInfo... stack)
     implements StackMapFrame, RecordConstant {
 
@@ -33,6 +35,17 @@ public record FullFrame(int offset, VerificationTypeInfo[] locals, VerificationT
 
     public U2 number_of_stack_items() {
         return U2.valueOf(stack.length);
+    }
+
+    @Override
+    public String toString() {
+        return "FullFrame[" +
+            "offset_delta=" + offset +
+            ", number_of_locals=" + number_of_locals() +
+            ", locals=" + Arrays.toString(locals) +
+            ", number_of_stack_items=" + number_of_stack_items() +
+            ", stack=" + Arrays.toString(stack) +
+            ']';
     }
 
 }

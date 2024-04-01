@@ -1,5 +1,8 @@
 package mx.kenzie.foundation.assembler.code;
 
+import mx.kenzie.foundation.assembler.tool.StackNotifier;
+import mx.kenzie.foundation.detail.Type;
+
 /**
  * An opcode for pushing a byte or short value (e.g. bipush, sipush)
  * This will actually default to the smallest code unless one type's value is specified.
@@ -12,11 +15,12 @@ public record PushCode(String mnemonic, byte code) implements OpCode {
 
     //<editor-fold desc="Push value" defaultstate="collapsed">
     public CodeElement value(byte value) {
-        return CodeElement.fixed(Codes.BIPUSH, value);
+        return CodeElement.notify(CodeElement.fixed(Codes.BIPUSH, value), StackNotifier.push(Type.INT));
     }
 
     public CodeElement value(short value) {
-        return CodeElement.fixed(Codes.SIPUSH, (byte) (value >> 8), (byte) (value));
+        return CodeElement.notify(CodeElement.fixed(Codes.SIPUSH, (byte) (value >> 8), (byte) (value)),
+                                  StackNotifier.push(Type.INT));
     }
 
     public CodeElement value(int value) {

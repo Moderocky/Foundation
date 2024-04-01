@@ -3,6 +3,8 @@ package mx.kenzie.foundation.assembler.code;
 import mx.kenzie.foundation.assembler.constant.ConstantPoolInfo;
 import mx.kenzie.foundation.assembler.tool.CodeBuilder;
 import mx.kenzie.foundation.assembler.tool.PoolReference;
+import mx.kenzie.foundation.detail.Type;
+import mx.kenzie.foundation.detail.TypeHint;
 import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;
@@ -27,9 +29,10 @@ public record LoadConstantCode(String mnemonic, byte code) implements OpCode {
     public UnboundedElement value(Constable value) {
         return switch (value) {
             case null -> ACONST_NULL;
-            case Long j -> storage -> new WideType(storage.constant(ConstantPoolInfo.LONG, j));
-            case Double d -> storage -> new WideType(storage.constant(ConstantPoolInfo.DOUBLE, d));
-            default -> storage -> new NarrowType(storage.constant(value));
+            case Long j -> storage -> new WideType(Type.LONG, storage.constant(ConstantPoolInfo.LONG, j));
+            case Double d -> storage -> new WideType(Type.DOUBLE, storage.constant(ConstantPoolInfo.DOUBLE, d));
+            case Number _, Boolean _, Character _ -> storage -> new NarrowType(Type.INT, storage.constant(value));
+            default -> storage -> new NarrowType(Type.of(value.getClass()), storage.constant(value));
         };
     }
 
@@ -38,7 +41,7 @@ public record LoadConstantCode(String mnemonic, byte code) implements OpCode {
         return this.mnemonic.toLowerCase() + "/" + Byte.toUnsignedInt(code);
     }
 
-    private record NarrowType(PoolReference reference) implements CodeElement, RecordConstant {
+    private record NarrowType(TypeHint hint, PoolReference reference) implements CodeElement, RecordConstant {
 
         @Override
         public void write(OutputStream stream) throws IOException {
@@ -56,6 +59,8 @@ public record LoadConstantCode(String mnemonic, byte code) implements OpCode {
 
         @Override
         public void notify(CodeBuilder builder) {
+            if (!builder.trackStack()) return;
+            builder.stack().push(hint);
             builder.notifyStack(1);
         }
 
@@ -71,7 +76,7 @@ public record LoadConstantCode(String mnemonic, byte code) implements OpCode {
 
     }
 
-    private record WideType(PoolReference reference) implements CodeElement, RecordConstant {
+    private record WideType(TypeHint hint, PoolReference reference) implements CodeElement, RecordConstant {
 
         @Override
         public void write(OutputStream stream) throws IOException {
@@ -81,6 +86,8 @@ public record LoadConstantCode(String mnemonic, byte code) implements OpCode {
 
         @Override
         public void notify(CodeBuilder builder) {
+            if (!builder.trackStack()) return;
+            builder.stack().push(hint);
             builder.notifyStack(2);
         }
 

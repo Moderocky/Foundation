@@ -77,6 +77,7 @@ public class CodeVector implements UVec, Iterable<CodeElement> {
         if (code.isEmpty()) return "[]";
         final StringBuilder builder = new StringBuilder("[");
         boolean first = true;
+        int index = 0;
         for (CodeElement element : code) {
             final byte[] binary = element.binary();
             if (first) first = false;
@@ -87,6 +88,7 @@ public class CodeVector implements UVec, Iterable<CodeElement> {
                 first = true;
                 continue;
             }
+            builder.append(index + ": ");
             boolean opcode = true;
             for (byte b : binary) {
                 if (opcode) {
@@ -94,6 +96,7 @@ public class CodeVector implements UVec, Iterable<CodeElement> {
                     builder.append(OpCode.getCode(Byte.toUnsignedInt(b)).toString());
                 } else builder.append(" ").append(b);
             }
+            index += element.length();
         }
         return builder.append("]").toString();
     }
