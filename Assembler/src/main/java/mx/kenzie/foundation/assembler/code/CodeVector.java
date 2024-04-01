@@ -88,7 +88,7 @@ public class CodeVector implements UVec, Iterable<CodeElement> {
                 first = true;
                 continue;
             }
-            builder.append(index + ": ");
+            builder.append(index).append(": ");
             boolean opcode = true;
             for (byte b : binary) {
                 if (opcode) {

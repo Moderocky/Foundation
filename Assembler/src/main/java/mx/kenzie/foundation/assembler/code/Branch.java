@@ -5,6 +5,7 @@ import mx.kenzie.foundation.assembler.tool.CodeBuilder;
 import mx.kenzie.foundation.assembler.tool.ProgramRegister;
 import mx.kenzie.foundation.assembler.tool.ProgramStack;
 import mx.kenzie.foundation.assembler.vector.U2;
+import mx.kenzie.foundation.assembler.vector.U4;
 import mx.kenzie.foundation.assembler.vector.UVec;
 import mx.kenzie.foundation.detail.Type;
 import mx.kenzie.foundation.detail.TypeHint;
@@ -13,6 +14,7 @@ import org.valross.constantine.Constant;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class Branch implements CodeElement {
 
@@ -88,17 +90,43 @@ public class Branch implements CodeElement {
         return U2.valueOf(jump);
     }
 
+    protected U4 getWideJump(CodeElement source) {
+        final int target = this.getHandle().index();
+        int index = 0;
+        for (CodeElement element : this.handle.vector.code) {
+            if (element == source) break;
+            else index += element.length();
+        }
+        final long jump = (target - index);
+        return new U4(jump);
+    }
+
     public void checkFrame(ProgramStack stack, ProgramRegister register) {
         if (this.stack == null || this.stack.length == 0) {
             this.stack = stack.toArray();
-        } else if (this.stack.length > 0 && !stack.isEmpty() && !Arrays.equals(this.stack, stack.toArray()))
+        } else if (this.stack.length > 0 && !stack.isEmpty() && !this.isCompatible(this.stack, stack.toArray()))
             throw new IncompatibleBranchError("Expected stack to be " + this.printTable(this.stack) + " entering" +
                                                   " " + this + " but found " + this.printTable(stack.toArray()));
         if (this.register == null || this.register.length == 0) {
             this.register = register.toArray();
-        } else if (!stack.isEmpty() && !Arrays.equals(this.register, register.toArray()))
+        } else if (!stack.isEmpty() && !this.isCompatible(this.register, register.toArray()))
             throw new IncompatibleBranchError("Expected register to be " + this.printTable(this.register) + " " +
                                                   "entering " + this + " but found " + this.printTable(register.toArray()));
+    }
+
+    private boolean isCompatible(TypeHint[] ours, TypeHint[] theirs) {
+        if (ours == theirs) return true;
+        final int length = ours.length;
+        if (theirs.length != length) return false;
+        for (int i = 0; i < length; i++) {
+            final TypeHint our = ours[i], their = theirs[i];
+            if (Objects.equals(our, their)) continue;
+            // Known null is assignable to any type, so it's okay if they change the type to void
+            if (our != null && !our.isPrimitive() && Objects.equals(their, Type.VOID_WRAPPER)) continue;
+            if (their != null && !their.isPrimitive() && Objects.equals(our, Type.VOID_WRAPPER)) continue;
+            return false;
+        }
+        return true;
     }
 
     private String printTable(TypeHint[] array) {

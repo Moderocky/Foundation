@@ -311,7 +311,7 @@ public interface OpCode {
     };
     Instruction LMUL = new Instruction("LMUL", Codes.LMUL);
     Instruction LNEG = new Instruction("LNEG", Codes.LNEG);
-    UncheckedCode LOOKUPSWITCH = new UncheckedCode("LOOKUPSWITCH", Codes.LOOKUPSWITCH);
+    LookupSwitchCode LOOKUPSWITCH = new LookupSwitchCode("LOOKUPSWITCH", Codes.LOOKUPSWITCH);
     Instruction LOR = new Instruction("LOR", Codes.LOR);
     Instruction LREM = new Instruction("LREM", Codes.LREM);
     Instruction LRETURN = new Instruction("LRETURN", Codes.LRETURN, (stack, _) -> stack.reframe());

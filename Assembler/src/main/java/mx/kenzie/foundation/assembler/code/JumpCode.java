@@ -45,9 +45,12 @@ public record JumpCode(String mnemonic, byte code, Consumer<CodeBuilder> notifie
 
             @Override
             public void notify(CodeBuilder builder) {
-                notifier.accept(builder);
+                if (notifier != null) notifier.accept(builder);
                 if (code != Codes.GOTO) return;
-                if (builder.trackStack()) builder.stack().reframe();
+                if (builder.trackStack()) {
+                    this.target().checkFrame(builder.stack(), builder.register());
+                    builder.stack().reframe();
+                }
             }
 
             @Override

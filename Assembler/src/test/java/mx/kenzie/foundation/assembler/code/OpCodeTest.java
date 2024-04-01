@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Contract;
 import org.junit.Test;
 
 import java.io.PrintStream;
+import java.lang.constant.Constable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -1724,7 +1725,13 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     @Test
-    public void testLOOKUPSWITCH() {
+    public void testLOOKUPSWITCH() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Constable test = "hello";
+        final Branch end = new Branch(), def = new Branch(), c1 = new Branch();
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_3, LOOKUPSWITCH.test(def).test(3, c1),
+                                              c1, LDC.value(test), GOTO.jump(end), def, ACONST_NULL, end, ARETURN)
+                                       .exit()).invoke(null).equals(test);
     }
 
     @Test
