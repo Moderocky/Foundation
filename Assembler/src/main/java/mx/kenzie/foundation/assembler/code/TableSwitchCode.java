@@ -27,12 +27,12 @@ public record TableSwitchCode(String mnemonic, byte code) implements RecordConst
      * it jumps to the default branch instead.
      *
      * @param defaultCase The `default` case of the switch table
-     * @param start       The factor to remove from the int before jumping
+     * @param firstIndex  The factor to remove from the int before jumping
      * @param branches    The branches to jump to, in order.
      * @return A switch instruction.
      */
-    public TableSwitch test(Branch defaultCase, int start, Branch... branches) {
-        return new TableSwitch(defaultCase, start, start + (branches.length - 1), branches);
+    public TableSwitch test(Branch defaultCase, int firstIndex, Branch... branches) {
+        return new TableSwitch(defaultCase, firstIndex, firstIndex + (branches.length - 1), branches);
     }
 
     @Override
@@ -97,7 +97,7 @@ public record TableSwitchCode(String mnemonic, byte code) implements RecordConst
 
         @Override
         public int length() {
-            return 1 + this.padding() + 4 + 4 + 4 + (branches.length * 4);
+            return 1 + this.padding() + 12 + (branches.length * 4);
         }
 
         @Override

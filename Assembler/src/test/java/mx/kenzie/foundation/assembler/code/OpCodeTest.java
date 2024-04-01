@@ -2030,7 +2030,8 @@ public class OpCodeTest extends MethodBuilderTest {
                                               TABLESWITCH.test(def, 2, case2, case3),
                                               case2, LDC.value("foo"), GOTO.jump(end),
                                               case3, LDC.value(test), GOTO.jump(end),
-                                              def, ACONST_NULL, end, ARETURN)
+                                              def, ACONST_NULL,
+                                              end, ARETURN)
                                        .exit()).invoke(null).equals(test);
     }
 

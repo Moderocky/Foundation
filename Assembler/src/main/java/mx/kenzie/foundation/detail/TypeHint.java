@@ -7,6 +7,7 @@ import mx.kenzie.foundation.assembler.vector.UVec;
 import org.valross.constantine.RecordConstant;
 
 import java.lang.reflect.Type;
+import java.util.Objects;
 
 /**
  * Something that resembles (or is indicative of) a Java class.
@@ -20,8 +21,8 @@ public interface TypeHint extends Descriptor, Type {
         return Top.TOP;
     }
 
-    static TypeHint uninitialisedThis() {
-        return This.THIS;
+    static TypeHint uninitialisedThis(TypeHint real) {
+        return new This(real);
     }
 
     static TypeHint uninitialised(mx.kenzie.foundation.detail.Type type, CodeElement allocation, CodeVector vector) {
@@ -66,11 +67,21 @@ public interface TypeHint extends Descriptor, Type {
         return mx.kenzie.foundation.detail.Type.of(this);
     }
 
-    record Uninitialised(mx.kenzie.foundation.detail.Type type, UVec offset) implements TypeHint, RecordConstant {
+    class Uninitialised implements TypeHint, InitialisableType {
+
+        private final mx.kenzie.foundation.detail.Type type;
+        private final UVec offset;
+        private boolean initialised;
+
+        public Uninitialised(mx.kenzie.foundation.detail.Type type, UVec offset) {
+            this.type = type;
+            this.offset = offset;
+            this.initialised = false;
+        }
 
         @Override
         public boolean isInitialisedType() {
-            return false;
+            return initialised;
         }
 
         @Override
@@ -84,35 +95,105 @@ public interface TypeHint extends Descriptor, Type {
         }
 
         @Override
+        public void initialise() {
+            this.initialised = true;
+        }
+
+        @Override
         public mx.kenzie.foundation.detail.Type constant() {
             return type;
         }
+
+        public mx.kenzie.foundation.detail.Type type() {
+            return type;
+        }
+
+        public UVec offset() {
+            return offset;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (obj == null || obj.getClass() != this.getClass()) return false;
+            var that = (Uninitialised) obj;
+            return Objects.equals(this.type, that.type) && Objects.equals(this.offset, that.offset);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(type, offset);
+        }
+
+        @Override
+        public String toString() {
+            return "Uninitialised[" + "initialised=" + initialised + ", " + "type=" + type + ", " + "offset=" + offset + ']';
+        }
+
+    }
+
+    final class This implements TypeHint, TypeHint.InitialisableType, RecordConstant {
+
+        private boolean initialised;
+        private final mx.kenzie.foundation.detail.TypeHint real;
+
+        This(TypeHint real) {
+            this.real = real;
+        }
+
+        @Override
+        public boolean isInitialisedType() {
+            return initialised;
+        }
+
+        @Override
+        public boolean isRealType() {
+            return initialised;
+        }
+
+        @Override
+        public String getTypeName() {
+            return initialised ? real.getTypeName() : "this";
+        }
+
+        @Override
+        public String descriptorString() {
+            return initialised ? real.descriptorString() : "this";
+        }
+
+        @Override
+        public void initialise() {
+            this.initialised = true;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (obj == null || obj.getClass() != this.getClass()) return false;
+            var that = (This) obj;
+            return Objects.equals(this.real, that.real);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(real);
+        }
+
+        @Override
+        public String toString() {
+            return "This[" + "real=" + real + ']';
+        }
+
+    }
+
+    interface InitialisableType extends TypeHint {
+
+        void initialise();
 
     }
 
     record Guess(int width, boolean isPrimitive, boolean isInitialisedType, boolean isRealType, boolean isTypeKnown,
                  String descriptorString, String getTypeName) implements TypeHint, RecordConstant {}
-
-}
-
-record This() implements TypeHint, RecordConstant {
-
-    static final This THIS = new This();
-
-    @Override
-    public boolean isInitialisedType() {
-        return false;
-    }
-
-    @Override
-    public boolean isRealType() {
-        return false;
-    }
-
-    @Override
-    public String descriptorString() {
-        return "this";
-    }
 
 }
 

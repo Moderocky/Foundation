@@ -5,6 +5,7 @@ import mx.kenzie.foundation.assembler.tool.PoolReference;
 import mx.kenzie.foundation.assembler.tool.ProgramStack;
 import mx.kenzie.foundation.detail.Member;
 import mx.kenzie.foundation.detail.Type;
+import mx.kenzie.foundation.detail.TypeHint;
 import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;
@@ -78,8 +79,12 @@ public record InvokeCode(String mnemonic, byte code) implements OpCode {
             switch (code) {
                 case Codes.INVOKESTATIC:
                     break;
-                case Codes.INVOKESPECIAL:
-                    // todo initialise the type duplicate in memory!
+                case Codes.INVOKESPECIAL: // initialise the duplicate in memory
+                    if (member.name().equals("<init>")) {
+                        final TypeHint peek = stack.peek();
+                        assert peek instanceof TypeHint.InitialisableType thing && !thing.isInitialisedType();
+                        if (peek instanceof TypeHint.InitialisableType thing) thing.initialise();
+                    }
                 default:
                     stack.pop();
             }

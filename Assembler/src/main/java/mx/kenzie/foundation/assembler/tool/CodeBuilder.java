@@ -9,6 +9,7 @@ import mx.kenzie.foundation.assembler.code.UnboundedElement;
 import mx.kenzie.foundation.assembler.error.IncompatibleBranchError;
 import mx.kenzie.foundation.assembler.vector.U2;
 import mx.kenzie.foundation.detail.Type;
+import mx.kenzie.foundation.detail.TypeHint;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -144,7 +145,11 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
         if (this.trackStack()) {
             this.stack().clear();
             this.register().clear();
-            if (!Access.is(exit().access_flags, Access.STATIC)) this.register().put(0, method.exit());
+            if (!Access.is(exit().access_flags, Access.STATIC)) {
+                if (exit().name().equals("<init>")) // constructor starts with an uninitialised 'this'
+                    this.register().put(0, TypeHint.uninitialisedThis(method.exit()));
+                else this.register().put(0, method.exit());
+            }
             for (Type parameter : this.exit().parameters()) this.register().putNext(parameter);
             for (CodeElement element : this.vector) element.notify(this);
             this.maxStack = this.stack().maximum();

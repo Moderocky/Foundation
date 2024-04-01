@@ -36,7 +36,7 @@ public interface VerificationTypeInfo extends UVec, Constant {
             case "long" -> LONG;
             default -> throw new IllegalArgumentException(type.toString());
         };
-        if (type == ProgramStack.UNINITIALISED_THIS) return UNINITIALISED_THIS;
+        if (type instanceof TypeHint.This) return UNINITIALISED_THIS;
         if (type instanceof TypeHint.Uninitialised uninitialised)
             return new UninitializedTypeInfo(uninitialised.offset());
         else if (type.isInitialisedType() && type.isTypeKnown()) return new ObjectTypeInfo(type.asType(), storage);

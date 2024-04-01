@@ -21,7 +21,7 @@ public class ProgramStack extends Stack<TypeHint> {
      * A dummy flag to represent Java's TOP type, since we can never make an actual class reference to TOP.
      * This is designed to fail if any operations are performed on it, since it doesn't represent a real class.
      */
-    public static final TypeHint TOP = TypeHint.top(), UNINITIALISED_THIS = TypeHint.uninitialisedThis();
+    public static final TypeHint TOP = TypeHint.top();
 
     /**
      * Whether this contains any wide types and requires special calculation.
