@@ -5,10 +5,7 @@ import mx.kenzie.foundation.assembler.tool.MethodBuilder;
 import mx.kenzie.foundation.assembler.tool.MethodBuilderTest;
 import org.jetbrains.annotations.Contract;
 import org.junit.Test;
-import org.valross.constantine.Array;
 import org.valross.constantine.RecordConstant;
-
-import java.util.Objects;
 
 import static mx.kenzie.foundation.assembler.code.OpCode.ARETURN;
 import static mx.kenzie.foundation.assembler.code.OpCode.LDC;
@@ -25,8 +22,6 @@ public class DynamicReferenceTest extends MethodBuilderTest {
                                                      .setModifiers(PUBLIC, STATIC).named("test");
     }
 
-    public record Blob(String word, int number) implements RecordConstant {}
-
     @Test
     public void of() {
         final Blob blob = new Blob("hello", 5);
@@ -37,5 +32,7 @@ public class DynamicReferenceTest extends MethodBuilderTest {
                        .write(LDC.value(blob), ARETURN)
                        .exit(), blob);
     }
+
+    public record Blob(String word, int number) implements RecordConstant {}
 
 }

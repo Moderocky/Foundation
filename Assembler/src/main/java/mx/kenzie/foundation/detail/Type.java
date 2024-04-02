@@ -149,17 +149,15 @@ public record Type(String getTypeName, String descriptorString, String internalN
         return type;
     }
 
-    public static final Type BYTE = Type.of(byte.class), SHORT = Type.of(short.class), INT = Type.of(int.class),
-        LONG = Type.of(long.class), FLOAT = Type.of(float.class), DOUBLE = Type.of(double.class), BOOLEAN =
-        Type.of(boolean.class), CHAR = Type.of(char.class), VOID = Type.of(void.class), OBJECT =
-        Type.of(Object.class), STRING = Type.of(String.class), VOID_WRAPPER = Type.of(Void.class);
-
     public static String internalName(java.lang.reflect.Type klass) {
         if (klass instanceof Class<?> thing) return thing.getName().replace('.', '/');
         if (klass instanceof Type type) return type.internalName;
         if (isPrimitive(klass)) return ofPrimitive(klass).internalName();
         return klass.getTypeName().replaceAll("<.+>", "").replace('.', '/');
-    }
+    }    public static final Type BYTE = Type.of(byte.class), SHORT = Type.of(short.class), INT = Type.of(int.class),
+        LONG = Type.of(long.class), FLOAT = Type.of(float.class), DOUBLE = Type.of(double.class), BOOLEAN =
+        Type.of(boolean.class), CHAR = Type.of(char.class), VOID = Type.of(void.class), OBJECT =
+        Type.of(Object.class), STRING = Type.of(String.class), VOID_WRAPPER = Type.of(Void.class);
 
     public static String descriptorString(java.lang.reflect.Type klass) {
         if (klass instanceof TypeDescriptor descriptor) return descriptor.descriptorString();
@@ -331,5 +329,7 @@ public record Type(String getTypeName, String descriptorString, String internalN
         for (int i = 0; i < Short.MAX_VALUE; i++) if (descriptorString.charAt(i) != '[') return i;
         throw new IllegalStateException("Type " + this + " is too big?");
     }
+
+
 
 }

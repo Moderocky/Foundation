@@ -67,6 +67,12 @@ public interface TypeHint extends Descriptor, Type {
         return mx.kenzie.foundation.detail.Type.of(this);
     }
 
+    interface InitialisableType extends TypeHint {
+
+        void initialise();
+
+    }
+
     class Uninitialised implements TypeHint, InitialisableType {
 
         private final mx.kenzie.foundation.detail.Type type;
@@ -113,16 +119,16 @@ public interface TypeHint extends Descriptor, Type {
         }
 
         @Override
+        public int hashCode() {
+            return Objects.hash(type, offset);
+        }
+
+        @Override
         public boolean equals(Object obj) {
             if (obj == this) return true;
             if (obj == null || obj.getClass() != this.getClass()) return false;
             var that = (Uninitialised) obj;
             return Objects.equals(this.type, that.type) && Objects.equals(this.offset, that.offset);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(type, offset);
         }
 
         @Override
@@ -134,8 +140,8 @@ public interface TypeHint extends Descriptor, Type {
 
     final class This implements TypeHint, TypeHint.InitialisableType, RecordConstant {
 
-        private boolean initialised;
         private final mx.kenzie.foundation.detail.TypeHint real;
+        private boolean initialised;
 
         This(TypeHint real) {
             this.real = real;
@@ -167,6 +173,11 @@ public interface TypeHint extends Descriptor, Type {
         }
 
         @Override
+        public int hashCode() {
+            return Objects.hash(real);
+        }
+
+        @Override
         public boolean equals(Object obj) {
             if (obj == this) return true;
             if (obj == null || obj.getClass() != this.getClass()) return false;
@@ -175,20 +186,9 @@ public interface TypeHint extends Descriptor, Type {
         }
 
         @Override
-        public int hashCode() {
-            return Objects.hash(real);
-        }
-
-        @Override
         public String toString() {
             return "This[" + "real=" + real + ']';
         }
-
-    }
-
-    interface InitialisableType extends TypeHint {
-
-        void initialise();
 
     }
 

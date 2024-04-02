@@ -26,10 +26,6 @@ public record DynamicReference(Kind type, Signature signature, Member.Invocation
         this(type, signature, invocation, (Object[]) arguments);
     }
 
-    public enum Kind {
-        CONSTANT, INVOCATION
-    }
-
     public static DynamicReference of(Array array) {
         final Optional<? extends ConstantDesc> described = array.describeConstable();
         if (described.isEmpty())
@@ -79,6 +75,10 @@ public record DynamicReference(Kind type, Signature signature, Member.Invocation
     @NotNull
     private static DynamicReference getDynamicReference(DynamicConstantDesc<?> description, Signature signature) {
         return getDynamicReference(description, signature, (Object[]) description.bootstrapArgs());
+    }
+
+    public enum Kind {
+        CONSTANT, INVOCATION
     }
 
 }

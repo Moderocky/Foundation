@@ -1802,8 +1802,6 @@ public class OpCodeTest extends MethodBuilderTest {
                    .invoke(null).equals(1L);
     }
 
-    public record Thing(String name, int thing) implements RecordConstant {}
-
     @Test
     public void testLDC() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         assert this.compileForTest(this.method().returns(int.class).code().write(LDC.value(1), IRETURN).exit())
@@ -2262,5 +2260,7 @@ public class OpCodeTest extends MethodBuilderTest {
         assert this.compileForTest(code.write(ICONST_1, ISTORE.var(slot), ILOAD.var(slot), IRETURN).exit()).invoke(null)
                    .equals(1);
     }
+
+    public record Thing(String name, int thing) implements RecordConstant {}
 
 }
