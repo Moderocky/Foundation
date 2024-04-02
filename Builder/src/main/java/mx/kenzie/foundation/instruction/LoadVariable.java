@@ -1,6 +1,6 @@
 package mx.kenzie.foundation.instruction;
 
-import static org.objectweb.asm.Opcodes.*;
+import static mx.kenzie.foundation.assembler.code.OpCode.*;
 
 public class LoadVariable {
 
@@ -8,11 +8,11 @@ public class LoadVariable {
     }
 
     public Instruction.Input<Object> object(int index) {
-        return visitor -> visitor.visitVarInsn(ALOAD, index);
+        return builder -> builder.write(ALOAD.var(index));
     }
 
     public Instruction.Input<Object> self() {
-        return visitor -> visitor.visitVarInsn(ALOAD, 0);
+        return builder -> builder.write(ALOAD_0);
     }
 
     public Instruction.Input<Integer> byteValue(int index) {
@@ -20,7 +20,7 @@ public class LoadVariable {
     }
 
     public Instruction.Input<Integer> intValue(int index) {
-        return visitor -> visitor.visitVarInsn(ILOAD, index);
+        return builder -> builder.write(ILOAD.var(index));
     }
 
     public Instruction.Input<Integer> shortValue(int index) {
@@ -28,15 +28,15 @@ public class LoadVariable {
     }
 
     public Instruction.Input<Long> longValue(int index) {
-        return visitor -> visitor.visitVarInsn(LLOAD, index);
+        return builder -> builder.write(LLOAD.var(index));
     }
 
     public Instruction.Input<Float> floatValue(int index) {
-        return visitor -> visitor.visitVarInsn(FLOAD, index);
+        return builder -> builder.write(FLOAD.var(index));
     }
 
     public Instruction.Input<Double> doubleValue(int index) {
-        return visitor -> visitor.visitVarInsn(DLOAD, index);
+        return builder -> builder.write(DLOAD.var(index));
     }
 
     public Instruction.Input<Integer> booleanValue(int index) {

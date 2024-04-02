@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.invoke.TypeDescriptor;
 
+import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.INTERFACE_METHOD_REFERENCE;
+
 /**
  * An opcode for invoking a method (via invokeinterface).
  *
@@ -20,7 +22,7 @@ import java.lang.invoke.TypeDescriptor;
  * @param code     The byte code. This is likely to be an UNSIGNED byte in disguise, so should be treated with
  *                 caution.
  */
-public record InvokeInterfaceCode(String mnemonic, byte code) implements OpCode {
+public record InvokeInterfaceCode(String mnemonic, byte code) implements OpCode, AbstractInvokeCode {
 
     /**
      * Invokes the interface method in the specified constant pool index.
@@ -48,6 +50,12 @@ public record InvokeInterfaceCode(String mnemonic, byte code) implements OpCode 
     public UnboundedElement method(Member member) {
         final int count = Type.parameterSize(member) + 1;
         return storage -> new Invocation(code, member, storage.constant(member), count);
+    }
+
+    @Override
+    public UnboundedElement interfaceMethod(Member member) {
+        final int count = Type.parameterSize(member) + 1;
+        return storage -> new Invocation(code, member, storage.constant(INTERFACE_METHOD_REFERENCE, member), count);
     }
 
     @Override

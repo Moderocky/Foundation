@@ -1,6 +1,6 @@
 package mx.kenzie.foundation.instruction;
 
-import static org.objectweb.asm.Opcodes.*;
+import static mx.kenzie.foundation.assembler.code.OpCode.*;
 
 public class Sum {
 
@@ -10,25 +10,25 @@ public class Sum {
     public Instruction.Input<Integer> ints(Instruction.Input<Integer> a, Instruction.Math operator,
                                            Instruction.Input<Integer> b) {
         return switch (operator) {
-            case PLUS -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(IADD);
+            case PLUS -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(IADD);
             };
-            case MINUS -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(ISUB);
+            case MINUS -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(ISUB);
             };
-            case TIMES -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(IMUL);
+            case TIMES -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(IMUL);
             };
-            case DIVIDED -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(IDIV);
+            case DIVIDED -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(IDIV);
             };
         };
     }
@@ -36,25 +36,25 @@ public class Sum {
     public Instruction.Input<Long> longs(Instruction.Input<Long> a, Instruction.Math operator,
                                          Instruction.Input<Long> b) {
         return switch (operator) {
-            case PLUS -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(LADD);
+            case PLUS -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(LADD);
             };
-            case MINUS -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(LSUB);
+            case MINUS -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(LSUB);
             };
-            case TIMES -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(LMUL);
+            case TIMES -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(LMUL);
             };
-            case DIVIDED -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(LDIV);
+            case DIVIDED -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(LDIV);
             };
         };
     }
@@ -62,25 +62,25 @@ public class Sum {
     public Instruction.Input<Float> floats(Instruction.Input<Float> a, Instruction.Math operator,
                                            Instruction.Input<Float> b) {
         return switch (operator) {
-            case PLUS -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(FADD);
+            case PLUS -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(FADD);
             };
-            case MINUS -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(FSUB);
+            case MINUS -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(FSUB);
             };
-            case TIMES -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(FMUL);
+            case TIMES -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(FMUL);
             };
-            case DIVIDED -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(FDIV);
+            case DIVIDED -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(FDIV);
             };
         };
     }
@@ -88,25 +88,25 @@ public class Sum {
     public Instruction.Input<Double> doubles(Instruction.Input<Double> a, Instruction.Math operator,
                                              Instruction.Input<Double> b) {
         return switch (operator) {
-            case PLUS -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(DADD);
+            case PLUS -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(DADD);
             };
-            case MINUS -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(DSUB);
+            case MINUS -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(DSUB);
             };
-            case TIMES -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(DMUL);
+            case TIMES -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(DMUL);
             };
-            case DIVIDED -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(DDIV);
+            case DIVIDED -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(DDIV);
             };
         };
     }

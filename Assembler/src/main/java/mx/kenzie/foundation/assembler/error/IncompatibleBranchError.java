@@ -1,5 +1,10 @@
 package mx.kenzie.foundation.assembler.error;
 
+import mx.kenzie.foundation.assembler.code.CodeVector;
+
+import java.io.PrintStream;
+import java.io.PrintWriter;
+
 /**
  * An error thrown when the program enters a branch in a state that cannot be reconciled with the branch's frame.
  * Two states are considered irreconcilable if:
@@ -32,6 +37,8 @@ package mx.kenzie.foundation.assembler.error;
  */
 public class IncompatibleBranchError extends Error {
 
+    private CodeVector vector;
+
     public IncompatibleBranchError() {
         super();
     }
@@ -51,6 +58,22 @@ public class IncompatibleBranchError extends Error {
     protected IncompatibleBranchError(String message, Throwable cause, boolean enableSuppression,
                                       boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
+    }
+
+    public void setVector(CodeVector vector) {
+        this.vector = vector;
+    }
+
+    @Override
+    public void printStackTrace(PrintWriter s) {
+        super.printStackTrace(s);
+        if (vector != null) s.println("Current method: " + vector);
+    }
+
+    @Override
+    public void printStackTrace(PrintStream s) {
+        super.printStackTrace(s);
+        if (vector != null) s.println("Current method: " + vector);
     }
 
 }

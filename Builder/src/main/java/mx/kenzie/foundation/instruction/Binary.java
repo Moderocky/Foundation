@@ -1,10 +1,12 @@
 package mx.kenzie.foundation.instruction;
 
+import mx.kenzie.foundation.assembler.code.Branch;
+import mx.kenzie.foundation.assembler.code.JumpCode;
+import mx.kenzie.foundation.assembler.code.UnboundedElement;
 import org.jetbrains.annotations.NotNull;
-import org.objectweb.asm.Label;
 
+import static mx.kenzie.foundation.assembler.code.OpCode.*;
 import static mx.kenzie.foundation.instruction.Instruction.Operator.EQ;
-import static org.objectweb.asm.Opcodes.*;
 
 public class Binary {
 
@@ -12,60 +14,51 @@ public class Binary {
     }
 
     @NotNull
-    static Instruction.Input<Integer> getIntegerInput(Instruction.Input<?> a, Instruction.Input<?> b, int instruction) {
-        return visitor -> {
-            final Label fail = new Label(), end = new Label();
-            a.write(visitor);
-            b.write(visitor);
-            visitor.visitJumpInsn(instruction, fail);
-            visitor.visitInsn(ICONST_1);
-            visitor.visitJumpInsn(GOTO, end);
-            visitor.visitLabel(fail);
-            visitor.visitInsn(ICONST_0);
-            visitor.visitLabel(end);
+    static Instruction.Input<Integer> getIntegerInput(Instruction.Input<?> a, Instruction.Input<?> b,
+                                                      JumpCode instruction) {
+        return builder -> {
+            final Branch fail = new Branch(), end = new Branch();
+            a.write(builder);
+            b.write(builder);
+            builder.write(instruction.jump(fail), ICONST_1, GOTO.jump(end), fail, ICONST_0, end);
         };
     }
 
     @NotNull
-    static Instruction.Input<Integer> getIntegerInput(Instruction.Input<?> a, Instruction.Input<?> b, int instruction
-        , int comparison) {
-        return visitor -> {
-            final Label fail = new Label(), end = new Label();
-            a.write(visitor);
-            b.write(visitor);
-            visitor.visitInsn(comparison);
-            visitor.visitJumpInsn(instruction, fail);
-            visitor.visitInsn(ICONST_1);
-            visitor.visitJumpInsn(GOTO, end);
-            visitor.visitLabel(fail);
-            visitor.visitInsn(ICONST_0);
-            visitor.visitLabel(end);
+    static Instruction.Input<Integer> getIntegerInput(Instruction.Input<?> a, Instruction.Input<?> b,
+                                                      UnboundedElement comparison, JumpCode instruction) {
+        return builder -> {
+            final Branch fail = new Branch(), end = new Branch();
+            a.write(builder);
+            b.write(builder);
+            builder.write(comparison, instruction.jump(fail));
+            builder.write(ICONST_1, GOTO.jump(end), fail, ICONST_0, end);
         };
     }
 
     public Instruction.Input<Integer> objects(Instruction.Input<Object> a, Instruction.Operator operator,
                                               Instruction.Input<Object> b) {
-        final int instruction = operator == EQ ? IF_ACMPNE : IF_ACMPEQ;
+        final JumpCode instruction = operator == EQ ? IF_ACMPNE : IF_ACMPEQ;
         return getIntegerInput(a, b, instruction);
     }
 
     public Instruction.Input<Integer> ints(Instruction.Input<Integer> a, Instruction.Operator operator,
                                            Instruction.Input<Integer> b) {
         return switch (operator) {
-            case OR -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(IOR);
+            case OR -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(IOR);
             };
-            case AND -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(IAND);
+            case AND -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(IAND);
             };
-            case XOR -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(IXOR);
+            case XOR -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(IXOR);
             };
             case LESS -> equality(a, b, IF_ICMPGE);
             case GREATER -> equality(a, b, IF_ICMPLE);
@@ -76,27 +69,27 @@ public class Binary {
         };
     }
 
-    private Instruction.Input<Integer> equality(Instruction.Input<?> a, Instruction.Input<?> b, int instruction) {
+    private Instruction.Input<Integer> equality(Instruction.Input<?> a, Instruction.Input<?> b, JumpCode instruction) {
         return getIntegerInput(a, b, instruction);
     }
 
     public Instruction.Input<Integer> longs(Instruction.Input<Long> a, Instruction.Operator operator,
                                             Instruction.Input<Long> b) {
         return switch (operator) {
-            case OR -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(LOR);
+            case OR -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(LOR);
             };
-            case AND -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(LAND);
+            case AND -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(LAND);
             };
-            case XOR -> visitor -> {
-                a.write(visitor);
-                b.write(visitor);
-                visitor.visitInsn(LXOR);
+            case XOR -> builder -> {
+                a.write(builder);
+                b.write(builder);
+                builder.write(LXOR);
             };
             case LESS -> equality(a, b, IFGE, LCMP);
             case GREATER -> equality(a, b, IFLE, LCMP);
@@ -107,19 +100,19 @@ public class Binary {
         };
     }
 
-    private Instruction.Input<Integer> equality(Instruction.Input<?> a, Instruction.Input<?> b, int instruction,
-                                                int comparison) {
-        return getIntegerInput(a, b, instruction, comparison);
+    private Instruction.Input<Integer> equality(Instruction.Input<?> a, Instruction.Input<?> b, JumpCode instruction,
+                                                UnboundedElement comparison) {
+        return getIntegerInput(a, b, comparison, instruction);
     }
 
-    public Instruction.Input<Integer> floats(Instruction.Input<Number> a, Instruction.Operator operator,
-                                             Instruction.Input<Number> b) {
+    public Instruction.Input<Integer> floats(Instruction.Input<? extends Number> a, Instruction.Operator operator,
+                                             Instruction.Input<? extends Number> b) {
         return this.compareFloating(a, operator, b, FCMPL);
     }
 
     @NotNull
-    private Instruction.Input<Integer> compareFloating(Instruction.Input<Number> a, Instruction.Operator operator,
-                                                       Instruction.Input<Number> b, int comparator) {
+    private Instruction.Input<Integer> compareFloating(Instruction.Input<? extends Number> a, Instruction.Operator operator,
+                                                       Instruction.Input<? extends Number> b, UnboundedElement comparator) {
         return switch (operator) {
             case LESS -> equality(a, b, IFGE, comparator);
             case GREATER -> equality(a, b, IFLE, comparator);
@@ -131,8 +124,8 @@ public class Binary {
         };
     }
 
-    public Instruction.Input<Integer> doubles(Instruction.Input<Number> a, Instruction.Operator operator,
-                                              Instruction.Input<Number> b) {
+    public Instruction.Input<Integer> doubles(Instruction.Input<? extends Number> a, Instruction.Operator operator,
+                                              Instruction.Input<? extends Number> b) {
         return this.compareFloating(a, operator, b, DCMPL);
     }
 

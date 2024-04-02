@@ -151,7 +151,12 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
                 else this.register().put(0, method.exit());
             }
             for (Type parameter : this.exit().parameters()) this.register().putNext(parameter);
-            for (CodeElement element : this.vector) element.notify(this);
+            try {
+                for (CodeElement element : this.vector) element.notify(this);
+            } catch (IncompatibleBranchError ex) {
+                ex.setVector(vector);
+                throw ex;
+            }
             this.maxStack = this.stack().maximum();
             this.maxLocals = this.register().maximum();
         }

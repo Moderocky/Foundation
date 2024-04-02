@@ -1,6 +1,6 @@
 package mx.kenzie.foundation.instruction;
 
-import static org.objectweb.asm.Opcodes.*;
+import static mx.kenzie.foundation.assembler.code.OpCode.*;
 
 public class Return extends MultiTypeInstruction {
 
@@ -9,47 +9,47 @@ public class Return extends MultiTypeInstruction {
 
     @Override
     public Instruction.Base object(Instruction.Input<Object> instruction) {
-        return visitor -> {
-            instruction.write(visitor);
-            visitor.visitInsn(ARETURN);
+        return builder -> {
+            instruction.write(builder);
+            builder.write(ARETURN);
         };
     }
 
     @Override
     public Instruction.Base intValue(Instruction.Input<Integer> instruction) {
-        return visitor -> {
-            instruction.write(visitor);
-            visitor.visitInsn(IRETURN);
+        return builder -> {
+            instruction.write(builder);
+            builder.write(IRETURN);
         };
     }
 
     @Override
     public Instruction.Base longValue(Instruction.Input<Long> instruction) {
-        return visitor -> {
-            instruction.write(visitor);
-            visitor.visitInsn(LRETURN);
+        return builder -> {
+            instruction.write(builder);
+            builder.write(LRETURN);
         };
     }
 
     @Override
     public Instruction.Base floatValue(Instruction.Input<Float> instruction) {
-        return visitor -> {
-            instruction.write(visitor);
-            visitor.visitInsn(FRETURN);
+        return builder -> {
+            instruction.write(builder);
+            builder.write(FRETURN);
         };
     }
 
     @Override
     public Instruction.Base doubleValue(Instruction.Input<Double> instruction) {
-        return visitor -> {
-            instruction.write(visitor);
-            visitor.visitInsn(DRETURN);
+        return builder -> {
+            instruction.write(builder);
+            builder.write(DRETURN);
         };
     }
 
     @Override
     public Instruction.Base none() {
-        return visitor -> visitor.visitInsn(RETURN);
+        return builder -> builder.write(RETURN);
     }
 
 }

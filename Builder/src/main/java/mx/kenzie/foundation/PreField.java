@@ -1,11 +1,11 @@
 package mx.kenzie.foundation;
 
+import mx.kenzie.foundation.assembler.tool.ClassFileBuilder;
 import mx.kenzie.foundation.detail.Modifier;
 import mx.kenzie.foundation.detail.Type;
 import mx.kenzie.foundation.instruction.AccessField;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.FieldVisitor;
 
+import java.lang.constant.Constable;
 import java.lang.invoke.TypeDescriptor;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -17,7 +17,7 @@ public class PreField extends BuildElement implements AccessField.Stub {
     protected Type type;
     protected String name;
     protected Set<Modifier> modifiers;
-    protected Object value;
+    protected Constable value;
 
     public <Klass extends java.lang.reflect.Type & TypeDescriptor> PreField(Modifier access, Modifier state,
                                                                             Modifier change, Klass type, String name) {
@@ -49,7 +49,7 @@ public class PreField extends BuildElement implements AccessField.Stub {
         this.type = Type.of(type);
     }
 
-    public void setValue(Object constant) {
+    public void setValue(Constable constant) {
         this.value = constant;
     }
 
@@ -73,10 +73,9 @@ public class PreField extends BuildElement implements AccessField.Stub {
     }
 
     @Override
-    protected void build(ClassWriter writer) {
-        final FieldVisitor visitor = writer.visitField(this.modifierCode(), name, type.descriptorString(), null, value);
-        for (PreAnnotation annotation : annotations) annotation.write(visitor);
-        visitor.visitEnd();
+    protected void build(ClassFileBuilder builder) {
+        builder.field().setModifiers(this::modifierCode).named(name).ofType(type).constantValue(value);
+//        for (PreAnnotation annotation : annotations) annotation.write(visitor);
     }
 
     @Override

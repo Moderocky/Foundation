@@ -1,7 +1,7 @@
 package mx.kenzie.foundation.instruction;
 
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import mx.kenzie.foundation.assembler.code.OpCode;
+import mx.kenzie.foundation.assembler.tool.CodeBuilder;
 
 import java.lang.invoke.TypeDescriptor;
 
@@ -29,15 +29,15 @@ public interface Instruction {
     Array ARRAY = new Array();
     Switch SWITCH = new Switch();
     Input<Object> THIS = LOAD_VAR.self();
-    Instruction.Input<Void> NULL = visitor -> visitor.visitInsn(Opcodes.ACONST_NULL);
-    Instruction.Input<Integer> ZERO = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
-        FALSE = visitor -> visitor.visitInsn(Opcodes.ICONST_0),
-        ONE = visitor -> visitor.visitInsn(Opcodes.ICONST_1),
-        TRUE = visitor -> visitor.visitInsn(Opcodes.ICONST_1);
+    Instruction.Input<Void> NULL = builder -> builder.write(OpCode.ACONST_NULL);
+    Instruction.Input<Integer> ZERO = builder -> builder.write(OpCode.ICONST_0),
+        FALSE = builder -> builder.write(OpCode.ICONST_0),
+        ONE = builder -> builder.write(OpCode.ICONST_1),
+        TRUE = builder -> builder.write(OpCode.ICONST_1);
     Push PUSH = new Push();
-    Instruction.Block BREAK = (visitor, block) -> visitor.visitJumpInsn(Opcodes.GOTO, block.end);
+    Instruction.Block BREAK = (builder, block) -> builder.write(OpCode.GOTO.jump(block.end));
 
-    void write(MethodVisitor visitor);
+    void write(CodeBuilder builder);
 
     enum Operator {
         EQ,
@@ -59,23 +59,23 @@ public interface Instruction {
     }
 
     enum Convert {
-        INT_TO_BYTE(Opcodes.I2B),
-        INT_TO_SHORT(Opcodes.I2S),
-        INT_TO_LONG(Opcodes.I2L),
-        INT_TO_FLOAT(Opcodes.I2F),
-        INT_TO_DOUBLE(Opcodes.I2D),
-        LONG_TO_INT(Opcodes.L2I),
-        LONG_TO_FLOAT(Opcodes.L2F),
-        LONG_TO_DOUBLE(Opcodes.L2D),
-        FLOAT_TO_INT(Opcodes.F2I),
-        FLOAT_TO_LONG(Opcodes.F2L),
-        FLOAT_TO_DOUBLE(Opcodes.F2D),
-        DOUBLE_TO_INT(Opcodes.D2I),
-        DOUBLE_TO_LONG(Opcodes.D2L),
-        DOUBLE_TO_FLOAT(Opcodes.D2F);
-        public final int opcode;
+        INT_TO_BYTE(OpCode.I2B),
+        INT_TO_SHORT(OpCode.I2S),
+        INT_TO_LONG(OpCode.I2L),
+        INT_TO_FLOAT(OpCode.I2F),
+        INT_TO_DOUBLE(OpCode.I2D),
+        LONG_TO_INT(OpCode.L2I),
+        LONG_TO_FLOAT(OpCode.L2F),
+        LONG_TO_DOUBLE(OpCode.L2D),
+        FLOAT_TO_INT(OpCode.F2I),
+        FLOAT_TO_LONG(OpCode.F2L),
+        FLOAT_TO_DOUBLE(OpCode.F2D),
+        DOUBLE_TO_INT(OpCode.D2I),
+        DOUBLE_TO_LONG(OpCode.D2L),
+        DOUBLE_TO_FLOAT(OpCode.D2F);
+        public final mx.kenzie.foundation.assembler.code.Instruction opcode;
 
-        Convert(int opcode) {
+        Convert(mx.kenzie.foundation.assembler.code.Instruction opcode) {
             this.opcode = opcode;
         }
     }
@@ -95,7 +95,7 @@ public interface Instruction {
 
     interface Block {
 
-        void write(MethodVisitor visitor, mx.kenzie.foundation.Block block);
+        void write(CodeBuilder builder, mx.kenzie.foundation.Block block);
 
     }
 

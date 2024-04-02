@@ -1,6 +1,7 @@
 package mx.kenzie.foundation.instruction;
 
-import org.objectweb.asm.Opcodes;
+import static mx.kenzie.foundation.assembler.code.OpCode.ICONST_1;
+import static mx.kenzie.foundation.assembler.code.OpCode.IXOR;
 
 public class Negate {
 
@@ -8,10 +9,9 @@ public class Negate {
     }
 
     public Instruction.Input<Integer> invert(Instruction.Input<Integer> value) {
-        return visitor -> {
-            value.write(visitor);
-            visitor.visitInsn(Opcodes.ICONST_1);
-            visitor.visitInsn(Opcodes.IXOR);
+        return builder -> {
+            value.write(builder);
+            builder.write(ICONST_1, IXOR);
         };
     }
 

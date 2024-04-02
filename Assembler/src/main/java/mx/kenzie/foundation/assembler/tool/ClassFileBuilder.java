@@ -233,6 +233,7 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive, 
         }
 
         public PoolReference constant(Constable constable) {
+            if (constable == null) return PoolReference.ZERO;
             return switch (constable) {
                 case PoolReference reference -> reference;
                 case Long j -> this.constant(LONG, j);

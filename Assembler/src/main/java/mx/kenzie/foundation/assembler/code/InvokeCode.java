@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.invoke.TypeDescriptor;
 
+import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.INTERFACE_METHOD_REFERENCE;
+
 /**
  * An opcode for invoking a method (via invokevirtual, invokestatic or invokespecial).
  *
@@ -19,18 +21,10 @@ import java.lang.invoke.TypeDescriptor;
  * @param code     The byte code. This is likely to be an UNSIGNED byte in disguise, so should be treated with
  *                 caution.
  */
-public record InvokeCode(String mnemonic, byte code) implements OpCode {
+public record InvokeCode(String mnemonic, byte code) implements OpCode, AbstractInvokeCode {
 
     public CodeElement method(PoolReference reference) {
         return CodeElement.vector(code, reference);
-    }
-
-    @SafeVarargs
-    public final <Klass extends java.lang.reflect.Type & TypeDescriptor> UnboundedElement method(Klass owner,
-                                                                                                 Klass returnType,
-                                                                                                 String name,
-                                                                                                 Klass... parameters) {
-        return this.method(new Member(owner, returnType, name, parameters));
     }
 
     @SafeVarargs
@@ -39,12 +33,22 @@ public record InvokeCode(String mnemonic, byte code) implements OpCode {
         return this.method(new Member(owner, void.class, "<init>", parameters));
     }
 
+    @Override
     public UnboundedElement method(Member member) {
         int taken = Type.parameterSize(member);
         if (code != Codes.INVOKESTATIC) ++taken; // caller obj is first 1-wide "parameter"
         if (taken == 0) taken += Type.fromDescriptor(member).width(); // it might be a 0-args method returning wide type
         final int count = taken;
         return storage -> new Invocation(code, member, storage.constant(member), count);
+    }
+
+    @Override
+    public UnboundedElement interfaceMethod(Member member) {
+        int taken = Type.parameterSize(member);
+        if (code != Codes.INVOKESTATIC) ++taken; // caller obj is first 1-wide "parameter"
+        if (taken == 0) taken += Type.fromDescriptor(member).width(); // it might be a 0-args method returning wide type
+        final int count = taken;
+        return storage -> new Invocation(code, member, storage.constant(INTERFACE_METHOD_REFERENCE, member), count);
     }
 
     @Override
@@ -94,3 +98,4 @@ public record InvokeCode(String mnemonic, byte code) implements OpCode {
     }
 
 }
+

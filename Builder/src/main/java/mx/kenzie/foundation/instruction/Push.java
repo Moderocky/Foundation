@@ -1,6 +1,6 @@
 package mx.kenzie.foundation.instruction;
 
-import org.objectweb.asm.Opcodes;
+import static mx.kenzie.foundation.assembler.code.OpCode.*;
 
 public class Push {
 
@@ -8,11 +8,16 @@ public class Push {
     }
 
     public Instruction.Input<Integer> byteValue(int b) {
-        return visitor -> visitor.visitIntInsn(Opcodes.BIPUSH, b);
+        return builder -> builder.write(BIPUSH.value(b));
     }
 
     public Instruction.Input<Integer> shortValue(int s) {
-        return visitor -> visitor.visitIntInsn(Opcodes.SIPUSH, s);
+        return builder -> builder.write(SIPUSH.value(s));
+    }
+
+    public Instruction.Input<Integer> value(int i) {
+        if (i < Short.MIN_VALUE || i > Short.MAX_VALUE) return builder -> builder.write(LDC.value(i));
+        return builder -> builder.write(SIPUSH.value(i));
     }
 
 }

@@ -186,7 +186,7 @@ public interface OpCode {
     Instruction FSUB = new Instruction("FSUB", Codes.FSUB, StackNotifier.POP);
     FieldCode GETFIELD = new FieldCode("GETFIELD", Codes.GETFIELD);
     FieldCode GETSTATIC = new FieldCode("GETSTATIC", Codes.GETSTATIC);
-    JumpCode GOTO = new JumpCode("GOTO", Codes.GOTO, _ -> {});
+    JumpCode GOTO = new JumpCode("GOTO", Codes.GOTO, builder -> builder.stack().reframe());
     JumpCode GOTO_W = new JumpCode("GOTO_W", Codes.GOTO_W, _ -> {});
     Instruction I2B = new Instruction("I2B", Codes.I2B);
     Instruction I2C = new Instruction("I2C", Codes.I2C);

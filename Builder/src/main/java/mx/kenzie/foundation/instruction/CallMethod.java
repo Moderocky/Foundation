@@ -2,32 +2,29 @@ package mx.kenzie.foundation.instruction;
 
 import mx.kenzie.foundation.PreClass;
 import mx.kenzie.foundation.PreMethod;
-import mx.kenzie.foundation.detail.Erasure;
-import mx.kenzie.foundation.detail.Member;
-import mx.kenzie.foundation.detail.Signature;
-import mx.kenzie.foundation.detail.Type;
-import org.objectweb.asm.Handle;
-import org.objectweb.asm.Opcodes;
+import mx.kenzie.foundation.assembler.code.AbstractInvokeCode;
+import mx.kenzie.foundation.assembler.constant.MethodTypeReference;
+import mx.kenzie.foundation.detail.*;
 
+import java.lang.constant.Constable;
 import java.lang.invoke.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+
+import static mx.kenzie.foundation.assembler.code.OpCode.*;
 
 public class CallMethod {
 
     CallMethod() {
     }
 
-    private org.objectweb.asm.Type type(Handle handle) {
-        return org.objectweb.asm.Type.getType(handle.getDesc());
+    VirtualStub virtual(Member.Invocation bootstrap, Signature appearance, Constable... arguments) {
+        return new VirtualStub(builder -> builder.write(INVOKEDYNAMIC.method(appearance, bootstrap, arguments)));
     }
 
-    @SafeVarargs
-    public final <Klass extends java.lang.reflect.Type & TypeDescriptor>
-    VirtualStub virtual(Handle maker, Handle lambda, Klass result, String name, Klass... parameters) {
-        final String dummy = Type.methodDescriptor(result, parameters);
-        return new VirtualStub(visitor -> visitor.visitInvokeDynamicInsn(name, dummy, maker, this.type(lambda),
-                                                                         lambda, this.type(lambda)));
+    VirtualStub virtual(Member.Invocation bootstrap, String name, TypeDescriptor descriptor, Constable... arguments) {
+        return new VirtualStub(builder -> builder.write(INVOKEDYNAMIC.method(new Signature(name, descriptor),
+                                                                             bootstrap, arguments)));
     }
 
     @SafeVarargs
@@ -50,41 +47,38 @@ public class CallMethod {
 
     @SafeVarargs
     public final <Klass extends java.lang.reflect.Type & TypeDescriptor>
-    VirtualStub metafactory(ConstantStub dummy, int modifiers, boolean isInterface, Klass owner, Klass result,
+    VirtualStub metafactory(Erasure dummy, int modifiers, boolean isInterface, Klass owner, Klass result,
                             String name, Klass... parameters) {
-        final Handle maker = this.handle(Modifier.PUBLIC | Modifier.STATIC, false, LambdaMetafactory.class,
-                                         CallSite.class, "metafactory", MethodHandles.Lookup.class, String.class,
-                                         MethodType.class,
-                                         MethodType.class, MethodHandle.class, MethodType.class);
-        final Handle lambda = this.handle(modifiers, isInterface, owner, result, name, parameters);
-        final String descriptor = Type.methodDescriptor(result, parameters);
-        return new VirtualStub(visitor -> visitor.visitInvokeDynamicInsn(dummy.name(),
-                                                                         Type.methodDescriptor(dummy.returnType,
-                                                                                               dummy.parameters), maker,
-                                                                         org.objectweb.asm.Type.getType(descriptor),
-                                                                         lambda,
-                                                                         org.objectweb.asm.Type.getType(descriptor)));
+        final Member.Invocation maker = this.handle(Modifier.PUBLIC | Modifier.STATIC, false, LambdaMetafactory.class,
+                                                    CallSite.class, "metafactory", MethodHandles.Lookup.class,
+                                                    String.class,
+                                                    MethodType.class,
+                                                    MethodType.class, MethodHandle.class, MethodType.class);
+        final Member.Invocation lambda = this.handle(modifiers, isInterface, owner, result, name, parameters);
+        final Descriptor descriptor = Descriptor.of(result, parameters);
+        return new VirtualStub(builder -> builder.write(INVOKEDYNAMIC.method(dummy.getSignature(), maker, descriptor,
+                                                                             lambda, descriptor)));
     }
 
     @SafeVarargs
     public final <Klass extends java.lang.reflect.Type & TypeDescriptor>
-    Handle handle(int modifiers, boolean isInterface, Klass owner, Klass result, String name, Klass... parameters) {
+    Member.Invocation handle(int modifiers, boolean isInterface, Klass owner, Klass result, String name,
+                             Klass... parameters) {
         final int code;
-        if (Modifier.isStatic(modifiers)) code = Opcodes.H_INVOKESTATIC;
-        else if (Modifier.isPrivate(modifiers)) code = Opcodes.H_INVOKESPECIAL;
-        else if (isInterface) code = Opcodes.H_INVOKEINTERFACE;
-        else code = Opcodes.H_INVOKEVIRTUAL;
-        return new Handle(code, Type.of(owner).internalName(), name, Type.methodDescriptor(result, parameters),
-                          isInterface);
+        if (Modifier.isStatic(modifiers)) code = MethodTypeReference.INVOKE_STATIC;
+        else if (Modifier.isPrivate(modifiers)) code = MethodTypeReference.INVOKE_SPECIAL;
+        else if (isInterface) code = MethodTypeReference.INVOKE_INTERFACE;
+        else code = MethodTypeReference.INVOKE_VIRTUAL;
+        return new Member(owner, result, name, parameters).dynamicInvocation(code, isInterface);
     }
 
-    public Handle handle(Method method) {
+    public Member.Invocation handle(Method method) {
         final boolean isInterface = method.getDeclaringClass().isInterface();
         return this.handle(method.getModifiers(), isInterface, Type.of(method.getDeclaringClass()),
                            Type.of(method.getReturnType()), method.getName(), Type.array(method.getParameterTypes()));
     }
 
-    public Handle handle(PreMethod method) {
+    public Member.Invocation handle(PreMethod method) {
         return this.handle(method.getModifiers(), method.isInterface(), method.getOwner(), method.returnType(),
                            method.name(), method.getParameters());
     }
@@ -132,42 +126,40 @@ public class CallMethod {
     public interface Stub extends Erasure {
 
         default Instruction.Base callStatic(Instruction.Input<?>... arguments) {
-            return visitor -> {
-                for (Instruction.Input argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(Opcodes.INVOKESTATIC, owner().internalName(), name(),
-                                        Type.methodDescriptor(returnType(), parameters()), isInterface());
-                if (returnType() != Type.VOID) visitor.visitInsn(Opcodes.POP);
+            return builder -> {
+                for (Instruction.Input argument : arguments) argument.write(builder);
+                builder.write(INVOKESTATIC.method(owner(), returnType(), name(), parameters()));
+                if (returnType() != Type.VOID) builder.write(POP);
             };
         }
 
         default <Result> Instruction.Input<Result> getStatic(Instruction.Input<?>... arguments) {
-            return visitor -> {
-                for (Instruction.Input argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(Opcodes.INVOKESTATIC, owner().internalName(), name(),
-                                        Type.methodDescriptor(returnType(), parameters()), isInterface());
-                if (returnType() == Type.VOID) visitor.visitInsn(Opcodes.ACONST_NULL);
+            return builder -> {
+                for (Instruction.Input argument : arguments) argument.write(builder);
+                builder.write(INVOKESTATIC.method(owner(), returnType(), name(), parameters()));
+                if (returnType() == Type.VOID) builder.write(ACONST_NULL);
             };
         }
 
         default Instruction.Base call(Instruction.Input<?> object, Instruction.Input<?>... arguments) {
-            final int instruction = isInterface() ? Opcodes.INVOKEINTERFACE : Opcodes.INVOKEVIRTUAL;
-            return visitor -> {
-                object.write(visitor);
-                for (Instruction.Input<?> argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(instruction, owner().internalName(), name(),
-                                        Type.methodDescriptor(returnType(), parameters()), isInterface());
-                if (returnType() != Type.VOID) visitor.visitInsn(Opcodes.POP);
+            final boolean face = isInterface();
+            final AbstractInvokeCode code = face ? INVOKEINTERFACE : INVOKEVIRTUAL;
+            return builder -> {
+                object.write(builder);
+                for (Instruction.Input<?> argument : arguments) argument.write(builder);
+                if (face) builder.write(code.interfaceMethod(owner(), returnType(), name(), parameters()));
+                else builder.write(code.method(owner(), returnType(), name(), parameters()));
+                if (returnType() != Type.VOID) builder.write(POP);
             };
         }
 
         default <Result> Instruction.Input<Result> get(Instruction.Input<?> object, Instruction.Input<?>... arguments) {
-            final int instruction = isInterface() ? Opcodes.INVOKEINTERFACE : Opcodes.INVOKEVIRTUAL;
-            return visitor -> {
-                object.write(visitor);
-                for (Instruction.Input<?> argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(instruction, owner().internalName(), name(),
-                                        Type.methodDescriptor(returnType(), parameters()), isInterface());
-                if (returnType() == Type.VOID) visitor.visitInsn(Opcodes.ACONST_NULL);
+            final AbstractInvokeCode code = isInterface() ? INVOKEINTERFACE : INVOKEVIRTUAL;
+            return builder -> {
+                object.write(builder);
+                for (Instruction.Input<?> argument : arguments) argument.write(builder);
+                builder.write(code.method(isInterface(), owner(), returnType(), name(), parameters()));
+                if (returnType() == Type.VOID) builder.write(ACONST_NULL);
             };
         }
 
@@ -195,9 +187,9 @@ public class CallMethod {
 
         @SafeVarargs
         public final Instruction.Input<Object> invoke(Instruction.Input<Object>... arguments) {
-            return visitor -> {
-                for (Instruction.Input<Object> argument : arguments) argument.write(visitor);
-                this.factory.write(visitor);
+            return builder -> {
+                for (Instruction.Input<Object> argument : arguments) argument.write(builder);
+                this.factory.write(builder);
             };
         }
 

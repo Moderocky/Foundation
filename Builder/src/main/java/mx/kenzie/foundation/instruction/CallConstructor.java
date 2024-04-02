@@ -1,9 +1,10 @@
 package mx.kenzie.foundation.instruction;
 
 import mx.kenzie.foundation.detail.Type;
-import org.objectweb.asm.Opcodes;
 
 import java.lang.invoke.TypeDescriptor;
+
+import static mx.kenzie.foundation.assembler.code.OpCode.*;
 
 public class CallConstructor {
 
@@ -19,12 +20,10 @@ public class CallConstructor {
     public record Stub(Type owner, Type... parameters) {
 
         public Instruction.Input<Object> make(Instruction.Input<?>... arguments) {
-            return visitor -> {
-                visitor.visitTypeInsn(Opcodes.NEW, owner.internalName());
-                visitor.visitInsn(Opcodes.DUP);
-                for (Instruction.Input<?> argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(Opcodes.INVOKESPECIAL, owner.internalName(), "<init>",
-                                        Type.methodDescriptor(Type.VOID, parameters), false);
+            return builder -> {
+                builder.write(NEW.type(owner), DUP);
+                for (Instruction.Input<?> argument : arguments) argument.write(builder);
+                builder.write(INVOKESPECIAL.constructor(owner, parameters));
             };
 
         }

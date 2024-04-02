@@ -1,12 +1,12 @@
 package mx.kenzie.foundation;
 
+import mx.kenzie.foundation.assembler.tool.ClassFileBuilder;
+import mx.kenzie.foundation.assembler.tool.CodeBuilder;
 import mx.kenzie.foundation.detail.Erasure;
 import mx.kenzie.foundation.detail.Modifier;
 import mx.kenzie.foundation.detail.Type;
 import mx.kenzie.foundation.instruction.CallMethod;
 import mx.kenzie.foundation.instruction.Instruction;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.MethodVisitor;
 
 import java.lang.invoke.TypeDescriptor;
 import java.util.*;
@@ -89,19 +89,13 @@ public class PreMethod extends BuildElement implements CodeBody, CallMethod.Stub
     }
 
     @Override
-    protected void build(ClassWriter writer) {
-        final MethodVisitor visitor = writer.visitMethod(this.modifierCode(), name, this.makeDescriptor(), null, null);
-        for (PreAnnotation annotation : annotations) annotation.write(visitor);
-        for (Instruction instruction : instructions) instruction.write(visitor);
-        visitor.visitMaxs(stack, locals);
-        visitor.visitEnd();
-    }
-
-    protected String makeDescriptor() {
-        final StringBuilder builder = new StringBuilder("(");
-        for (Type parameter : parameters) builder.append(parameter.descriptorString());
-        builder.append(')').append(returnType.descriptorString());
-        return builder.toString();
+    protected void build(ClassFileBuilder builder) {
+        final CodeBuilder code = builder.method().setModifiers(this::modifierCode).named(name).returns(returnType)
+                                        .parameters(parameters()).code();
+        // todo annotations
+//        for (PreAnnotation annotation : annotations) annotation.write(visitor);
+        for (Instruction instruction : instructions) instruction.write(code);
+        code.stackSize(stack).registerSize(locals);
     }
 
     public void addParameters(Type... parameters) {

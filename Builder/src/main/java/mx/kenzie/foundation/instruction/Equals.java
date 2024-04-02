@@ -1,7 +1,7 @@
 package mx.kenzie.foundation.instruction;
 
+import static mx.kenzie.foundation.assembler.code.OpCode.*;
 import static mx.kenzie.foundation.instruction.Binary.getIntegerInput;
-import static org.objectweb.asm.Opcodes.*;
 
 public class Equals {
 
@@ -17,15 +17,15 @@ public class Equals {
     }
 
     public Instruction.Input<Integer> longs(Instruction.Input<Long> a, Instruction.Input<Long> b) {
-        return getIntegerInput(a, b, IFNE, LCMP);
+        return getIntegerInput(a, b, LCMP, IFNE);
     }
 
     public Instruction.Input<Integer> floats(Instruction.Input<Float> a, Instruction.Input<Float> b) {
-        return getIntegerInput(a, b, IFNE, FCMPL);
+        return getIntegerInput(a, b, FCMPL, IFNE);
     }
 
     public Instruction.Input<Integer> doubles(Instruction.Input<Double> a, Instruction.Input<Double> b) {
-        return getIntegerInput(a, b, IFNE, DCMPL);
+        return getIntegerInput(a, b, DCMPL, IFNE);
     }
 
 }

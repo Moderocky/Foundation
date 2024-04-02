@@ -2,9 +2,10 @@ package mx.kenzie.foundation.instruction;
 
 import mx.kenzie.foundation.detail.Erasure;
 import mx.kenzie.foundation.detail.Type;
-import org.objectweb.asm.Opcodes;
 
 import java.lang.invoke.TypeDescriptor;
+
+import static mx.kenzie.foundation.assembler.code.OpCode.*;
 
 public class CallSuper {
 
@@ -31,23 +32,21 @@ public class CallSuper {
     public record Stub(Type owner, Type returnType, String name, Type... parameters) {
 
         public Instruction.Base call(Instruction.Input<Object> object, Instruction.Input<?>... arguments) {
-            return visitor -> {
-                object.write(visitor);
-                for (Instruction.Input<?> argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(Opcodes.INVOKESPECIAL, owner.internalName(), name,
-                                        Type.methodDescriptor(returnType, parameters), false);
-                if (returnType != Type.VOID) visitor.visitInsn(Opcodes.POP);
+            return builder -> {
+                object.write(builder);
+                for (Instruction.Input<?> argument : arguments) argument.write(builder);
+                builder.write(INVOKESPECIAL.method(owner, returnType, name, parameters));
+                if (returnType != Type.VOID) builder.write(POP);
             };
         }
 
         public <Result> Instruction.Input<Result> get(Instruction.Input<Object> object,
                                                       Instruction.Input<?>... arguments) {
-            return visitor -> {
-                object.write(visitor);
-                for (Instruction.Input<?> argument : arguments) argument.write(visitor);
-                visitor.visitMethodInsn(Opcodes.INVOKESPECIAL, owner.internalName(), name,
-                                        Type.methodDescriptor(returnType, parameters), false);
-                if (returnType == Type.VOID) visitor.visitInsn(Opcodes.ACONST_NULL);
+            return builder -> {
+                object.write(builder);
+                for (Instruction.Input<?> argument : arguments) argument.write(builder);
+                builder.write(INVOKESPECIAL.method(owner, returnType, name, parameters));
+                if (returnType == Type.VOID) builder.write(ACONST_NULL);
             };
         }
 

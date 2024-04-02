@@ -1,7 +1,7 @@
 package mx.kenzie.foundation;
 
+import mx.kenzie.foundation.assembler.tool.ClassFileBuilder;
 import mx.kenzie.foundation.detail.Modifier;
-import org.objectweb.asm.ClassWriter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,7 +18,7 @@ abstract class BuildElement {
 
     protected abstract int modifierCode();
 
-    protected abstract void build(ClassWriter writer);
+    protected abstract void build(ClassFileBuilder builder);
 
     public Set<PreAnnotation> getAnnotations() {
         return annotations;

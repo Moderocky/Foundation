@@ -1,6 +1,6 @@
 package mx.kenzie.foundation.instruction;
 
-import static org.objectweb.asm.Opcodes.*;
+import static mx.kenzie.foundation.assembler.code.OpCode.*;
 
 public class StoreVariable {
 
@@ -8,9 +8,9 @@ public class StoreVariable {
     }
 
     public Instruction.Base object(int index, Instruction.Input<?> value) {
-        return visitor -> {
-            value.write(visitor);
-            visitor.visitVarInsn(ASTORE, index);
+        return builder -> {
+            value.write(builder);
+            builder.write(ASTORE.var(index));
         };
     }
 
@@ -19,9 +19,9 @@ public class StoreVariable {
     }
 
     public Instruction.Base intValue(int index, Instruction.Input<Integer> value) {
-        return visitor -> {
-            value.write(visitor);
-            visitor.visitVarInsn(ISTORE, index);
+        return builder -> {
+            value.write(builder);
+            builder.write(ISTORE.var(index));
         };
     }
 
@@ -30,23 +30,23 @@ public class StoreVariable {
     }
 
     public Instruction.Base longValue(int index, Instruction.Input<Long> value) {
-        return visitor -> {
-            value.write(visitor);
-            visitor.visitVarInsn(LSTORE, index);
+        return builder -> {
+            value.write(builder);
+            builder.write(LSTORE.var(index));
         };
     }
 
     public Instruction.Base floatValue(int index, Instruction.Input<Float> value) {
-        return visitor -> {
-            value.write(visitor);
-            visitor.visitVarInsn(FSTORE, index);
+        return builder -> {
+            value.write(builder);
+            builder.write(FSTORE.var(index));
         };
     }
 
     public Instruction.Base doubleValue(int index, Instruction.Input<Double> value) {
-        return visitor -> {
-            value.write(visitor);
-            visitor.visitVarInsn(DSTORE, index);
+        return builder -> {
+            value.write(builder);
+            builder.write(DSTORE.var(index));
         };
     }
 

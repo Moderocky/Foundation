@@ -1,10 +1,14 @@
 package mx.kenzie.foundation.instruction;
 
 import mx.kenzie.foundation.Block;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
+import mx.kenzie.foundation.assembler.code.Branch;
+import mx.kenzie.foundation.assembler.code.LookupSwitchCode;
+import mx.kenzie.foundation.assembler.tool.CodeBuilder;
 
+import java.util.Collection;
 import java.util.HashSet;
+
+import static mx.kenzie.foundation.assembler.code.OpCode.LOOKUPSWITCH;
 
 public class Switch {
 
@@ -15,8 +19,8 @@ public class Switch {
     public class Lookup {
 
         protected final Instruction.Input<?> source;
-        protected final HashSet<Case> cases;
-        protected Label alternative = new Label();
+        protected final Collection<Case> cases;
+        protected Branch alternative = new Branch();
         protected SwitchBlock closer;
 
         public Lookup(Instruction.Input<?> source) {
@@ -40,24 +44,19 @@ public class Switch {
         }
 
         public Instruction.Base close() {
-            return visitor -> {
-                final int[] keys = new int[cases.size()];
-                final Label[] labels = new Label[cases.size()];
-                int index = 0;
+            return builder -> {
+                this.source.write(builder);
+                final LookupSwitchCode.Builder test = LOOKUPSWITCH.test(alternative);
+                builder.write(test);
                 for (Case aCase : cases) {
-                    keys[index] = aCase.match;
-                    labels[index++] = aCase.label;
+                    test.test(aCase.match, aCase.branch);
+                    aCase.block.write(builder);
                 }
-                this.source.write(visitor);
-                visitor.visitLookupSwitchInsn(alternative, keys, labels);
-                for (Case aCase : cases) {
-                    aCase.block.write(visitor);
-                }
-                if (closer != null) closer.write(visitor);
+                if (closer != null) closer.write(builder);
             };
         }
 
-        public record Case(int match, Label label, SwitchBlock block) {
+        public record Case(int match, Branch branch, SwitchBlock block) {
 
             @Override
             public boolean equals(Object obj) {
@@ -76,9 +75,9 @@ public class Switch {
             protected Lookup.Case handle;
 
             @Override
-            public void write(MethodVisitor visitor) {
-                visitor.visitLabel(start);
-                for (Instruction instruction : instructions) instruction.write(visitor);
+            public void write(CodeBuilder builder) {
+                builder.write(start);
+                for (Instruction instruction : instructions) instruction.write(builder);
             }
 
             public Lookup close() {

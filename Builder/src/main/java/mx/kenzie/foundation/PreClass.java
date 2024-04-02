@@ -1,10 +1,10 @@
 package mx.kenzie.foundation;
 
+import mx.kenzie.foundation.assembler.tool.ClassFileBuilder;
 import mx.kenzie.foundation.detail.Modifier;
 import mx.kenzie.foundation.detail.Type;
 import mx.kenzie.foundation.detail.UnloadedClass;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
+import mx.kenzie.foundation.detail.Version;
 
 import java.lang.invoke.TypeDescriptor;
 import java.lang.reflect.Method;
@@ -21,7 +21,7 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
     protected Type type, parent;
 
     public PreClass(String path, String name) {
-        this(Opcodes.V17, path, name);
+        this(Version.JAVA_22, path, name);
     }
 
     public PreClass(int version, String path, String name) {
@@ -69,16 +69,19 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
     }
 
     @Override
-    protected void build(ClassWriter writer) {
+    protected void build(ClassFileBuilder builder) {
         final List<String> interfaces = new ArrayList<>(this.interfaces.size());
         for (Type anInterface : this.interfaces) {
             interfaces.add(anInterface.internalName());
         }
-        writer.visit(version, this.modifierCode(), type.internalName(), null, parent.internalName(),
-                     interfaces.toArray(new String[0]));
-        for (PreAnnotation annotation : annotations) annotation.write(writer);
-        for (PreField field : fields) field.build(writer);
-        for (PreMethod method : methods) method.build(writer);
+        builder.setModifiers(this::modifierCode);
+        builder.setType(type);
+        builder.setSuperType(parent);
+        builder.addInterfaces(this.interfaces.toArray(new Type[0]));
+        // todo annotations
+//        for (PreAnnotation annotation : annotations) annotation.write(writer);
+        for (PreField field : fields) field.build(builder);
+        for (PreMethod method : methods) method.build(builder);
     }
 
     public void setAbstract(boolean isAbstract) {
@@ -139,9 +142,9 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
     }
 
     public byte[] bytecode() {
-        final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        final ClassFileBuilder writer = new ClassFileBuilder(this.version, this.type);
         this.build(writer);
-        return writer.toByteArray();
+        return writer.build().binary();
     }
 
     public UnloadedClass compile() {

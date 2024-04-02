@@ -3,7 +3,7 @@ package mx.kenzie.foundation.instruction;
 import java.lang.invoke.TypeDescriptor;
 import java.lang.reflect.Type;
 
-import static org.objectweb.asm.Opcodes.*;
+import static mx.kenzie.foundation.assembler.code.OpCode.*;
 
 public class Array {
 
@@ -15,14 +15,12 @@ public class Array {
                                                                                     Instruction.Input<Object>... values) {
         final mx.kenzie.foundation.detail.Type found = mx.kenzie.foundation.detail.Type.of(type);
         final int length = values.length;
-        return visitor -> {
-            visitor.visitIntInsn(SIPUSH, length);
-            visitor.visitTypeInsn(ANEWARRAY, found.internalName());
+        return builder -> {
+            builder.write(SIPUSH.value(length), ANEWARRAY.type(found));
             for (int i = 0; i < length; i++) {
-                visitor.visitInsn(DUP);
-                visitor.visitIntInsn(SIPUSH, i);
-                values[i].write(visitor);
-                visitor.visitInsn(AASTORE);
+                builder.write(DUP, SIPUSH.value(i));
+                values[i].write(builder);
+                builder.write(AASTORE);
             }
         };
     }

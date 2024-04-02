@@ -123,7 +123,7 @@ public class Branch implements CodeElement {
             if (Objects.equals(our, their)) continue;
             // Known null is assignable to any type, so it's okay if they change the type to void
             if (our != null && !our.isPrimitive() && Objects.equals(their, Type.VOID_WRAPPER)) continue;
-            if (their != null && !their.isPrimitive() && Objects.equals(our, Type.VOID_WRAPPER)) continue;
+            if (their != null && !their.isPrimitive() && Objects.equals(our, Type.VOID_WRAPPER)) {continue;}
             return false;
         }
         return true;

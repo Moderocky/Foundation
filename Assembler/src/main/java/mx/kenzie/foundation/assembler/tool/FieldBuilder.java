@@ -39,6 +39,11 @@ public class FieldBuilder extends ModifiableBuilder implements Constantive {
         return this;
     }
 
+    public FieldBuilder constantValue(Constable value) {
+        return this.attribute(new ConstantValue(storage.constant(UTF8, ConstantValue.ATTRIBUTE_NAME),
+                                                this.storage.constant(value)));
+    }
+
     public <Value extends Constable> FieldBuilder constantValue(ConstantType<?, Value> type, Value value) {
         return this.attribute(new ConstantValue(storage.constant(UTF8, ConstantValue.ATTRIBUTE_NAME),
                                                 this.storage.constant(type, value)));

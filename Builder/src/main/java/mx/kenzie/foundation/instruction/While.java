@@ -1,8 +1,9 @@
 package mx.kenzie.foundation.instruction;
 
 import mx.kenzie.foundation.Block;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import mx.kenzie.foundation.assembler.tool.CodeBuilder;
+
+import static mx.kenzie.foundation.assembler.code.OpCode.*;
 
 public class While {
 
@@ -12,13 +13,12 @@ public class While {
     public Block check(Instruction.Input<Integer> condition) {
         return new Block() {
             @Override
-            public void write(MethodVisitor visitor) {
-                visitor.visitLabel(start);
-                condition.write(visitor);
-                visitor.visitJumpInsn(Opcodes.IFEQ, end);
-                for (Instruction instruction : instructions) instruction.write(visitor);
-                visitor.visitJumpInsn(Opcodes.GOTO, start);
-                visitor.visitLabel(end);
+            public void write(CodeBuilder builder) {
+                builder.write(start);
+                condition.write(builder);
+                builder.write(IFEQ.jump(end));
+                for (Instruction instruction : instructions) instruction.write(builder);
+                builder.write(GOTO.jump(start), end);
             }
         };
     }
@@ -26,12 +26,11 @@ public class While {
     public Block doWhile(Instruction.Input<Integer> condition) {
         return new Block() {
             @Override
-            public void write(MethodVisitor visitor) {
-                visitor.visitLabel(start);
-                for (Instruction instruction : instructions) instruction.write(visitor);
-                condition.write(visitor);
-                visitor.visitJumpInsn(Opcodes.IFNE, start);
-                visitor.visitLabel(end);
+            public void write(CodeBuilder builder) {
+                builder.write(start);
+                for (Instruction instruction : instructions) instruction.write(builder);
+                condition.write(builder);
+                builder.write(IFNE.jump(start), end);
             }
         };
     }
