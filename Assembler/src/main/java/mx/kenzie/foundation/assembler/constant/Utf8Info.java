@@ -10,12 +10,12 @@ import java.lang.constant.Constable;
 import java.util.Arrays;
 import java.util.Objects;
 
-public record Utf8Info(int length, String value, byte[] data) implements ConstantPoolInfo, UVec, RecordConstant {
+public record Utf8Info(String value, byte[] data) implements ConstantPoolInfo, UVec, RecordConstant {
 
     private static final int MAX_LENGTH = 65535;
 
     public Utf8Info(byte[] data) {
-        this(data.length, null, data);
+        this(null, data);
     }
 
     public static Utf8Info of(String string) {
@@ -38,7 +38,7 @@ public record Utf8Info(int length, String value, byte[] data) implements Constan
         }
         if (pointer > MAX_LENGTH) throw new IllegalArgumentException("UTF-8 string is too long.");
         if (++pointer != data.length) data = copy(data, pointer);
-        return new Utf8Info(data.length, string, data);
+        return new Utf8Info(string, data);
     }
 
     private static byte[] copy(byte[] data, int length) {
@@ -48,13 +48,18 @@ public record Utf8Info(int length, String value, byte[] data) implements Constan
     }
 
     @Override
+    public int length() {
+        return data.length + 3;
+    }
+
+    @Override
     public ConstantType<Utf8Info, String> tag() {
         return UTF8;
     }
 
     @Override
     public UVec info() {
-        return UVec.of(new U2(length), data);
+        return UVec.of(U2.valueOf(data.length), data);
     }
 
     @Override
@@ -67,14 +72,15 @@ public record Utf8Info(int length, String value, byte[] data) implements Constan
     @Override
     public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
         UTF8.write(stream);
-        stream.write((byte) length >>> 8);
-        stream.write((byte) length);
+        final short length = (short) data.length;
+        stream.write((length) >>> 8);
+        stream.write(length);
         stream.write(data);
     }
 
     @Override
     public byte[] binary() {
-        return this.info().binary();
+        return ConstantPoolInfo.super.binary();
     }
 
     @Override
@@ -88,18 +94,18 @@ public record Utf8Info(int length, String value, byte[] data) implements Constan
         if (value != null && object instanceof Utf8Info utf8Info && utf8Info.value != null)
             return value.equals(utf8Info.value);
         return object instanceof Utf8Info utf8Info
-            && length == utf8Info.length && Arrays.equals(data, utf8Info.data);
+            && data.length == utf8Info.data.length && Arrays.equals(data, utf8Info.data);
     }
 
     @Override
     public int hashCode() {
-        return 31 * Objects.hash(length) + Arrays.hashCode(data);
+        return 31 * Objects.hash(data.length) + Arrays.hashCode(data);
     }
 
     @Override
     public String toString() {
         return "Utf8Info[" +
-            "length=" + length +
+            "length=" + data.length +
             ", value='" + value + '\'' +
             ", data=" + Arrays.toString(data) +
             ']';

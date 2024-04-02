@@ -23,7 +23,7 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
 
     ConstantType<Utf8Info, String> UTF8 = new ConstantType<>(1, Utf8Info.class, String.class,
                                                              ClassFileBuilder.Storage::valueOf);
-    ConstantType<ClassInfo, Type> TYPE = new ConstantType<>(7, ClassInfo.class, Type.class,
+    ConstantType<ConstantPoolInfo, Type> TYPE = new ConstantType<>(7, ConstantPoolInfo.class, Type.class,
                                                             ClassFileBuilder.Storage::valueOf);
     ConstantType<StringInfo, String> STRING = new ConstantType<>(8, StringInfo.class, String.class,
                                                                  ClassFileBuilder.Storage::valueOfString);

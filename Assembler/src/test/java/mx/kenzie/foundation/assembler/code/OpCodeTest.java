@@ -9,9 +9,11 @@ import mx.kenzie.foundation.assembler.tool.MethodBuilderTest;
 import mx.kenzie.foundation.detail.Type;
 import org.jetbrains.annotations.Contract;
 import org.junit.Test;
+import org.valross.constantine.RecordConstant;
 
 import java.io.PrintStream;
 import java.lang.constant.Constable;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,20 +34,6 @@ public class OpCodeTest extends MethodBuilderTest {
     protected MethodBuilder method() {
         return new ClassFileBuilder(JAVA_22, RELEASE).setType(Type.of("org.example", "Test")).method()
                                                      .setModifiers(PUBLIC, STATIC).named("test");
-    }
-
-    @Contract(pure = true)
-    protected Method compileForTest(MethodBuilder builder) throws NoSuchMethodException {
-        final Loader loader = Loader.createDefault();
-        final ClassFile file = builder.exit().build();
-        final Class<?> done = this.load(loader, file, Type.of("org.example", "Test"));
-        assert done != null;
-        assert done.getDeclaredMethods().length > 0;
-        final Class<?>[] parameters = new Class[builder.parameters().length];
-        for (int i = 0; i < builder.parameters().length; i++) parameters[i] = builder.parameters()[i].toClass();
-        final Method found = done.getDeclaredMethod("test", parameters);
-        found.setAccessible(true);
-        return found;
     }
 
     @Test
@@ -1814,10 +1802,36 @@ public class OpCodeTest extends MethodBuilderTest {
                    .invoke(null).equals(1L);
     }
 
+    public record Thing(String name, int thing) implements RecordConstant {}
+
     @Test
     public void testLDC() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         assert this.compileForTest(this.method().returns(int.class).code().write(LDC.value(1), IRETURN).exit())
                    .invoke(null).equals(1);
+        this.check(this.method().returns(int.class).code()
+                       .write(LDC.value(-103483), IRETURN)
+                       .exit(), -103483);
+        this.check(this.method().returns(long.class).code()
+                       .write(LDC.value(483L), LRETURN)
+                       .exit(), 483L);
+        this.check(this.method().returns(String.class).code()
+                       .write(LDC.value("hello"), ARETURN)
+                       .exit(), "hello");
+        this.check(this.method().returns(Class.class).code()
+                       .write(LDC.value(Object.class), ARETURN)
+                       .exit(), Object.class);
+        this.check(this.method().returns(Class.class).code()
+                       .write(LDC.value(Integer.class), ARETURN)
+                       .exit(), Integer.class);
+        this.check(this.method().returns(Object.class).code()
+                       .write(LDC.value(MethodType.methodType(void.class)), ARETURN)
+                       .exit(), MethodType.methodType(void.class));
+        this.check(this.method().returns(Object.class).code()
+                       .write(LDC.value(MethodType.methodType(void.class)), ARETURN)
+                       .exit(), MethodType.methodType(void.class));
+        this.check(this.method().returns(Thing.class).code()
+                       .write(LDC.value(new Thing("foo", 2)), ARETURN)
+                       .exit(), new Thing("foo", 2));
     }
 
     @Test

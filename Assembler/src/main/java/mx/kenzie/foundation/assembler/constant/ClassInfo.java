@@ -13,7 +13,7 @@ import java.lang.constant.Constable;
 public record ClassInfo(PoolReference name_index) implements ConstantPoolInfo, Data, UVec, RecordConstant {
 
     @Override
-    public ConstantType<ClassInfo, Type> tag() {
+    public ConstantType<ConstantPoolInfo, Type> tag() {
         return ConstantPoolInfo.TYPE;
     }
 

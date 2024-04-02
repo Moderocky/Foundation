@@ -48,7 +48,7 @@ public record U2(int value)
     public void write(OutputStream stream) throws IOException {
         final short value = (short) this.value;
         stream.write((value >>> 8));
-        stream.write(value);
+        stream.write((value));
     }
 
     public short shortValue() {

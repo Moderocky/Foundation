@@ -5,10 +5,16 @@ import mx.kenzie.foundation.assembler.ClassFile;
 import mx.kenzie.foundation.detail.Erasure;
 import mx.kenzie.foundation.detail.Signature;
 import mx.kenzie.foundation.detail.Type;
+import org.jetbrains.annotations.Contract;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Objects;
 
 import static mx.kenzie.foundation.assembler.code.OpCode.ARETURN;
 import static mx.kenzie.foundation.assembler.code.OpCode.LDC;
@@ -22,6 +28,48 @@ public class MethodBuilderTest extends ClassFileBuilderTest {
     @Override
     protected MethodBuilder example() {
         return new ClassFileBuilder(JAVA_21, RELEASE).method();
+    }
+
+    @Contract(pure = true)
+    protected Method compileForTest(MethodBuilder builder) throws NoSuchMethodException {
+        final Loader loader = Loader.createDefault();
+        final ClassFile file = builder.exit().build();
+        final Class<?> done;
+        try {
+            done = this.load(loader, file, Type.of("org.example", "Test"));
+            assert done != null;
+            assert done.getDeclaredMethods().length > 0;
+        } catch (VerifyError | ClassFormatError ex) {
+            //<editor-fold desc="Output the bytecode for debug purposes" defaultstate="collapsed">
+            final File debug = new File("target/test-failures/Test.class");
+            System.out.println(Arrays.toString(file.constant_pool()));
+            System.out.println(Arrays.toString(file.attributes()));
+            file.debug(System.out); // todo
+            try {
+                debug.getParentFile().mkdirs();
+                debug.createNewFile();
+                try (OutputStream stream = new FileOutputStream(debug)) {
+                    stream.write(file.binary());
+                }
+            } catch (IOException _) {
+            }
+            //</editor-fold>
+            throw new AssertionError(ex);
+        }
+        final Class<?>[] parameters = new Class[builder.parameters().length];
+        for (int i = 0; i < builder.parameters().length; i++) parameters[i] = builder.parameters()[i].toClass();
+        final Method found = done.getDeclaredMethod("test", parameters);
+        found.setAccessible(true);
+        return found;
+    }
+
+    protected void check(MethodBuilder builder, Object value) {
+        try {
+            final Object result = this.compileForTest(builder).invoke(null);
+            assert Objects.equals(result, value) : result;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Test

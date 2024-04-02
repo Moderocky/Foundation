@@ -8,8 +8,11 @@ import mx.kenzie.foundation.assembler.vector.U4;
 import mx.kenzie.foundation.assembler.vector.UVec;
 import org.valross.constantine.RecordConstant;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.Arrays;
 
 public record ClassFile(U4 magic, U2 minor_version, U2 major_version, U2 constant_pool_count,
                         ConstantPoolInfo[] constant_pool,  //constant_pool_count-1
@@ -70,6 +73,74 @@ public record ClassFile(U4 magic, U2 minor_version, U2 major_version, U2 constan
         for (Data info : methods) info.write(stream);
         this.attributes_count.write(stream);
         for (Data info : attributes) info.write(stream);
+    }
+
+    public void debug(PrintStream stream) {
+        stream.println("Expected length: " + this.length());
+        stream.println("Actual length: " + this.binary().length);
+        stream.println("magic (" + magic.length() + "/" + magic.binary().length + "): " + Arrays.toString(magic.binary()));
+        stream.println("minor_version (" + minor_version.length() + "/" + minor_version.binary().length + "): " + Arrays.toString(minor_version.binary()));
+        stream.println("major_version (" + major_version.length() + "/" + major_version.binary().length + "): " + Arrays.toString(major_version.binary()));
+        stream.println("constant_pool_count (" + constant_pool_count.length() + "/" + constant_pool_count.binary().length + "): " + Arrays.toString(constant_pool_count.binary()));
+        for (int i = 0; i < constant_pool.length; i++) {
+            final ConstantPoolInfo info = constant_pool[i];
+            stream.print("\t");
+            final int expectedLength = info.length(), realLength = info.binary().length;
+            stream.print(i + " " + info.getClass().getSimpleName() + " (" + expectedLength + "/" + realLength + "): ");
+            stream.println(Arrays.toString(info.binary()));
+            stream.println("\t" + info);
+            if (expectedLength == realLength) continue;
+            stream.print("\t");
+            stream.println("ERROR in " + info);
+            assert Arrays.equals(info.binary(), this.write(info));
+        }
+        stream.println("access_flags (" + access_flags.length() + "/" + access_flags.binary().length + "): " + Arrays.toString(access_flags.binary()));
+        stream.println("this_class (" + this_class.length() + "/" + this_class.binary().length + "): " + Arrays.toString(this_class.binary()));
+        stream.println("super_class (" + super_class.length() + "/" + super_class.binary().length + "): " + Arrays.toString(super_class.binary()));
+        stream.println("interfaces_count (" + interfaces_count.length() + "/" + interfaces_count.binary().length + ")" +
+                           ": " + Arrays.toString(interfaces_count.binary()));
+        for (int i = 0; i < interfaces.length; i++) {
+            stream.print("\t");
+            stream.print(i + " (" + interfaces[i].length() + "/" + interfaces[i].binary().length + "): ");
+            stream.println(Arrays.toString(interfaces[i].binary()));
+            assert Arrays.equals(interfaces[i].binary(), this.write(interfaces[i]));
+        }
+        stream.println("fields_count (" + fields_count.length() + "/" + fields_count.binary().length + "): " + Arrays.toString(fields_count.binary()));
+        for (int i = 0; i < fields.length; i++) {
+            stream.print("\t");
+            stream.print(i + " (" + fields[i].length() + "/" + fields[i].binary().length + "): ");
+            stream.println(Arrays.toString(fields[i].binary()));
+            assert Arrays.equals(fields[i].binary(), this.write(fields[i]));
+        }
+        stream.println("methods_count (" + methods_count.length() + "/" + methods_count.binary().length + "): " + Arrays.toString(methods_count.binary()));
+        for (int i = 0; i < methods.length; i++) {
+            stream.print("\t");
+            final MethodInfo method = methods[i];
+            stream.print(i + " (" + method.length() + "/" + method.binary().length + "): ");
+            stream.println(Arrays.toString(method.binary()));
+            for (AttributeInfo info : method.attributes()) info.debug("\t", stream);
+            assert Arrays.equals(method.binary(), this.write(method));
+        }
+        stream.println("attributes_count (" + attributes_count.length() + "/" + attributes_count.binary().length + ")" +
+                           ": " + Arrays.toString(attributes_count.binary()));
+        for (int i = 0; i < attributes.length; i++) {
+            stream.print("\t");
+            stream.print(i + " (" + attributes[i].length() + "/" + attributes[i].binary().length + "): ");
+            stream.println(Arrays.toString(attributes[i].binary()));
+            attributes[i].debug("\t", stream);
+            assert Arrays.equals(attributes[i].binary(), this.write(attributes[i]));
+        }
+        stream.println(Arrays.toString(this.binary()));
+    }
+
+    private byte[] write(Data data) {
+        final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        try {
+            data.write(stream);
+        } catch (IOException | ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+        return stream.toByteArray();
     }
 
 }

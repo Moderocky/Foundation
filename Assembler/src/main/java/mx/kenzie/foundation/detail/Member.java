@@ -4,6 +4,7 @@ import mx.kenzie.foundation.assembler.constant.MethodTypeReference;
 import org.intellij.lang.annotations.MagicConstant;
 import org.valross.constantine.RecordConstant;
 
+import java.lang.constant.DirectMethodHandleDesc;
 import java.lang.invoke.TypeDescriptor;
 import java.lang.reflect.Field;
 import java.util.Objects;
@@ -21,6 +22,10 @@ public record Member(Type owner, Signature signature) implements Erasure, Descri
 
     public <Klass extends java.lang.reflect.Type & TypeDescriptor> Member(Klass owner, Erasure erasure) {
         this(Type.of(owner), erasure.getSignature());
+    }
+
+    public <Klass extends TypeDescriptor> Member(Klass owner, String name, TypeDescriptor descriptor) {
+        this(Type.fromDescriptor(owner), new Signature(name, descriptor));
     }
 
     @SafeVarargs
@@ -110,6 +115,11 @@ public record Member(Type owner, Signature signature) implements Erasure, Descri
      */
     public record Invocation(Member member, @MagicConstant(valuesFromClass = MethodTypeReference.class) int type,
                              boolean isInterface) implements Descriptor, RecordConstant {
+
+        public Invocation(DirectMethodHandleDesc desc) {
+            this(new Member(Type.of(desc.owner()), Type.fromDescriptor(desc::lookupDescriptor), desc.methodName(),
+                            Type.parameters(desc::lookupDescriptor)), desc.refKind(), desc.isOwnerInterface());
+        }
 
         @Override
         public String descriptorString() {

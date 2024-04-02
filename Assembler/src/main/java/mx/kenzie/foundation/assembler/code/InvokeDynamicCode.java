@@ -27,7 +27,7 @@ public record InvokeDynamicCode(String mnemonic, byte code) implements OpCode {
     }
 
     public UnboundedElement method(Signature signature, Member.Invocation invocation, Constable... arguments) {
-        final DynamicReference reference = new DynamicReference(DynamicReference.Type.INVOCATION, signature,
+        final DynamicReference reference = new DynamicReference(DynamicReference.Kind.INVOCATION, signature,
                                                                 invocation, arguments);
         return this.method(reference);
     }

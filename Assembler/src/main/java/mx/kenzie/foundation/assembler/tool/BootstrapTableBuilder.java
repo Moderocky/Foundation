@@ -5,6 +5,7 @@ import mx.kenzie.foundation.assembler.constant.ConstantPoolInfo;
 import mx.kenzie.foundation.detail.Member;
 
 import java.lang.constant.Constable;
+import java.lang.constant.ConstantDesc;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,9 +23,17 @@ public class BootstrapTableBuilder implements AttributeBuilder {
         return !methods.isEmpty();
     }
 
-    public BootstrapReference registerMethod(Member.Invocation invocation, Constable... arguments) {
+    public BootstrapReference registerMethod(Member.Invocation invocation, Object... arguments) {
         final PoolReference[] references = new PoolReference[arguments.length];
-        for (int i = 0; i < references.length; i++) references[i] = storage.constant(arguments[i]);
+        for (int i = 0; i < references.length; i++) {
+            references[i] = switch (arguments[i]) {
+                case Constable constable -> storage.constant(constable);
+                case ConstantDesc desc -> storage.constantFromDescription(desc);
+                default ->
+                    throw new IllegalArgumentException("Bootstrap argument " + arguments[i] + " doesn't resemble " +
+                                                           "a " + "constant.");
+            };
+        }
         return this.registerMethod(invocation, references);
     }
 
@@ -32,8 +41,7 @@ public class BootstrapTableBuilder implements AttributeBuilder {
         final BootstrapMethods.BootstrapMethod method;
         this.methods.add(method =
                              new BootstrapMethods.BootstrapMethod(storage.constant(ConstantPoolInfo.METHOD_HANDLE,
-                                                                                   invocation),
-                                                                  arguments));
+                                                                                   invocation), arguments));
         return new BootstrapReference(methods, method);
     }
 

@@ -9,6 +9,7 @@ import mx.kenzie.foundation.assembler.vector.UVec;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
 
 import static mx.kenzie.foundation.assembler.constant.ConstantPoolInfo.UTF8;
 
@@ -45,6 +46,11 @@ public interface AttributeInfo extends Data, UVec, AttributeBuilder {
     }
 
     default @Override void finalise() {
+    }
+
+    default void debug(String indent, PrintStream stream) {
+        stream.print(indent);
+        stream.println(this);
     }
 
     /**

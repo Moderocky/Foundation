@@ -12,7 +12,8 @@ import mx.kenzie.foundation.assembler.vector.U4;
 import mx.kenzie.foundation.detail.*;
 import org.valross.constantine.Constantive;
 
-import java.lang.constant.Constable;
+import java.lang.constant.*;
+import java.lang.invoke.MethodType;
 import java.lang.invoke.TypeDescriptor;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -98,10 +99,15 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive, 
 
     public ClassFile build() throws ClassBuilderException {
         this.finalise();
-        return new ClassFile(magic, minor_version, major_version, constantPoolCount(), constantPool(), access_flags,
+        final FieldInfo[] fields = fields();
+        final MethodInfo[] methods = methods();
+        final AttributeInfo[] attributes = attributes();
+        // some of these put more things into the constant pool, so we need to make sure the pool is baked LAST
+        final ConstantPoolInfo[] pool = constantPool();
+        return new ClassFile(magic, minor_version, major_version, constantPoolCount(), pool, access_flags,
                              this_class, super_class, interfacesCount(), interfaces.toArray(new PoolReference[0]),
                              fieldsCount(),
-                             fields(), methodsCount(), methods(), attributesCount(), attributes());
+                             fields, methodsCount(), methods, attributesCount(), attributes);
     }
 
     private MethodInfo[] methods() {
@@ -215,6 +221,17 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive, 
             return ClassFileBuilder.this;
         }
 
+        public PoolReference constantFromDescription(ConstantDesc description) {
+            return switch (description) {
+                case ClassDesc value -> this.constant(TYPE, Type.of(value));
+                case MethodTypeDesc desc -> this.constant(METHOD_TYPE, Descriptor.of(desc.descriptorString()));
+                case DirectMethodHandleDesc desc -> this.constant(METHOD_HANDLE, new Member.Invocation(desc));
+                case DynamicConstantDesc<?> desc -> this.constant(DYNAMIC, DynamicReference.of(desc));
+                case Constable constable -> this.constant(constable);
+                case Number value -> this.constant(INTEGER, value.intValue());
+            };
+        }
+
         public PoolReference constant(Constable constable) {
             return switch (constable) {
                 case PoolReference reference -> reference;
@@ -232,8 +249,10 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive, 
                         INTERFACE_METHOD_REFERENCE : METHOD_REFERENCE, value);
                 case Signature value -> this.constant(NAME_AND_TYPE, value);
                 case Member.Invocation value -> this.constant(METHOD_HANDLE, value);
+                case MethodType value -> this.constant(METHOD_TYPE, Descriptor.of(value.descriptorString()));
                 case Descriptor value -> this.constant(METHOD_TYPE, value);
-                default -> throw new IllegalStateException("Unhandled constant value: " + constable);
+                case Constantive constant -> this.constant(DYNAMIC, DynamicReference.of(constant.constant()));
+                default -> throw new IllegalArgumentException("Unhandled constant value: " + constable);
             };
         }
 
@@ -255,7 +274,8 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive, 
             return new StringInfo(this.constant(UTF8, value));
         }
 
-        public ClassInfo valueOf(Type value) {
+        public ConstantPoolInfo valueOf(Type value) {
+            if (value.isPrimitive()) throw new IllegalArgumentException("Can't LDC a primitive class (" + value + ")");
             return new ClassInfo(this.constant(UTF8, value.internalName()));
         }
 
@@ -298,12 +318,12 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive, 
             return new LongNumberInfo<>(DOUBLE, U4.fromSigned(buffer.getInt(0)), U4.fromSigned(buffer.getInt(4)));
         }
 
-        public DynamicInfo constantDynamic(Signature signature, Member.Invocation invocation, Constable... arguments) {
+        public DynamicInfo constantDynamic(Signature signature, Member.Invocation invocation, Object... arguments) {
             return new DynamicInfo(DYNAMIC, bootstrapTable().registerMethod(invocation, arguments),
                                    this.constant(NAME_AND_TYPE, signature));
         }
 
-        public DynamicInfo invokeDynamic(Signature signature, Member.Invocation invocation, Constable... arguments) {
+        public DynamicInfo invokeDynamic(Signature signature, Member.Invocation invocation, Object... arguments) {
             return new DynamicInfo(INVOKE_DYNAMIC, bootstrapTable().registerMethod(invocation, arguments),
                                    this.constant(NAME_AND_TYPE, signature));
         }

@@ -30,7 +30,9 @@ public record DynamicInfo(ConstantType<DynamicInfo, ?> tag, BootstrapReference b
 
     @Override
     public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
-        ConstantPoolInfo.super.write(stream);
+        this.tag().write(stream);
+        this.bootstrap_method_attr_index.write(stream);
+        this.name_and_type_index.write(stream);
     }
 
     @Override

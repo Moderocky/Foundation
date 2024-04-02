@@ -9,6 +9,7 @@ import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
 
 public record Code(PoolReference attribute_name_index, U4 attribute_length, U2 max_stack, U2 max_locals, U4 code_length,
                    UVec code, U2 exception_table_length,
@@ -45,6 +46,22 @@ public record Code(PoolReference attribute_name_index, U4 attribute_length, U2 m
         for (Exception exception : exception_table) exception.write(stream);
         this.attributes_count.write(stream);
         for (AttributeInfo attribute : attributes) attribute.write(stream);
+    }
+
+    @Override
+    public void debug(String indent, PrintStream stream) {
+        stream.print(indent);
+        stream.println(this.attributeName());
+        stream.println(indent + "\tattribute_name_index() = " + attribute_name_index());
+        stream.println(indent + "\tattribute_length() = " + attribute_length());
+        stream.println(indent + "\tmax_stack = " + max_stack);
+        stream.println(indent + "\tmax_locals = " + max_locals);
+        stream.println(indent + "\tcode_length = " + code_length);
+        stream.println(indent + "\tcode = " + code);
+//        stream.println(indent + "\texception_table_length = " + exception_table_length);
+//        for (Exception exception : exception_table) exception.write(stream);
+//        stream.println(indent + "\tattributes_count = " + attributes_count);
+//        for (AttributeInfo attribute : attributes) attribute.write(stream);
     }
 
     public record Exception(U2 start_pc, U2 end_pc, U2 handler_pc,
