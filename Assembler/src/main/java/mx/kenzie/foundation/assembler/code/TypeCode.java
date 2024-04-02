@@ -217,7 +217,13 @@ public class TypeCode implements OpCode {
                 @Override
                 public void notify(CodeBuilder builder) {
                     if (!builder.trackStack()) return;
-                    builder.stack().pop(MultiNewArray.this.dimensions);
+                    try {
+                        builder.stack().pop(MultiNewArray.this.dimensions);
+                    } catch (ArrayIndexOutOfBoundsException ex) {
+                        throw new IndexOutOfBoundsException("Tried to pop " + MultiNewArray.this.dimensions
+                                                                + " integers for multi-array creation, but the stack " +
+                                                                "under-flowed.");
+                    }
                     builder.stack().push(type);
                 }
 
