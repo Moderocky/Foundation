@@ -1349,27 +1349,97 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     @Test
-    public void testIFLT() {
+    public void testIFLT() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Branch to = new Branch();
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_1, IFLT.jump(to), LDC.value("no"), ARETURN, to,
+                                              LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("no");
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_0, IFLT.jump(to), LDC.value("no"), ARETURN, to,
+                                              LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("no");
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_M1, IFLT.jump(to), LDC.value("no"), ARETURN, to,
+                                              LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("yes");
     }
 
     @Test
-    public void testIFGE() {
+    public void testIFGE() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Branch to = new Branch();
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_1, IFGE.jump(to), LDC.value("no"), ARETURN, to,
+                                              LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("yes");
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_0, IFGE.jump(to), LDC.value("no"), ARETURN, to,
+                                              LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("yes");
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_M1, IFGE.jump(to), LDC.value("no"), ARETURN, to,
+                                              LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("no");
     }
 
     @Test
-    public void testIFGT() {
+    public void testIFGT() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Branch to = new Branch();
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_1, IFGT.jump(to), LDC.value("no"), ARETURN, to,
+                                              LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("yes");
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_0, IFGT.jump(to), LDC.value("no"), ARETURN, to,
+                                              LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("no");
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_M1, IFGT.jump(to), LDC.value("no"), ARETURN, to,
+                                              LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("no");
     }
 
     @Test
-    public void testIFLE() {
+    public void testIFLE() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Branch to = new Branch();
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_1, IFLE.jump(to), LDC.value("no"), ARETURN, to,
+                                              LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("no");
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_0, IFLE.jump(to), LDC.value("no"), ARETURN, to,
+                                              LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("yes");
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_M1, IFLE.jump(to), LDC.value("no"), ARETURN, to,
+                                              LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("yes");
     }
 
     @Test
-    public void testIFNONNULL() {
+    public void testIFNONNULL() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Branch to = new Branch();
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(LDC.value("hello"), IFNONNULL.jump(to), LDC.value("no"), ARETURN, to,
+                                              LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("yes");
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ACONST_NULL, IFNONNULL.jump(to), LDC.value("no"), ARETURN, to,
+                                              LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("no");
     }
 
     @Test
-    public void testIFNULL() {
+    public void testIFNULL() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Branch to = new Branch();
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(LDC.value("hello"), IFNULL.jump(to), LDC.value("no"), ARETURN, to,
+                                              LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("no");
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ACONST_NULL, IFNULL.jump(to), LDC.value("no"), ARETURN, to,
+                                              LDC.value("yes"), ARETURN)
+                                       .exit()).invoke(null).equals("yes");
     }
 
     @Test
