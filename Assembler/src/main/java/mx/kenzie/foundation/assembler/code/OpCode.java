@@ -336,8 +336,8 @@ public interface OpCode {
     Instruction LSUB = new Instruction("LSUB", Codes.LSUB);
     Instruction LUSHR = new Instruction("LUSHR", Codes.LUSHR);
     Instruction LXOR = new Instruction("LXOR", Codes.LXOR);
-    Instruction MONITORENTER = new Instruction("MONITORENTER", Codes.MONITORENTER);
-    Instruction MONITOREXIT = new Instruction("MONITOREXIT", Codes.MONITOREXIT);
+    Instruction MONITORENTER = new Instruction("MONITORENTER", Codes.MONITORENTER, StackNotifier.POP);
+    Instruction MONITOREXIT = new Instruction("MONITOREXIT", Codes.MONITOREXIT, StackNotifier.POP);
     TypeCode.MultiArray MULTIANEWARRAY = new TypeCode.MultiArray("MULTIANEWARRAY", Codes.MULTIANEWARRAY);
     TypeCode NEW = new TypeCode("NEW", Codes.NEW, null);
     TypeCode.Array NEWARRAY = new TypeCode.Array("NEWARRAY", Codes.NEWARRAY);
