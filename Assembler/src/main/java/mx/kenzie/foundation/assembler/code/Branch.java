@@ -20,9 +20,11 @@ public class Branch implements CodeElement {
 
     protected Handle handle = new Handle();
     protected TypeHint[] stack, register;
+    protected TypeHint[] stackSnapshot, registerSnapshot;
 
     public Frame.Map toStackMap() {
-        return new Frame.Map(register, stack);
+        return new Frame.Map(registerSnapshot != null ? registerSnapshot : register,
+                             stackSnapshot != null ? stackSnapshot : stack);
     }
 
     @Override
@@ -50,8 +52,20 @@ public class Branch implements CodeElement {
         this.handle.setVector(builder);
         if (builder.trackFrames()) this.checkFrame(builder.stack(), builder.register());
         if (builder.trackStack()) {
+            this.snapshot();
             builder.stack().reframe(this.stack);
             builder.register().reframe(this.register);
+        }
+    }
+
+    public void snapshot() {
+        this.stackSnapshot = stack.clone();
+        for (int i = 0; i < stackSnapshot.length; i++) {
+            if (stackSnapshot[i] != null) stackSnapshot[i] = (TypeHint) stackSnapshot[i].constant();
+        }
+        this.registerSnapshot = register.clone();
+        for (int i = 0; i < registerSnapshot.length; i++) {
+            if (registerSnapshot[i] != null) registerSnapshot[i] = (TypeHint) registerSnapshot[i].constant();
         }
     }
 
@@ -123,7 +137,7 @@ public class Branch implements CodeElement {
             if (Objects.equals(our, their)) continue;
             // Known null is assignable to any type, so it's okay if they change the type to void
             if (our != null && !our.isPrimitive() && Objects.equals(their, Type.VOID_WRAPPER)) continue;
-            if (their != null && !their.isPrimitive() && Objects.equals(our, Type.VOID_WRAPPER)) {continue;}
+            if (their != null && !their.isPrimitive() && Objects.equals(our, Type.VOID_WRAPPER)) continue;
             return false;
         }
         return true;

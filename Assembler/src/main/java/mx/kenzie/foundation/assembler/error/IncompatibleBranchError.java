@@ -60,8 +60,9 @@ public class IncompatibleBranchError extends Error {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public void setVector(CodeVector vector) {
+    public IncompatibleBranchError setVector(CodeVector vector) {
         this.vector = vector;
+        return this;
     }
 
     @Override

@@ -154,8 +154,9 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
             try {
                 for (CodeElement element : this.vector) element.notify(this);
             } catch (IncompatibleBranchError ex) {
-                ex.setVector(vector);
-                throw ex;
+                throw ex.setVector(vector);
+            } catch (UnsupportedOperationException ex) {
+                throw new IncompatibleBranchError(ex).setVector(vector);
             }
             this.maxStack = this.stack().maximum();
             this.maxLocals = this.register().maximum();

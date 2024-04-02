@@ -106,8 +106,9 @@ public interface TypeHint extends Descriptor, Type {
         }
 
         @Override
-        public mx.kenzie.foundation.detail.Type constant() {
-            return type;
+        public Guess constant() {
+            return new Guess(width(), isPrimitive(), isInitialisedType(), isRealType(), isTypeKnown(),
+                             descriptorString(), getTypeName());
         }
 
         public mx.kenzie.foundation.detail.Type type() {
@@ -126,9 +127,8 @@ public interface TypeHint extends Descriptor, Type {
         @Override
         public boolean equals(Object obj) {
             if (obj == this) return true;
-            if (obj == null || obj.getClass() != this.getClass()) return false;
-            var that = (Uninitialised) obj;
-            return Objects.equals(this.type, that.type) && Objects.equals(this.offset, that.offset);
+            if (!(obj instanceof TypeHint hint)) return false;
+            return Objects.equals(this.descriptorString(), hint.descriptorString());
         }
 
         @Override
@@ -138,7 +138,7 @@ public interface TypeHint extends Descriptor, Type {
 
     }
 
-    final class This implements TypeHint, TypeHint.InitialisableType, RecordConstant {
+    final class This implements TypeHint, TypeHint.InitialisableType {
 
         private final mx.kenzie.foundation.detail.TypeHint real;
         private boolean initialised;
@@ -188,6 +188,12 @@ public interface TypeHint extends Descriptor, Type {
         @Override
         public String toString() {
             return "This[" + "real=" + real + ']';
+        }
+
+        @Override
+        public Guess constant() {
+            return new Guess(width(), isPrimitive(), isInitialisedType(), isRealType(), isTypeKnown(),
+                             descriptorString(), getTypeName());
         }
 
     }

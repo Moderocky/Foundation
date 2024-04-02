@@ -292,7 +292,7 @@ public interface OpCode {
     LoadConstantCode LDC = new LoadConstantCode("LDC", Codes.LDC);
     UncheckedCode LDC_W = new UncheckedCode("LDC_W", Codes.LDC_W);
     UncheckedCode LDC2_W = new UncheckedCode("LDC2_W", Codes.LDC2_W);
-    Instruction LDIV = new Instruction("LDIV", Codes.LDIV);
+    Instruction LDIV = new Instruction("LDIV", Codes.LDIV, StackNotifier.POP2);
     Instruction LLOAD_0 = new Instruction("LLOAD_0", Codes.LLOAD_0, StackNotifier.pushVariable(0));
     Instruction LLOAD_1 = new Instruction("LLOAD_1", Codes.LLOAD_1, StackNotifier.pushVariable(1));
     Instruction LLOAD_2 = new Instruction("LLOAD_2", Codes.LLOAD_2, StackNotifier.pushVariable(2));
@@ -309,11 +309,14 @@ public interface OpCode {
             };
         }
     };
-    Instruction LMUL = new Instruction("LMUL", Codes.LMUL);
+    Instruction LMUL = new Instruction("LMUL", Codes.LMUL, StackNotifier.POP2);
     Instruction LNEG = new Instruction("LNEG", Codes.LNEG);
     LookupSwitchCode LOOKUPSWITCH = new LookupSwitchCode("LOOKUPSWITCH", Codes.LOOKUPSWITCH);
-    Instruction LOR = new Instruction("LOR", Codes.LOR);
-    Instruction LREM = new Instruction("LREM", Codes.LREM);
+    Instruction LOR = new Instruction("LOR", Codes.LOR, (stack, _) -> {
+        stack.pop(4);
+        stack.push(Type.INT);
+    });
+    Instruction LREM = new Instruction("LREM", Codes.LREM, StackNotifier.POP2);
     Instruction LRETURN = new Instruction("LRETURN", Codes.LRETURN, (stack, _) -> stack.reframe());
     Instruction LSHL = new Instruction("LSHL", Codes.LSHL);
     Instruction LSHR = new Instruction("LSHR", Codes.LSHR);
@@ -333,9 +336,12 @@ public interface OpCode {
             };
         }
     };
-    Instruction LSUB = new Instruction("LSUB", Codes.LSUB);
+    Instruction LSUB = new Instruction("LSUB", Codes.LSUB, StackNotifier.POP2);
     Instruction LUSHR = new Instruction("LUSHR", Codes.LUSHR);
-    Instruction LXOR = new Instruction("LXOR", Codes.LXOR);
+    Instruction LXOR = new Instruction("LXOR", Codes.LXOR, (stack, _) -> {
+        stack.pop(4);
+        stack.push(Type.INT);
+    });
     Instruction MONITORENTER = new Instruction("MONITORENTER", Codes.MONITORENTER, StackNotifier.POP);
     Instruction MONITOREXIT = new Instruction("MONITOREXIT", Codes.MONITOREXIT, StackNotifier.POP);
     TypeCode.MultiArray MULTIANEWARRAY = new TypeCode.MultiArray("MULTIANEWARRAY", Codes.MULTIANEWARRAY);
