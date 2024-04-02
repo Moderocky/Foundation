@@ -94,6 +94,7 @@ public class ProgramStack extends Stack<TypeHint> {
         // defaultstate="collapsed">
         return switch (top.width()) {
             case 1 -> {
+                this.pop0();
                 second = this.pop0();
                 if (second.width() == 2) { // we tried to duplicate half of a long
                     this.push0(second);
