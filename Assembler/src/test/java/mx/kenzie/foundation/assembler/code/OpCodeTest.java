@@ -1966,15 +1966,40 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     @Test
-    public void testMONITORENTER() {
+    public void testMONITORENTER() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(NEW.type(Object.class), DUP, INVOKESPECIAL.constructor(Object.class), DUP,
+                                              MONITORENTER, LDC.value("test"), SWAP, MONITOREXIT, ARETURN)
+                                       .exit()).invoke(null).equals("test");
     }
 
     @Test
-    public void testMONITOREXIT() {
+    public void testMONITOREXIT() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(NEW.type(Object.class), DUP, INVOKESPECIAL.constructor(Object.class), DUP,
+                                              MONITORENTER, LDC.value("test"), SWAP, MONITOREXIT, ARETURN)
+                                       .exit()).invoke(null).equals("test");
     }
 
     @Test
-    public void testMULTIANEWARRAY() {
+    public void testMULTIANEWARRAY() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_0, ICONST_0, ICONST_0, ICONST_0,
+                                              MULTIANEWARRAY.type(int.class, 4), ARETURN)
+                                       .exit()).invoke(null) instanceof int[][][][];
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_0, ICONST_0, ICONST_0, ICONST_0,
+                                              MULTIANEWARRAY.type(int[][][][][].class, 4), ARETURN)
+                                       .exit()).invoke(null) instanceof int[][][][][];
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_0, ICONST_0, ICONST_0, ICONST_0,
+                                              MULTIANEWARRAY.type(Object.class, 4), ARETURN)
+                                       .exit()).invoke(null) instanceof Object[][][][];
+        assert this.compileForTest(this.method().returns(Object.class).code()
+                                       .write(ICONST_3, ICONST_2, ICONST_1, ICONST_0,
+                                              MULTIANEWARRAY.type(int.class, 4), ARETURN)
+                                       .exit()).invoke(null) instanceof int[][][][] ints
+            && ints.length == 3 && ints[0].length == 2 && ints[0][0].length == 1 && ints[0][0][0].length == 0;
     }
 
     @Test
