@@ -147,6 +147,12 @@ public class PreClass extends BuildElement implements TypeDescriptor, java.lang.
         return writer.build().binary();
     }
 
+    public ClassFileBuilder toBuilder() {
+        final ClassFileBuilder writer = new ClassFileBuilder(this.version, this.type);
+        this.build(writer);
+        return writer;
+    }
+
     public UnloadedClass compile() {
         return new UnloadedClass(type, this.bytecode());
     }
