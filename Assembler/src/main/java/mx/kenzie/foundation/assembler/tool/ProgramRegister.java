@@ -39,7 +39,7 @@ public class ProgramRegister implements Iterable<TypeHint> {
 
     public void put(int slot, TypeHint hint) {
         final int extra = hint.width() - 1;
-        do locals.add(TypeHint.top()); while (locals.size() <= slot + extra);
+        while (locals.size() <= slot + extra) locals.add(TypeHint.top());
         this.locals.set(slot, hint);
         if (extra > 0) for (int i = 1; i <= extra; ++i) locals.set(slot + i, null);
         this.maximum = Math.max(maximum, slot + hint.width());
@@ -92,7 +92,7 @@ public class ProgramRegister implements Iterable<TypeHint> {
     }
 
     public void reframe(TypeHint... register) {
-        this.clear();
+        this.locals.clear();
         for (TypeHint hint : register) this.add(hint);
     }
 
