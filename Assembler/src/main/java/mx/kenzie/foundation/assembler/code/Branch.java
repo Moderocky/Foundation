@@ -23,8 +23,8 @@ public class Branch implements CodeElement {
     protected TypeHint[] stackSnapshot, registerSnapshot;
 
     public Frame.Map toStackMap() {
-        return new Frame.Map(registerSnapshot != null ? registerSnapshot : register,
-                             stackSnapshot != null ? stackSnapshot : stack);
+        return new Frame.Map(registerSnapshot != null ? registerSnapshot : register, stackSnapshot != null ?
+            stackSnapshot : stack);
     }
 
     @Override
@@ -118,14 +118,16 @@ public class Branch implements CodeElement {
     public void checkFrame(ProgramStack stack, ProgramRegister register) {
         if (this.stack == null || this.stack.length == 0) {
             this.stack = stack.toArray();
-        } else if (this.stack.length > 0 && !stack.isEmpty() && !this.isCompatible(this.stack, stack.toArray()))
+        } else if (!stack.isEmpty() && !this.isCompatible(this.stack, stack.toArray()))
             throw new IncompatibleBranchError("Expected stack to be " + this.printTable(this.stack) + " entering" +
-                                                  " " + this + " but found " + this.printTable(stack.toArray()));
+                                                  " branch " + this.getHandle()
+                                                                   .index() + " but found " + this.printTable(stack.toArray()));
         if (this.register == null || this.register.length == 0) {
             this.register = register.toArray();
-        } else if (!stack.isEmpty() && !this.isCompatible(this.register, register.toArray()))
+        } else if (!register.isEmpty() && !this.isCompatible(this.register, register.toArray()))
             throw new IncompatibleBranchError("Expected register to be " + this.printTable(this.register) + " " +
-                                                  "entering " + this + " but found " + this.printTable(register.toArray()));
+                                                  "entering branch " + this.getHandle()
+                                                                           .index() + " but found " + this.printTable(register.toArray()));
     }
 
     private boolean isCompatible(TypeHint[] ours, TypeHint[] theirs) {
@@ -150,7 +152,7 @@ public class Branch implements CodeElement {
     @Override
     public String toString() {
         if (handle.vector == null) return "Branch";
-        return "Branch[index=" + handle.index() + "]";
+        return "Branch[index=" + handle.index() + ", stack=" + Arrays.toString(stack) + ", register=" + Arrays.toString(register) + "]";
     }
 
     public static class ImplicitBranch extends Branch {
