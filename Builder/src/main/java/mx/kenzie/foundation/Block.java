@@ -3,6 +3,7 @@ package mx.kenzie.foundation;
 import mx.kenzie.foundation.assembler.code.Branch;
 import mx.kenzie.foundation.assembler.tool.CodeBuilder;
 import mx.kenzie.foundation.instruction.Instruction;
+import mx.kenzie.foundation.instruction.Return;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -60,7 +61,8 @@ public class Block implements CodeBody, Instruction.Base {
                 this.condition.write(builder);
                 builder.write(IFEQ.jump(elseBlock.start));
                 for (Instruction instruction : instructions) instruction.write(builder);
-                builder.write(GOTO.jump(elseBlock.end));
+                if (!(instructions.getLast() instanceof Return.ReturnInstruction))
+                    builder.write(GOTO.jump(elseBlock.end));
                 this.elseBlock.write(builder);
             }
         }
