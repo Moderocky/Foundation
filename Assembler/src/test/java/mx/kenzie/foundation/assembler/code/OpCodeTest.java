@@ -1317,6 +1317,13 @@ public class OpCodeTest extends MethodBuilderTest {
                                        .write(ICONST_5, ISTORE_1, to, IINC.var(1, -1), ILOAD_1,
                                               IFEQ.jump(to), ILOAD_1, IRETURN)
                                        .exit()).invoke(null).equals(4);
+        final Branch a = new Branch(), b = new Branch(), c = new Branch();
+        assert this.compileForTest(this.method().returns(int.class).code()
+                                       .write(ICONST_0, IFEQ.jump(a),
+                                              ICONST_0, ISTORE_0, GOTO.jump(b), a, ICONST_1, ISTORE_0,
+                                              b, ILOAD_0, IFEQ.jump(c), ICONST_1, IRETURN,
+                                              c, ICONST_0, IRETURN)
+                                       .exit()).invoke(null).equals(1);
     }
 
     @Test

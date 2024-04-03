@@ -26,7 +26,6 @@ public class ConditionalTest extends FoundationTest {
     @Test
     public void testElse() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, BOOLEAN, "testElse");
-        method.line(STORE_VAR.booleanValue(0, FALSE));
         final Block.If check;
         method.line(check = IF.check(FALSE));
         check.line(STORE_VAR.booleanValue(0, FALSE));

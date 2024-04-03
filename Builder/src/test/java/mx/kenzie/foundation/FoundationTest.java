@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
 public abstract class FoundationTest {
 
@@ -25,14 +26,22 @@ public abstract class FoundationTest {
 
     @AfterClass
     public static void finish() throws Exception {
-        final Class<?> loaded = test.thing.load(Loader.DEFAULT);
-        for (Method method : loaded.getDeclaredMethods()) {
-            if (method.getReturnType() != boolean.class) continue;
-            if (!Modifier.isStatic(method.getModifiers())) continue;
-            if (!Modifier.isPublic(method.getModifiers())) continue;
-            if (method.getParameterCount() > 0) continue;
-            final boolean result = (boolean) method.invoke(null);
-            assert result : method.getName();
+        try {
+            final Class<?> loaded = test.thing.load(Loader.DEFAULT);
+            for (Method method : loaded.getDeclaredMethods()) {
+                if (method.getReturnType() != boolean.class) continue;
+                if (!Modifier.isStatic(method.getModifiers())) continue;
+                if (!Modifier.isPublic(method.getModifiers())) continue;
+                if (method.getParameterCount() > 0) continue;
+                final boolean result = (boolean) method.invoke(null);
+                assert result : method.getName();
+            }
+        } catch (VerifyError | ClassFormatError ex) {
+            //<editor-fold desc="Output the bytecode for debug purposes" defaultstate="collapsed">
+            final File debug = new File("target/test-failures/Test.class");
+            test.thing.toBuilder().build().debug(System.out);
+            //</editor-fold>
+            throw new AssertionError(ex);
         }
     }
 
