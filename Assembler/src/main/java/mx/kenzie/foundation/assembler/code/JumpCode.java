@@ -47,9 +47,11 @@ public record JumpCode(String mnemonic, byte code, Consumer<CodeBuilder> notifie
             public void notify(CodeBuilder builder) {
                 if (code != Codes.GOTO) {
                     if (notifier != null) notifier.accept(builder);
+                    JumpInstruction.super.notify(builder);
                 } else if (builder.trackStack()) {
                     this.target().checkFrame(builder.stack(), builder.register());
                     builder.stack().reframe();
+                    builder.register().reframe();
                 }
             }
 
