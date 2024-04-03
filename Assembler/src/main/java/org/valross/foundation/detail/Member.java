@@ -1,8 +1,8 @@
 package org.valross.foundation.detail;
 
-import org.valross.foundation.assembler.constant.MethodTypeReference;
 import org.intellij.lang.annotations.MagicConstant;
 import org.valross.constantine.RecordConstant;
+import org.valross.foundation.assembler.constant.MethodTypeReference;
 
 import java.lang.constant.DirectMethodHandleDesc;
 import java.lang.invoke.TypeDescriptor;

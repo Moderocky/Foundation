@@ -1,13 +1,16 @@
 package org.valross.foundation.assembler.tool;
 
+import org.jetbrains.annotations.Contract;
+import org.valross.constantine.Constantive;
 import org.valross.foundation.assembler.FieldInfo;
 import org.valross.foundation.assembler.attribute.AttributeInfo;
 import org.valross.foundation.assembler.attribute.ConstantValue;
+import org.valross.foundation.assembler.constant.ConstantPoolInfo;
 import org.valross.foundation.assembler.constant.ConstantType;
 import org.valross.foundation.assembler.vector.U2;
+import org.valross.foundation.detail.Erasure;
 import org.valross.foundation.detail.Signature;
-import org.jetbrains.annotations.Contract;
-import org.valross.constantine.Constantive;
+import org.valross.foundation.detail.Type;
 
 import java.lang.constant.Constable;
 import java.lang.invoke.TypeDescriptor;
@@ -16,7 +19,7 @@ import java.util.function.Function;
 
 import static org.valross.foundation.assembler.constant.ConstantPoolInfo.UTF8;
 
-public class FieldBuilder extends ModifiableBuilder implements Constantive {
+public class FieldBuilder extends ModifiableBuilder implements Constantive, Erasure {
 
     protected final ClassFileBuilder.Storage storage;
     protected PoolReference name, descriptor;
@@ -83,6 +86,31 @@ public class FieldBuilder extends ModifiableBuilder implements Constantive {
         this.finalise();
         return new FieldInfo(access_flags, name, descriptor, U2.valueOf(attributes.size()),
                              attributes.toArray(new AttributeInfo[0]));
+    }
+
+    @Override
+    public Type returnType() {
+        return ConstantPoolInfo.NAME_AND_TYPE.unpack(descriptor.get()).returnType();
+    }
+
+    @Override
+    public String name() {
+        return ConstantPoolInfo.NAME_AND_TYPE.unpack(descriptor.get()).name();
+    }
+
+    @Override
+    public Type[] parameters() {
+        return new Type[0];
+    }
+
+    @Override
+    public boolean isField() {
+        return true;
+    }
+
+    @Override
+    public boolean isMethod() {
+        return false;
     }
 
     public FieldBuilder setModifiers(Access.Field... flags) {

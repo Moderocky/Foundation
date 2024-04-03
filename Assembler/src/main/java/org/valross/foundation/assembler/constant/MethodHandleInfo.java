@@ -1,11 +1,11 @@
 package org.valross.foundation.assembler.constant;
 
+import org.valross.constantine.RecordConstant;
 import org.valross.foundation.assembler.Data;
 import org.valross.foundation.assembler.tool.PoolReference;
 import org.valross.foundation.assembler.vector.U1;
 import org.valross.foundation.assembler.vector.UVec;
 import org.valross.foundation.detail.Member;
-import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -34,6 +34,14 @@ public record MethodHandleInfo(ConstantType<MethodHandleInfo, Member.Invocation>
     @Override
     public int sort() {
         return 55;
+    }
+
+    @Override
+    public Member.Invocation unpack() {
+        final ConstantPoolInfo info = reference_index.ensure();
+        final boolean isInterface = info.tag() == ConstantPoolInfo.INTERFACE_METHOD_REFERENCE;
+        final Member member = (Member) info.unpack();
+        return invocation != null ? invocation : member.dynamicInvocation(reference_kind.intValue(), isInterface);
     }
 
     @Override

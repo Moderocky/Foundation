@@ -1,9 +1,9 @@
 package org.valross.foundation.assembler.constant;
 
+import org.valross.constantine.RecordConstant;
 import org.valross.foundation.assembler.Data;
 import org.valross.foundation.assembler.vector.U4;
 import org.valross.foundation.assembler.vector.UVec;
-import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -37,6 +37,13 @@ public record LongNumberInfo<Type extends Number & Constable>(ConstantType<LongN
     @Override
     public int sort() {
         return 5;
+    }
+
+    @Override
+    public Number unpack() {
+        if (tag == (Object) LONG)
+            return high_bytes.longValue(low_bytes);
+        return high_bytes.doubleValue(low_bytes);
     }
 
     @Override

@@ -38,6 +38,12 @@ public record Type(String getTypeName, String descriptorString, String internalN
         return types;
     }
 
+    public static Type[] array(TypeDescriptor... values) {
+        final Type[] types = new Type[values.length];
+        for (int i = 0; i < values.length; i++) types[i] = Type.fromDescriptor(values[i]);
+        return types;
+    }
+
     public static Type[] array(Parameter... values) {
         final Type[] types = new Type[values.length];
         for (int i = 0; i < values.length; i++) types[i] = Type.of(values[i].getType());
@@ -154,7 +160,9 @@ public record Type(String getTypeName, String descriptorString, String internalN
         if (klass instanceof Type type) return type.internalName;
         if (isPrimitive(klass)) return ofPrimitive(klass).internalName();
         return klass.getTypeName().replaceAll("<.+>", "").replace('.', '/');
-    }    public static final Type BYTE = Type.of(byte.class), SHORT = Type.of(short.class), INT = Type.of(int.class),
+    }
+
+    public static final Type BYTE = Type.of(byte.class), SHORT = Type.of(short.class), INT = Type.of(int.class),
         LONG = Type.of(long.class), FLOAT = Type.of(float.class), DOUBLE = Type.of(double.class), BOOLEAN =
         Type.of(boolean.class), CHAR = Type.of(char.class), VOID = Type.of(void.class), OBJECT =
         Type.of(Object.class), STRING = Type.of(String.class), VOID_WRAPPER = Type.of(Void.class);
@@ -253,6 +261,22 @@ public record Type(String getTypeName, String descriptorString, String internalN
         };
     }
 
+    public static Type fromInternalName(String internalName) {
+        return switch (internalName) {
+            case "V" -> Type.VOID;
+            case "Z" -> Type.BOOLEAN;
+            case "C" -> Type.CHAR;
+            case "B" -> Type.BYTE;
+            case "S" -> Type.SHORT;
+            case "I" -> Type.INT;
+            case "L" -> Type.LONG;
+            case "F" -> Type.FLOAT;
+            case "D" -> Type.DOUBLE;
+            default -> internalName.charAt(0) == '[' ? Type.fromDescriptor(() -> internalName)
+                : Type.fromDescriptor(() -> "L" + internalName + ";");
+        };
+    }
+
     public Class<?> toClass() {
         return toClass(descriptorString, getTypeName);
     }
@@ -329,7 +353,5 @@ public record Type(String getTypeName, String descriptorString, String internalN
         for (int i = 0; i < Short.MAX_VALUE; i++) if (descriptorString.charAt(i) != '[') return i;
         throw new IllegalStateException("Type " + this + " is too big?");
     }
-
-
 
 }

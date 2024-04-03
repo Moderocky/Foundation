@@ -1,9 +1,9 @@
 package org.valross.foundation.assembler.constant;
 
+import org.valross.constantine.RecordConstant;
 import org.valross.foundation.assembler.tool.ClassFileBuilder;
 import org.valross.foundation.assembler.vector.U1;
 import org.valross.foundation.assembler.vector.UVec;
-import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -38,6 +38,13 @@ public record ConstantType<Info extends ConstantPoolInfo, Value extends Constabl
     public int indices() {
         if (infoType == LongNumberInfo.class) return 2;
         return 1;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Value unpack(ConstantPoolInfo info) {
+        if (info == null) return null;
+        if (!infoType.isInstance(info)) throw new IllegalArgumentException("Wrong constant type " + info);
+        return (Value) info.unpack();
     }
 
 }

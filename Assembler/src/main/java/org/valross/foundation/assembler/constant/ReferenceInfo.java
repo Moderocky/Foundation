@@ -1,10 +1,10 @@
 package org.valross.foundation.assembler.constant;
 
+import org.valross.constantine.RecordConstant;
 import org.valross.foundation.assembler.Data;
 import org.valross.foundation.assembler.tool.PoolReference;
 import org.valross.foundation.assembler.vector.UVec;
 import org.valross.foundation.detail.Member;
-import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -36,6 +36,12 @@ public record ReferenceInfo(ConstantType<ReferenceInfo, Member> tag, PoolReferen
     @Override
     public int sort() {
         return 40;
+    }
+
+    @Override
+    public Member unpack() {
+        return new Member(ConstantPoolInfo.TYPE.unpack(class_index.get()),
+                          ConstantPoolInfo.NAME_AND_TYPE.unpack(name_and_type_index.get()));
     }
 
     @Override

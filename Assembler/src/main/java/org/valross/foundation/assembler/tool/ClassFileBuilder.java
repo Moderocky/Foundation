@@ -142,6 +142,14 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive, 
     }
 
     @SafeVarargs
+    public final <Klass extends java.lang.reflect.Type & TypeDescriptor> ClassFileBuilder setInterfaces(Klass... interfaces) {
+        for (PoolReference reference : this.interfaces) reference.purge();
+        this.interfaces.clear();
+        for (Klass klass : interfaces) this.interfaces.add(this.helper().constant(TYPE, Type.of(klass)));
+        return this;
+    }
+
+    @SafeVarargs
     public final <Klass extends java.lang.reflect.Type & TypeDescriptor> ClassFileBuilder addInterfaces(Klass... interfaces) {
         for (Klass klass : interfaces) this.interfaces.add(this.helper().constant(TYPE, Type.of(klass)));
         return this;

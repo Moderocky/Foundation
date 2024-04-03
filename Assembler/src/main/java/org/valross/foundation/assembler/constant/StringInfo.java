@@ -1,9 +1,9 @@
 package org.valross.foundation.assembler.constant;
 
+import org.valross.constantine.RecordConstant;
 import org.valross.foundation.assembler.Data;
 import org.valross.foundation.assembler.tool.PoolReference;
 import org.valross.foundation.assembler.vector.UVec;
-import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -35,6 +35,11 @@ public record StringInfo(PoolReference string_index)
     @Override
     public int sort() {
         return 10;
+    }
+
+    @Override
+    public String unpack() {
+        return ConstantPoolInfo.UTF8.unpack(string_index.get());
     }
 
     @Override

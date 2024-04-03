@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.constant.Constable;
+import java.lang.constant.Constable;import java.util.Objects;
 
 /**
  * An entry into the constant pool, such as a primitive (number) value, a type, field or method name.
@@ -75,5 +75,6 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
         return Integer.compare(this.sort(), o.sort());
     }
 
+    Object unpack();
 }
 

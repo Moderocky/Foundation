@@ -54,4 +54,12 @@ public abstract class TableReference<Element> implements UVec, Data, Constantive
         return Objects.requireNonNull(this.get());
     }
 
+    /**
+     * Retracts a use of this entry. If there are no remaining uses of the entry,
+     * the entry may be purged from its table (subject to reference implementation).
+     */
+    public void purge() {
+        // Todo
+    }
+
 }

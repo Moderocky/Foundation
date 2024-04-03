@@ -52,6 +52,11 @@ public record DeadSpaceInfo() implements ConstantPoolInfo {
     }
 
     @Override
+    public Void unpack() {
+        return null;
+    }
+
+    @Override
     public int length() {
         return 0;
     }
