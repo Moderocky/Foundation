@@ -1,5 +1,7 @@
 package mx.kenzie.foundation.assembler.error;
 
+import mx.kenzie.foundation.assembler.code.Branch;
+import mx.kenzie.foundation.assembler.code.CodeElement;
 import mx.kenzie.foundation.assembler.code.CodeVector;
 
 import java.io.PrintStream;
@@ -38,6 +40,9 @@ import java.io.PrintWriter;
 public class IncompatibleBranchError extends Error {
 
     private CodeVector vector;
+    private CodeElement element;
+    private Branch branch;
+    private int index;
 
     public IncompatibleBranchError() {
         super();
@@ -69,12 +74,47 @@ public class IncompatibleBranchError extends Error {
     public void printStackTrace(PrintWriter s) {
         super.printStackTrace(s);
         if (vector != null) s.println("Current method: " + vector);
+        if (vector != null) s.println("Current index: " + index);
+        if (branch != null) s.println("Current branch: " + branch);
     }
 
     @Override
     public void printStackTrace(PrintStream s) {
         super.printStackTrace(s);
         if (vector != null) s.println("Current method: " + vector);
+        if (vector != null) s.println("Current index: " + index);
+        if (branch != null) s.println("Current branch: " + branch);
+    }
+
+    public IncompatibleBranchError setProblem(CodeElement element) {
+        this.element = element;
+        return this;
+    }
+
+    public IncompatibleBranchError setIndex(int index) {
+        this.index = index;
+        return this;
+    }
+
+    public CodeVector getVector() {
+        return vector;
+    }
+
+    public CodeElement getElement() {
+        return element;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public IncompatibleBranchError setBranch(Branch branch) {
+        this.branch = branch;
+        return this;
+    }
+
+    public Branch getBranch() {
+        return branch;
     }
 
 }
