@@ -4,16 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>mx.kenzie</groupId>
+    <groupId>org.valross</groupId>
     <artifactId>foundation</artifactId>
     <packaging>pom</packaging>
     <modules>
         <module>Assembler</module>
-        <module>Builder</module>
+        <module>Legacy</module>
+        <module>Factory</module>
     </modules>
     <version>3.0.0</version>
     <name>Foundation</name>
-    <description>A framework for building compiled bytecode.</description>
+    <description>A virtual machine code compiler library and class file assembler.</description>
     <url>https://github.com/Moderocky/Foundation</url>
 
     <properties>
@@ -67,7 +68,7 @@
             <groupId>org.valross</groupId>
             <artifactId>constantine</artifactId>
             <version>1.0.0</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
