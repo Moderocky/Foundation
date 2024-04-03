@@ -151,19 +151,25 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
                 else this.register().put(0, method.exit());
             }
             for (Type parameter : this.exit().parameters()) this.register().putNext(parameter);
-            try {
-                for (CodeElement element : this.vector) element.notify(this);
-            } catch (IncompatibleBranchError ex) {
-                throw ex.setVector(vector);
-            } catch (UnsupportedOperationException ex) {
-                throw new IncompatibleBranchError(ex).setVector(vector);
+            int index = 0;
+            Branch branch = new Branch.UnconditionalBranch();
+            for (CodeElement element : this.vector) {
+                try {
+                    if (element instanceof Branch b) branch = b;
+                    element.notify(this);
+                    index += element.length();
+                } catch (IncompatibleBranchError ex) {
+                    throw ex.setVector(vector).setBranch(branch).setProblem(element).setIndex(index);
+                } catch (UnsupportedOperationException | IllegalArgumentException ex) {
+                    throw new IncompatibleBranchError(ex).setBranch(branch).setProblem(element).setIndex(index).setVector(vector);
+                }
             }
             this.maxStack = this.stack().maximum();
             this.maxLocals = this.register().maximum();
         }
         frames:
         if (this.trackFrames()) {
-            if (!vector.isEmpty() && vector.getLast(1) instanceof Branch branch) {
+            while (!vector.isEmpty() && vector.getLast(1).getLast() instanceof Branch branch) {
                 this.vector.getLast(1).remove(branch);
                 this.tracker.branches.remove(branch);
             }
