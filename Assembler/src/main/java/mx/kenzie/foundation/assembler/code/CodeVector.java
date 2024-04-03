@@ -96,6 +96,9 @@ public class CodeVector implements UVec, Iterable<CodeElement> {
                     builder.append(OpCode.getCode(Byte.toUnsignedInt(b)).toString());
                 } else builder.append(" ").append(b);
             }
+            if (element instanceof JumpCode.JumpInstruction instruction) {
+                builder.append(" (target: ").append(instruction.target().getHandle().index()).append(")");
+            }
             index += element.length();
         }
         return builder.append("]").toString();
