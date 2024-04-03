@@ -8,7 +8,7 @@ public class Return extends MultiTypeInstruction {
     }
 
     @Override
-    public Instruction.Base object(Instruction.Input<Object> instruction) {
+    public ReturnInstruction object(Instruction.Input<Object> instruction) {
         return builder -> {
             instruction.write(builder);
             builder.write(ARETURN);
@@ -16,7 +16,7 @@ public class Return extends MultiTypeInstruction {
     }
 
     @Override
-    public Instruction.Base intValue(Instruction.Input<Integer> instruction) {
+    public ReturnInstruction intValue(Instruction.Input<Integer> instruction) {
         return builder -> {
             instruction.write(builder);
             builder.write(IRETURN);
@@ -24,7 +24,7 @@ public class Return extends MultiTypeInstruction {
     }
 
     @Override
-    public Instruction.Base longValue(Instruction.Input<Long> instruction) {
+    public ReturnInstruction longValue(Instruction.Input<Long> instruction) {
         return builder -> {
             instruction.write(builder);
             builder.write(LRETURN);
@@ -32,7 +32,7 @@ public class Return extends MultiTypeInstruction {
     }
 
     @Override
-    public Instruction.Base floatValue(Instruction.Input<Float> instruction) {
+    public ReturnInstruction floatValue(Instruction.Input<Float> instruction) {
         return builder -> {
             instruction.write(builder);
             builder.write(FRETURN);
@@ -40,7 +40,7 @@ public class Return extends MultiTypeInstruction {
     }
 
     @Override
-    public Instruction.Base doubleValue(Instruction.Input<Double> instruction) {
+    public ReturnInstruction doubleValue(Instruction.Input<Double> instruction) {
         return builder -> {
             instruction.write(builder);
             builder.write(DRETURN);
@@ -48,8 +48,10 @@ public class Return extends MultiTypeInstruction {
     }
 
     @Override
-    public Instruction.Base none() {
+    public ReturnInstruction none() {
         return builder -> builder.write(RETURN);
     }
+
+    public interface ReturnInstruction extends Instruction.Base {}
 
 }
