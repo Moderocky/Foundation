@@ -3,6 +3,10 @@ package org.valross.foundation.factory.statement;
 import org.valross.foundation.assembler.code.OpCode;
 import org.valross.foundation.assembler.tool.CodePoint;
 
+import java.lang.invoke.TypeDescriptor;
+
+import static org.valross.foundation.assembler.code.OpCode.*;
+
 /**
  * The set of code instructions.
  * Some instructions are {@link org.valross.foundation.factory.statement.Line}s, others are
@@ -12,8 +16,20 @@ import org.valross.foundation.assembler.tool.CodePoint;
  */
 public interface Code {
 
-    static Phrase<?> get(int slot) {
-        return OpCode.ALOAD.var(slot)::addTo;
+    @SuppressWarnings({"RedundantCast"})
+    static Phrase<?> get(int slot, TypeDescriptor type) {
+        return switch (type.descriptorString()) {
+            case "I", "S", "C", "B", "Z" -> (IntPrimitivePhrase) ILOAD.var(slot)::addTo;
+            case "F" -> (FloatPrimitivePhrase) FLOAD.var(slot)::addTo;
+            case "J" -> (LongPrimitivePhrase) LLOAD.var(slot)::addTo;
+            case "D" -> (DoublePrimitivePhrase) DLOAD.var(slot)::addTo;
+            default -> ALOAD.var(slot)::addTo;
+        };
+    }
+
+    @SuppressWarnings("unchecked")
+    static <Value> Phrase<Value> get(int slot, Class<? super Value> type) {
+        return (Phrase<Value>) get(slot, (TypeDescriptor) type);
     }
 
     static Line set$(int slot, Phrase<?> value) {

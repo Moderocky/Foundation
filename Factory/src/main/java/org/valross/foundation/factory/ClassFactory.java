@@ -10,6 +10,7 @@ import org.valross.foundation.detail.TypeHint;
 import org.valross.foundation.detail.Version;
 
 import java.lang.invoke.TypeDescriptor;
+import java.util.Collection;
 
 /**
  * A factory for building a compiled, loadable Java class.
@@ -28,6 +29,10 @@ public class ClassFactory extends ModifiableFactory<ClassFileBuilder> implements
 
     public static ClassFactory create(@MagicConstant(valuesFromClass = Version.class) int version, boolean preview) {
         return new ClassFactory(new ClassFileBuilder(version, preview ? Version.PREVIEW : Version.RELEASE));
+    }
+
+    public RecordFactory record(Signature... components) {
+        return new RecordFactory(this.builder).components(components);
     }
 
     public ClassFactory modifiers(Access.Type... modifiers) {
@@ -55,20 +60,30 @@ public class ClassFactory extends ModifiableFactory<ClassFileBuilder> implements
     }
 
     public FieldFactory field(String name, TypeDescriptor type) {
-        return new FieldFactory(this.builder.field().named(name).ofType(Type.fromDescriptor(type)), this);
+        return this.field(new Signature(name, type));
     }
 
     public FieldFactory field(Signature signature) {
+        this.builder.helper().removeField(signature);
         return new FieldFactory(this.builder.field().signature(signature), this);
     }
 
     public MethodFactory method(TypeDescriptor returnType, String name, TypeDescriptor... parameters) {
-        return new MethodFactory(this.builder.method().named(name).returns(Type.fromDescriptor(returnType))
-                                             .parameters(Type.array(parameters)), this);
+        return this.method(new Signature(Type.fromDescriptor(returnType), name, Type.array(parameters)));
     }
 
     public MethodFactory method(Signature signature) {
+        this.builder.helper().removeMethod(signature);
         return new MethodFactory(this.builder.method().signature(signature), this);
+    }
+
+    public MethodFactory constructor(Collection<? extends TypeDescriptor> parameters) {
+        return this.constructor(parameters.toArray(new TypeDescriptor[0]));
+    }
+
+    public MethodFactory constructor(TypeDescriptor... parameters) {
+        final Signature signature = new Signature(void.class, "<init>", Type.array(parameters));
+        return this.method(signature);
     }
 
     @Override

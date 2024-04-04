@@ -8,6 +8,7 @@ import org.valross.foundation.assembler.tool.PoolReference;
 import org.valross.foundation.assembler.vector.U2;
 import org.valross.foundation.assembler.vector.U4;
 import org.valross.foundation.assembler.vector.UVec;
+import org.valross.foundation.detail.Signature;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,8 +18,16 @@ import static org.valross.foundation.assembler.constant.ConstantPoolInfo.UTF8;
 public record Record(PoolReference attribute_name_index, RecordComponent... record_component_info)
     implements AttributeInfo.TypeAttribute, AttributeBuilder, AttributeInfo, UVec, RecordConstant {
 
-    public Record(ClassFileBuilder.Storage storage, RecordComponent... bootstrap_methods) {
-        this(storage.constant(UTF8, "Record"), bootstrap_methods);
+    public Record(ClassFileBuilder.Storage storage, RecordComponent... record_component_info) {
+        this(storage.constant(UTF8, "Record"), record_component_info);
+    }
+
+    public static Record of(ClassFileBuilder.Storage storage, Signature... components) {
+        final RecordComponent[] array = new RecordComponent[components.length];
+        for (int i = 0; i < array.length; i++)
+            array[i] = new RecordComponent(storage.constant(UTF8, components[i].name()),
+                                           storage.constant(UTF8, components[i].returnType().descriptorString()));
+        return new Record(storage.constant(UTF8, "Record"), array);
     }
 
     public U2 components_count() {

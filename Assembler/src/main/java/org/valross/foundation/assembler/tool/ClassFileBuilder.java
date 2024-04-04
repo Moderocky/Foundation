@@ -223,6 +223,15 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive, 
         return us.getTypeName();
     }
 
+    public void removeAttribute(Class<?> attributeType) {
+        final var iterator = attributes.iterator();
+        while (iterator.hasNext()) {
+            final AttributeBuilder builder = iterator.next();
+            if (!attributeType.isInstance(builder)) continue;
+            iterator.remove();
+        }
+    }
+
     public class Storage {
 
         public ClassFileBuilder source() {
@@ -366,6 +375,36 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive, 
                 case INVOCATION:
                     yield this.invokeDynamic(reference.signature(), reference.invocation(), reference.arguments());
             };
+        }
+
+        public boolean isMethodPresent(Erasure erasure) {
+            for (MethodBuilder method : methods) if (Erasure.equals(method, erasure)) return true;
+            return false;
+        }
+
+        public boolean isFieldPresent(Erasure erasure) {
+            for (FieldBuilder field : fields) if (Erasure.equals(field, erasure)) return true;
+            return false;
+        }
+
+        public void removeField(Erasure erasure) {
+            final var iterator = fields.iterator();
+            while (iterator.hasNext()) {
+                final FieldBuilder builder = iterator.next();
+                if (!Erasure.equals(builder, erasure)) continue;
+                iterator.remove();
+                builder.purge(this);
+            }
+        }
+
+        public void removeMethod(Erasure erasure) {
+            final var iterator = methods.iterator();
+            while (iterator.hasNext()) {
+                final MethodBuilder builder = iterator.next();
+                if (!Erasure.equals(builder, erasure)) continue;
+                iterator.remove();
+                builder.purge(this);
+            }
         }
 
     }

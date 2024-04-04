@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 import static org.valross.foundation.assembler.constant.ConstantPoolInfo.UTF8;
 
-public class FieldBuilder extends ModifiableBuilder implements Constantive, Erasure {
+public class FieldBuilder extends ModifiableBuilder implements Constantive, Erasure, Purgative {
 
     protected final ClassFileBuilder.Storage storage;
     protected PoolReference name, descriptor;
@@ -125,6 +125,11 @@ public class FieldBuilder extends ModifiableBuilder implements Constantive, Eras
     public void finalise() {
         Objects.requireNonNull(name, "No field name provided");
         Objects.requireNonNull(descriptor, "No field type (descriptor) provided");
+    }
+
+    @Override
+    public void purge(ClassFileBuilder.Storage storage) {
+        // todo
     }
 
 }

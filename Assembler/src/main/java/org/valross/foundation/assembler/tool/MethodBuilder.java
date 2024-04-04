@@ -16,7 +16,7 @@ import java.util.function.Function;
 
 import static org.valross.foundation.assembler.constant.ConstantPoolInfo.UTF8;
 
-public class MethodBuilder extends ModifiableBuilder implements Constantive, Erasure {
+public class MethodBuilder extends ModifiableBuilder implements Constantive, Erasure, Purgative {
 
     private static final int HAS_NAME = 0x0001, HAS_RETURN = 0x0010, HAS_PARAMETERS = 0x0100;
     protected final ClassFileBuilder.Storage storage;
@@ -166,6 +166,11 @@ public class MethodBuilder extends ModifiableBuilder implements Constantive, Era
         if (code != null) return code;
         this.attribute(code = new CodeBuilder(this).writingTo(new CodeVector()));
         return code;
+    }
+
+    @Override
+    public void purge(ClassFileBuilder.Storage storage) {
+        // todo
     }
 
 }

@@ -5,6 +5,7 @@ import org.valross.constantine.RecordConstant;
 
 import java.lang.invoke.TypeDescriptor;
 import java.lang.reflect.Executable;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -36,6 +37,14 @@ public interface Erasure extends Descriptor, TypeDescriptor {
     static <Klass extends java.lang.reflect.Type & TypeDescriptor>
     Erasure of(Klass returnType, String name, Klass... parameters) {
         return new Simple(returnType, name, parameters);
+    }
+
+    static boolean equals(Erasure a, Erasure b) {
+        if (a == null && b == null) return true;
+        return a != null && b != null
+            && Objects.equals(a.name(), b.name())
+            && Objects.equals(a.returnType(), b.returnType())
+            && Arrays.equals(a.parameters(), b.parameters());
     }
 
     default Constant constant() {
