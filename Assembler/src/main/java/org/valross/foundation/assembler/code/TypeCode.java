@@ -1,5 +1,6 @@
 package org.valross.foundation.assembler.code;
 
+import org.valross.constantine.RecordConstant;
 import org.valross.foundation.assembler.constant.ConstantPoolInfo;
 import org.valross.foundation.assembler.tool.CodeBuilder;
 import org.valross.foundation.assembler.tool.PoolReference;
@@ -7,7 +8,6 @@ import org.valross.foundation.assembler.tool.ProgramStack;
 import org.valross.foundation.assembler.tool.StackNotifier;
 import org.valross.foundation.detail.Type;
 import org.valross.foundation.detail.TypeHint;
-import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;
 import java.io.OutputStream;

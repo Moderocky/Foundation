@@ -1,9 +1,9 @@
 package org.valross.foundation.assembler.attribute.frame;
 
+import org.valross.constantine.RecordConstant;
 import org.valross.foundation.assembler.vector.U1;
 import org.valross.foundation.assembler.vector.U2;
 import org.valross.foundation.assembler.vector.UVec;
-import org.valross.constantine.RecordConstant;
 
 import java.util.Arrays;
 

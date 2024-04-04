@@ -104,13 +104,13 @@ public class FieldBuilder extends ModifiableBuilder implements Constantive, Eras
     }
 
     @Override
-    public boolean isField() {
-        return true;
+    public boolean isMethod() {
+        return false;
     }
 
     @Override
-    public boolean isMethod() {
-        return false;
+    public boolean isField() {
+        return true;
     }
 
     public FieldBuilder setModifiers(Access.Field... flags) {

@@ -1,7 +1,7 @@
 package org.valross.foundation.assembler.tool;
 
-import org.valross.foundation.detail.TypeHint;
 import org.valross.constantine.RecordConstant;
+import org.valross.foundation.detail.TypeHint;
 
 import java.util.function.Consumer;
 

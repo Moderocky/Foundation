@@ -49,11 +49,12 @@ public interface Erasure extends Descriptor, TypeDescriptor {
     Type[] parameters();
 
     default String descriptorString() {
+        if (this.parameters() == null) return this.returnType().descriptorString();
         return Type.methodDescriptor(this.returnType(), this.parameters());
     }
 
     default boolean isMethod() {
-        return this.descriptorString().startsWith("(");
+        return this.parameters() != null && this.descriptorString().startsWith("(");
     }
 
     default boolean isField() {

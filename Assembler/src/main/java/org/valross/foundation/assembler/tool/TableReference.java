@@ -1,10 +1,10 @@
 package org.valross.foundation.assembler.tool;
 
+import org.jetbrains.annotations.NotNull;
+import org.valross.constantine.Constantive;
 import org.valross.foundation.assembler.Data;
 import org.valross.foundation.assembler.vector.U2;
 import org.valross.foundation.assembler.vector.UVec;
-import org.jetbrains.annotations.NotNull;
-import org.valross.constantine.Constantive;
 
 import java.io.IOException;
 import java.io.OutputStream;

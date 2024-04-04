@@ -1,9 +1,9 @@
 package org.valross.foundation.assembler.code;
 
+import org.valross.constantine.Constant;
 import org.valross.foundation.assembler.tool.CodeBuilder;
 import org.valross.foundation.assembler.vector.U2;
 import org.valross.foundation.assembler.vector.UVec;
-import org.valross.constantine.Constant;
 
 import java.io.IOException;
 import java.io.OutputStream;

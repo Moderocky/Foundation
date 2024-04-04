@@ -1,11 +1,11 @@
 package org.valross.foundation.assembler.code;
 
+import org.valross.constantine.Constantive;
+import org.valross.constantine.RecordConstant;
 import org.valross.foundation.assembler.attribute.frame.StackMapFrame;
 import org.valross.foundation.assembler.tool.ClassFileBuilder;
 import org.valross.foundation.assembler.tool.ProgramStack;
 import org.valross.foundation.detail.TypeHint;
-import org.valross.constantine.Constantive;
-import org.valross.constantine.RecordConstant;
 
 public record Frame(ClassFileBuilder.Storage storage, Branch branch, Branch previous)
     implements Constantive {

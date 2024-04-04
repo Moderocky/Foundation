@@ -1,10 +1,10 @@
 package org.valross.foundation.assembler.attribute.frame;
 
+import org.valross.constantine.Constant;
 import org.valross.foundation.assembler.code.Frame;
 import org.valross.foundation.assembler.tool.ClassFileBuilder;
 import org.valross.foundation.assembler.vector.U1;
 import org.valross.foundation.assembler.vector.UVec;
-import org.valross.constantine.Constant;
 
 import java.io.IOException;
 import java.io.OutputStream;

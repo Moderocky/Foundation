@@ -1,10 +1,10 @@
 package org.valross.foundation.assembler.vector;
 
-import org.valross.foundation.assembler.ArraySegments;
-import org.valross.foundation.assembler.Data;
 import org.valross.constantine.Constant;
 import org.valross.constantine.Constantive;
 import org.valross.constantine.RecordConstant;
+import org.valross.foundation.assembler.ArraySegments;
+import org.valross.foundation.assembler.Data;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

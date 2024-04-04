@@ -1,11 +1,11 @@
 package org.valross.foundation.assembler.attribute;
 
+import org.valross.constantine.RecordConstant;
 import org.valross.foundation.assembler.tool.AttributeBuilder;
 import org.valross.foundation.assembler.tool.ClassFileBuilder;
 import org.valross.foundation.assembler.tool.PoolReference;
 import org.valross.foundation.assembler.vector.U4;
 import org.valross.foundation.assembler.vector.UVec;
-import org.valross.constantine.RecordConstant;
 
 import java.lang.constant.Constable;
 

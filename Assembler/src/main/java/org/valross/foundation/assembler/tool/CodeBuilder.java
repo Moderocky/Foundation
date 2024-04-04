@@ -1,5 +1,7 @@
 package org.valross.foundation.assembler.tool;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.valross.foundation.assembler.attribute.AttributeInfo;
 import org.valross.foundation.assembler.attribute.Code;
 import org.valross.foundation.assembler.code.Branch;
@@ -10,8 +12,6 @@ import org.valross.foundation.assembler.error.IncompatibleBranchError;
 import org.valross.foundation.assembler.vector.U2;
 import org.valross.foundation.detail.Type;
 import org.valross.foundation.detail.TypeHint;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 
@@ -161,7 +161,8 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
                 } catch (IncompatibleBranchError ex) {
                     throw ex.setVector(vector).setBranch(branch).setProblem(element).setIndex(index);
                 } catch (UnsupportedOperationException | IllegalArgumentException ex) {
-                    throw new IncompatibleBranchError(ex).setBranch(branch).setProblem(element).setIndex(index).setVector(vector);
+                    throw new IncompatibleBranchError(ex).setBranch(branch).setProblem(element).setIndex(index)
+                                                         .setVector(vector);
                 }
             }
             this.maxStack = this.stack().maximum();

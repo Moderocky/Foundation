@@ -65,13 +65,8 @@ public class IncompatibleBranchError extends Error {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public IncompatibleBranchError setVector(CodeVector vector) {
-        this.vector = vector;
-        return this;
-    }
-
     @Override
-    public void printStackTrace(PrintWriter s) {
+    public void printStackTrace(PrintStream s) {
         super.printStackTrace(s);
         if (vector != null) s.println("Current method: " + vector);
         if (vector != null) s.println("Current index: " + index);
@@ -79,7 +74,7 @@ public class IncompatibleBranchError extends Error {
     }
 
     @Override
-    public void printStackTrace(PrintStream s) {
+    public void printStackTrace(PrintWriter s) {
         super.printStackTrace(s);
         if (vector != null) s.println("Current method: " + vector);
         if (vector != null) s.println("Current index: " + index);
@@ -91,13 +86,13 @@ public class IncompatibleBranchError extends Error {
         return this;
     }
 
-    public IncompatibleBranchError setIndex(int index) {
-        this.index = index;
-        return this;
-    }
-
     public CodeVector getVector() {
         return vector;
+    }
+
+    public IncompatibleBranchError setVector(CodeVector vector) {
+        this.vector = vector;
+        return this;
     }
 
     public CodeElement getElement() {
@@ -108,13 +103,18 @@ public class IncompatibleBranchError extends Error {
         return index;
     }
 
-    public IncompatibleBranchError setBranch(Branch branch) {
-        this.branch = branch;
+    public IncompatibleBranchError setIndex(int index) {
+        this.index = index;
         return this;
     }
 
     public Branch getBranch() {
         return branch;
+    }
+
+    public IncompatibleBranchError setBranch(Branch branch) {
+        this.branch = branch;
+        return this;
     }
 
 }

@@ -1,9 +1,9 @@
 package org.valross.foundation.assembler.code;
 
+import org.valross.constantine.RecordConstant;
 import org.valross.foundation.assembler.tool.CodeBuilder;
 import org.valross.foundation.assembler.tool.ProgramRegister;
 import org.valross.foundation.assembler.tool.ProgramStack;
-import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;
 import java.io.OutputStream;

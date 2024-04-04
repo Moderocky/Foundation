@@ -1,7 +1,7 @@
 package org.valross.foundation.assembler.tool;
 
-import org.valross.foundation.detail.TypeHint;
 import org.jetbrains.annotations.NotNull;
+import org.valross.foundation.detail.TypeHint;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -1,5 +1,6 @@
 package org.valross.foundation.assembler.code;
 
+import org.valross.constantine.Constant;
 import org.valross.foundation.assembler.error.IncompatibleBranchError;
 import org.valross.foundation.assembler.tool.CodeBuilder;
 import org.valross.foundation.assembler.tool.ProgramRegister;
@@ -9,7 +10,6 @@ import org.valross.foundation.assembler.vector.U4;
 import org.valross.foundation.assembler.vector.UVec;
 import org.valross.foundation.detail.Type;
 import org.valross.foundation.detail.TypeHint;
-import org.valross.constantine.Constant;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -58,6 +58,11 @@ public class Branch implements CodeElement {
         }
     }
 
+    @Override
+    public byte code() {
+        return -1;
+    }
+
     public void snapshot() {
         this.stackSnapshot = stack.clone();
         for (int i = 0; i < stackSnapshot.length; i++) {
@@ -67,11 +72,6 @@ public class Branch implements CodeElement {
         for (int i = 0; i < registerSnapshot.length; i++) {
             if (registerSnapshot[i] != null) registerSnapshot[i] = (TypeHint) registerSnapshot[i].constant();
         }
-    }
-
-    @Override
-    public byte code() {
-        return -1;
     }
 
     public Branch register(TypeHint... locals) {

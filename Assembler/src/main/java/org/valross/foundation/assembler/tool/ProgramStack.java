@@ -1,8 +1,8 @@
 package org.valross.foundation.assembler.tool;
 
+import org.jetbrains.annotations.NotNull;
 import org.valross.foundation.detail.Erasure;
 import org.valross.foundation.detail.TypeHint;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;

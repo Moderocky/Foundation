@@ -1,13 +1,13 @@
 package org.valross.foundation.assembler.attribute.frame;
 
+import org.valross.constantine.Constant;
+import org.valross.constantine.RecordConstant;
 import org.valross.foundation.assembler.constant.ConstantPoolInfo;
 import org.valross.foundation.assembler.tool.ClassFileBuilder;
 import org.valross.foundation.assembler.tool.ProgramStack;
 import org.valross.foundation.assembler.vector.UVec;
 import org.valross.foundation.detail.Type;
 import org.valross.foundation.detail.TypeHint;
-import org.valross.constantine.Constant;
-import org.valross.constantine.RecordConstant;
 
 import java.io.IOException;
 import java.io.OutputStream;

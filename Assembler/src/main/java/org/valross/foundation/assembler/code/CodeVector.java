@@ -1,7 +1,7 @@
 package org.valross.foundation.assembler.code;
 
-import org.valross.foundation.assembler.vector.UVec;
 import org.jetbrains.annotations.NotNull;
+import org.valross.foundation.assembler.vector.UVec;
 
 import java.io.IOException;
 import java.io.OutputStream;

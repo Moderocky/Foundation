@@ -1,5 +1,7 @@
 package org.valross.foundation.assembler.tool;
 
+import org.jetbrains.annotations.Contract;
+import org.valross.constantine.Constantive;
 import org.valross.foundation.assembler.MethodInfo;
 import org.valross.foundation.assembler.attribute.AttributeInfo;
 import org.valross.foundation.assembler.code.CodeVector;
@@ -8,8 +10,6 @@ import org.valross.foundation.detail.Descriptor;
 import org.valross.foundation.detail.Erasure;
 import org.valross.foundation.detail.Signature;
 import org.valross.foundation.detail.Type;
-import org.jetbrains.annotations.Contract;
-import org.valross.constantine.Constantive;
 
 import java.lang.invoke.TypeDescriptor;
 import java.util.function.Function;

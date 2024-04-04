@@ -1,8 +1,8 @@
 package org.valross.foundation.assembler.tool;
 
+import org.jetbrains.annotations.NotNull;
 import org.valross.foundation.assembler.constant.ConstantPoolInfo;
 import org.valross.foundation.assembler.constant.DeadSpaceInfo;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
 

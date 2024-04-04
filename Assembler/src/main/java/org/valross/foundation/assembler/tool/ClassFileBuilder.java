@@ -1,5 +1,6 @@
 package org.valross.foundation.assembler.tool;
 
+import org.valross.constantine.Constantive;
 import org.valross.foundation.assembler.ClassFile;
 import org.valross.foundation.assembler.FieldInfo;
 import org.valross.foundation.assembler.MethodInfo;
@@ -10,7 +11,6 @@ import org.valross.foundation.assembler.vector.U1;
 import org.valross.foundation.assembler.vector.U2;
 import org.valross.foundation.assembler.vector.U4;
 import org.valross.foundation.detail.*;
-import org.valross.constantine.Constantive;
 
 import java.lang.constant.*;
 import java.lang.invoke.MethodType;
