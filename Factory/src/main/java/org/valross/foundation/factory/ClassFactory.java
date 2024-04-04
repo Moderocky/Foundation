@@ -16,7 +16,7 @@ import java.lang.invoke.TypeDescriptor;
  * This wraps the class file assembler, but mimics Java's paradigm for a more
  * familiar code format.
  */
-public class ClassFactory extends Factory<ClassFileBuilder> implements TypeHint {
+public class ClassFactory extends ModifiableFactory<ClassFileBuilder> implements TypeHint {
 
     protected ClassFactory(ClassFileBuilder builder) {
         super(builder);
@@ -55,11 +55,20 @@ public class ClassFactory extends Factory<ClassFileBuilder> implements TypeHint 
     }
 
     public FieldFactory field(String name, TypeDescriptor type) {
-        return new FieldFactory(this.builder.field().named(name).ofType(Type.fromDescriptor(type)));
+        return new FieldFactory(this.builder.field().named(name).ofType(Type.fromDescriptor(type)), this);
     }
 
     public FieldFactory field(Signature signature) {
-        return new FieldFactory(this.builder.field().signature(signature));
+        return new FieldFactory(this.builder.field().signature(signature), this);
+    }
+
+    public MethodFactory method(TypeDescriptor returnType, String name, TypeDescriptor... parameters) {
+        return new MethodFactory(this.builder.method().named(name).returns(Type.fromDescriptor(returnType))
+                                             .parameters(Type.array(parameters)), this);
+    }
+
+    public MethodFactory method(Signature signature) {
+        return new MethodFactory(this.builder.method().signature(signature), this);
     }
 
     @Override

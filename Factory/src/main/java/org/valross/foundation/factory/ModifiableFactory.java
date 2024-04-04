@@ -1,10 +1,10 @@
 package org.valross.foundation.factory;
 
-class Factory<Builder> {
+abstract class ModifiableFactory<Builder> {
 
     protected final Builder builder;
 
-    Factory(Builder builder) {
+    ModifiableFactory(Builder builder) {
         this.builder = builder;
     }
 
