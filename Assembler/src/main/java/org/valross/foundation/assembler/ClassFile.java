@@ -7,6 +7,7 @@ import org.valross.foundation.assembler.tool.PoolReference;
 import org.valross.foundation.assembler.vector.U2;
 import org.valross.foundation.assembler.vector.U4;
 import org.valross.foundation.assembler.vector.UVec;
+import org.valross.foundation.detail.ReifiedType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -22,7 +23,7 @@ public record ClassFile(U4 magic, U2 minor_version, U2 major_version, U2 constan
                         U2 fields_count, FieldInfo[] fields, //fields_count
                         U2 methods_count, MethodInfo[] methods, //methods_count
                         U2 attributes_count, AttributeInfo[] attributes //attributes_count
-) implements Data, UVec, RecordConstant {
+) implements Data, UVec, ReifiedType, RecordConstant {
 
     @Override
     public boolean validate() {
@@ -141,6 +142,21 @@ public record ClassFile(U4 magic, U2 minor_version, U2 major_version, U2 constan
             throw new RuntimeException(e);
         }
         return stream.toByteArray();
+    }
+
+    @Override
+    public String descriptorString() {
+        return ConstantPoolInfo.TYPE.unpack(this_class.get()).descriptorString();
+    }
+
+    @Override
+    public String getTypeName() {
+        return ConstantPoolInfo.TYPE.unpack(this_class.get()).getTypeName();
+    }
+
+    @Override
+    public byte[] bytecode() {
+        return this.binary();
     }
 
 }

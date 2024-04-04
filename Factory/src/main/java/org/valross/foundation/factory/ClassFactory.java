@@ -4,10 +4,7 @@ import org.intellij.lang.annotations.MagicConstant;
 import org.valross.foundation.assembler.ClassFile;
 import org.valross.foundation.assembler.tool.Access;
 import org.valross.foundation.assembler.tool.ClassFileBuilder;
-import org.valross.foundation.detail.Signature;
-import org.valross.foundation.detail.Type;
-import org.valross.foundation.detail.TypeHint;
-import org.valross.foundation.detail.Version;
+import org.valross.foundation.detail.*;
 
 import java.lang.invoke.TypeDescriptor;
 import java.util.Collection;
@@ -17,7 +14,7 @@ import java.util.Collection;
  * This wraps the class file assembler, but mimics Java's paradigm for a more
  * familiar code format.
  */
-public class ClassFactory extends ModifiableFactory<ClassFileBuilder> implements TypeHint {
+public class ClassFactory extends ModifiableFactory<ClassFileBuilder> implements TypeHint, ReifiedType {
 
     protected ClassFactory(ClassFileBuilder builder) {
         super(builder);
@@ -99,6 +96,11 @@ public class ClassFactory extends ModifiableFactory<ClassFileBuilder> implements
     @Override
     public ClassFile constant() {
         return builder.constant();
+    }
+
+    @Override
+    public byte[] bytecode() {
+        return this.constant().bytecode();
     }
 
 }

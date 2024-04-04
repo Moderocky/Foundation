@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
-public record UnloadedClass(Type type, byte[] bytecode) implements RecordConstant, Descriptor, java.lang.reflect.Type {
+public record UnloadedClass(Type type, byte[] bytecode) implements RecordConstant, ReifiedType, Descriptor, java.lang.reflect.Type {
 
     public UnloadedClass(Class<?> loaded) {
         this(Type.of(loaded), UnloadedClass.getBytecode(loaded));

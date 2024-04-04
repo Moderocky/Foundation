@@ -1,5 +1,8 @@
 package org.valross.foundation;
 
+import org.valross.foundation.detail.ReifiedType;
+import org.valross.foundation.detail.UnloadedClass;
+
 public interface Loader {
 
     Loader DEFAULT = new SimpleClassLoader();
@@ -17,6 +20,10 @@ public interface Loader {
     }
 
     Class<?> loadClass(String name, byte[] bytecode);
+
+    default Class<?> loadClass(ReifiedType type) {
+        return this.loadClass(type.getTypeName(), type.bytecode());
+    }
 
 }
 

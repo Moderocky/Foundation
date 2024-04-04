@@ -24,7 +24,7 @@ import java.util.function.Function;
 import static org.valross.foundation.assembler.constant.ConstantPoolInfo.*;
 import static org.valross.foundation.assembler.constant.MethodTypeReference.*;
 
-public class ClassFileBuilder extends ModifiableBuilder implements Constantive, TypeHint {
+public class ClassFileBuilder extends ModifiableBuilder implements Constantive, TypeHint, ReifiedType {
 
     private static final U4 MAGIC = U4.valueOf(0xCAFEBABE);
     protected final U4 magic;
@@ -230,6 +230,11 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive, 
             if (!attributeType.isInstance(builder)) continue;
             iterator.remove();
         }
+    }
+
+    @Override
+    public byte[] bytecode() {
+        return this.constant().binary();
     }
 
     public class Storage {
