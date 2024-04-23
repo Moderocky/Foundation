@@ -1,30 +1,37 @@
 package org.valross.foundation.detail;
 
 import org.jetbrains.annotations.NotNull;
+import org.valross.constantine.Canonical;
 import org.valross.constantine.RecordConstant;
 
 import java.lang.constant.ClassDesc;
 import java.lang.constant.Constable;
+import java.lang.constant.ConstantDesc;
 import java.lang.invoke.TypeDescriptor;
+import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
+import java.util.function.Function;
 
 public record Type(String getTypeName, String descriptorString, String internalName)
-    implements java.lang.reflect.Type, TypeHint, Descriptor, Constable, TypeDescriptor, RecordConstant {
+    implements java.lang.reflect.Type, TypeHint, Descriptor, Constable, TypeDescriptor, RecordConstant,
+    Canonical<Type> {
 
-    private static final Map<Class<?>, SoftReference<Type>> CACHE = new WeakHashMap<>();
+    private static final Map<Class<?>, SoftReference<Type>> classCache = new WeakHashMap<>();
+    private static final Map<String, SoftReference<Type>> descriptorCache = new WeakHashMap<>();
 
     public static Type of(String path, String name) {
-        final String internal = path.replace('.', '/') + '/' + name;
-        return new Type(path + '.' + name, 'L' + internal + ';', internal);
+        final String internal = path.replace('.', '/') + '/' + name, descriptor = 'L' + internal + ';';
+        return getCached(descriptorCache, descriptor, _ -> new Type(path + '.' + name, descriptor, internal));
     }
 
     public static Type of(ClassDesc description) {
         return fromDescriptor(description);
+    }
+
+    public static Type valueOf(String getTypeName, String descriptorString, String internalName) {
+        return getCached(descriptorCache, descriptorString, _ -> new Type(getTypeName, descriptorString, internalName));
     }
 
     @SafeVarargs
@@ -57,8 +64,8 @@ public record Type(String getTypeName, String descriptorString, String internalN
         return of(string);
     }
 
-    private static Type of(String descriptor) {
-        descriptor = descriptor.substring(descriptor.lastIndexOf(')') + 1);
+    private static Type of(String descriptorString) {
+        final String descriptor = descriptorString.substring(descriptorString.lastIndexOf(')') + 1);
         return switch (descriptor) {
             case "Z" -> BOOLEAN;
             case "B" -> BYTE;
@@ -69,7 +76,9 @@ public record Type(String getTypeName, String descriptorString, String internalN
             case "D" -> DOUBLE;
             case "C" -> CHAR;
             case "V" -> VOID;
-            default -> new Type(getTypeName(descriptor), descriptor, getInternalName(descriptor));
+            default ->
+                getCached(descriptorCache, descriptor, _ -> new Type(getTypeName(descriptor), descriptor,
+                                                                     getInternalName(descriptor)));
         };
     }
 
@@ -137,21 +146,24 @@ public record Type(String getTypeName, String descriptorString, String internalN
     public static Type of(java.lang.reflect.Type value) {
         if (value instanceof Type type) return type;
         if (value instanceof Class<?> thing) {
-            final Type result;
-            final SoftReference<Type> reference = CACHE.get(thing);
-            if (reference != null) {
-                final Type check = reference.get();
-                if (check != null) return check;
-            }
-            result = new Type(value.getTypeName(), thing.descriptorString(), Type.internalName(value));
-            CACHE.put(thing, new SoftReference<>(result));
-            return result;
+            return getCached(classCache, thing, _ -> new Type(value.getTypeName(), thing.descriptorString(),
+                                                              Type.internalName(value)));
         } else return new Type(value.getTypeName(), Type.descriptorString(value), Type.internalName(value));
+    }
+
+    private static <Key, Result>
+    Result getCached(Map<Key, SoftReference<Result>> cache, Key key, Function<Key, Result> ifAbsent) {
+        final Reference<Result> reference = cache.computeIfAbsent(key, k -> new SoftReference<>(ifAbsent.apply(k)));
+        Result result = reference.get();
+        if (result != null) return result;
+        result = ifAbsent.apply(key);
+        cache.put(key, new SoftReference<>(result));
+        return result;
     }
 
     private static Type of(Class<?> value) {
         final Type type = new Type(value.getTypeName(), value.descriptorString(), Type.internalName(value));
-        CACHE.put(value, new SoftReference<>(type));
+        classCache.put(value, new SoftReference<>(type));
         return type;
     }
 
@@ -277,6 +289,10 @@ public record Type(String getTypeName, String descriptorString, String internalN
         };
     }
 
+    public Type {
+        descriptorCache.computeIfAbsent(descriptorString, _ -> new SoftReference<>(this));
+    }
+
     public Class<?> toClass() {
         return toClass(descriptorString, getTypeName);
     }
@@ -299,6 +315,16 @@ public record Type(String getTypeName, String descriptorString, String internalN
     @Override
     public Class<?>[] canonicalParameters() {
         return new Class[] {String.class, String.class, String.class};
+    }
+
+    @Override
+    public Optional<? extends ConstantDesc> describeConstable() {
+        return Canonical.super.describeConstable();
+    }
+
+    @Override
+    public boolean validate() {
+        return Canonical.super.validate() && RecordConstant.super.validate();
     }
 
     public Type arrayType() {
@@ -352,6 +378,11 @@ public record Type(String getTypeName, String descriptorString, String internalN
     public int arrayDepth() {
         for (int i = 0; i < Short.MAX_VALUE; i++) if (descriptorString.charAt(i) != '[') return i;
         throw new IllegalStateException("Type " + this + " is too big?");
+    }
+
+    @Override
+    public Type intern() {
+        return getCached(descriptorCache, descriptorString, _ -> this);
     }
 
 }
