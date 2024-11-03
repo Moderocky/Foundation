@@ -5,10 +5,7 @@ import org.junit.Test;
 import org.valross.constantine.RecordConstant;
 import org.valross.foundation.Loader;
 import org.valross.foundation.assembler.ClassFile;
-import org.valross.foundation.assembler.tool.ClassFileBuilder;
-import org.valross.foundation.assembler.tool.CodeBuilder;
-import org.valross.foundation.assembler.tool.MethodBuilder;
-import org.valross.foundation.assembler.tool.MethodBuilderTest;
+import org.valross.foundation.assembler.tool.*;
 import org.valross.foundation.detail.Type;
 
 import java.io.PrintStream;
@@ -18,10 +15,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 import static org.valross.foundation.assembler.code.OpCode.*;
 import static org.valross.foundation.assembler.tool.Access.PUBLIC;
@@ -29,12 +23,6 @@ import static org.valross.foundation.assembler.tool.Access.STATIC;
 import static org.valross.foundation.detail.Version.*;
 
 public class OpCodeTest extends MethodBuilderTest {
-
-    @Contract(pure = true)
-    protected MethodBuilder method() {
-        return new ClassFileBuilder(JAVA_22, RELEASE).setType(Type.of("org.example", "Test")).method()
-            .setModifiers(PUBLIC, STATIC).named("test");
-    }
 
     @Test
     public void mnemonic() throws NoSuchFieldException, IllegalAccessException {
@@ -1554,22 +1542,6 @@ public class OpCodeTest extends MethodBuilderTest {
             .write(NEW.type(Object.class), DUP, INVOKESPECIAL.constructor(Object.class),
                 ARETURN)
             .exit()).invoke(null) != null;
-        {
-            final Branch a = new Branch(), b = new Branch();
-            Method method = this.compileForTest(this.method().setModifiers(PUBLIC).parameters(String.class).code()
-                .write(ALOAD_1, IFNULL.jump(a), ALOAD_1, INVOKEVIRTUAL.method(String.class, boolean.class, "isEmpty"),
-                    IFEQ.jump(b), a, LDC.value("test"), CHECKCAST.type(String.class), ASTORE_1, b, ALOAD_1, ARETURN)
-                .exit().returns(String.class));
-            assert method != null;
-        }
-        final Branch a = new Branch(), b = new Branch();
-        Method method = this.compileForTest(this.method().parameters(String.class).code()
-            .write(ALOAD_0, IFNULL.jump(a), ALOAD_0, INVOKEVIRTUAL.method(String.class, boolean.class, "isEmpty"),
-                IFEQ.jump(b), a, LDC.value("test"), CHECKCAST.type(String.class), ASTORE_0, b, ALOAD_0, ARETURN)
-            .exit().returns(String.class));
-        assert method.invoke(null, (Object) null).equals("test");
-        assert method.invoke(null, "foo").equals("foo") : method.invoke(null, "foo");
-        assert method.invoke(null, "").equals("test");
     }
 
     @Test

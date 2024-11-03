@@ -1,12 +1,12 @@
 package org.valross.foundation.assembler.tool;
 
+import org.jetbrains.annotations.Contract;
+import org.junit.Test;
 import org.valross.foundation.Loader;
 import org.valross.foundation.assembler.ClassFile;
 import org.valross.foundation.detail.Erasure;
 import org.valross.foundation.detail.Signature;
 import org.valross.foundation.detail.Type;
-import org.jetbrains.annotations.Contract;
-import org.junit.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -20,8 +20,7 @@ import static org.valross.foundation.assembler.code.OpCode.ARETURN;
 import static org.valross.foundation.assembler.code.OpCode.LDC;
 import static org.valross.foundation.assembler.tool.Access.PUBLIC;
 import static org.valross.foundation.assembler.tool.Access.STATIC;
-import static org.valross.foundation.detail.Version.JAVA_21;
-import static org.valross.foundation.detail.Version.RELEASE;
+import static org.valross.foundation.detail.Version.*;
 
 public class MethodBuilderTest extends ClassFileBuilderTest {
 
@@ -63,6 +62,34 @@ public class MethodBuilderTest extends ClassFileBuilderTest {
         return found;
     }
 
+    @Contract(pure = true)
+    protected Class<?> compileForTest(ClassFileBuilder builder) {
+        final Loader loader = Loader.createDefault();
+        final ClassFile file = builder.build();
+        final Class<?> done;
+        try {
+            done = this.load(loader, file, Type.of("org.example", "Test"));
+            assert done != null;
+        } catch (VerifyError | ClassFormatError ex) {
+            //<editor-fold desc="Output the bytecode for debug purposes" defaultstate="collapsed">
+            final File debug = new File("target/test-failures/Test.class");
+            System.out.println(Arrays.toString(file.constant_pool()));
+            System.out.println(Arrays.toString(file.attributes()));
+            file.debug(System.out); // todo
+            try {
+                debug.getParentFile().mkdirs();
+                debug.createNewFile();
+                try (OutputStream stream = new FileOutputStream(debug)) {
+                    stream.write(file.binary());
+                }
+            } catch (IOException _) {
+            }
+            //</editor-fold>
+            throw new AssertionError(ex);
+        }
+        return done;
+    }
+
     protected void check(MethodBuilder builder, Object value) {
         try {
             final Object result = this.compileForTest(builder).invoke(null);
@@ -96,7 +123,7 @@ public class MethodBuilderTest extends ClassFileBuilderTest {
     public void signature() {
         final ClassFileBuilder builder = new ClassFileBuilder(JAVA_21, RELEASE);
         final MethodBuilder method = builder.method().signature(new Signature(boolean[].class, "test", String.class,
-                                                                              int.class));
+            int.class));
         assert method.name != null;
         assert method.name.ensure().is("test");
         assert method.descriptor != null;
@@ -116,7 +143,7 @@ public class MethodBuilderTest extends ClassFileBuilderTest {
     public void erasure() {
         final ClassFileBuilder builder = new ClassFileBuilder(JAVA_21, RELEASE);
         final MethodBuilder method = builder.method().erasure(Erasure.of(boolean[].class, "test", String.class,
-                                                                         int.class));
+            int.class));
         assert method.name != null;
         assert method.name.ensure().is("test");
         assert method.descriptor != null;
@@ -149,7 +176,7 @@ public class MethodBuilderTest extends ClassFileBuilderTest {
     public void parameters() {
         final ClassFileBuilder builder = new ClassFileBuilder(JAVA_21, RELEASE);
         final MethodBuilder method = builder.method().parameters(String[].class,
-                                                                 int.class);
+            int.class);
         assert method.name == null;
         assert method.descriptor == null;
         assert Arrays.equals(method.parameters(), Type.array(String[].class, int.class));
@@ -157,6 +184,12 @@ public class MethodBuilderTest extends ClassFileBuilderTest {
         method.finalise();
         assert method.descriptor != null;
         assert method.descriptor.ensure().is(Type.methodDescriptor(void.class, String[].class, int.class));
+    }
+
+    @Contract(pure = true)
+    protected MethodBuilder method() {
+        return new ClassFileBuilder(JAVA_22, RELEASE).setType(Type.of("org.example", "Test")).method()
+            .setModifiers(PUBLIC, STATIC).named("test");
     }
 
 }

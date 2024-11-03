@@ -26,13 +26,17 @@ public interface StackMapFrame extends UVec, Constant {
                         return new ShiftFrame(offset, difference);
                     else
                         return new ShiftFrame(offset, difference, VerificationTypeInfo.of(storage,
-                                                                                          Arrays.copyOfRange(ours.register(), ourLength - difference, ourLength)));
+                            Arrays.copyOfRange(ours.register(), ourLength - difference, ourLength)));
                 }
             }
         } else if (stackSize == 1 && Arrays.equals(ours.register(), previous.register()))
             return new SameLocalsOneStackFrame(offset, VerificationTypeInfo.of(storage, ours.stack()[0]));
-        return new FullFrame(offset, VerificationTypeInfo.of(storage, ours.stack()), VerificationTypeInfo.of(storage,
-                                                                                                             ours.register()));
+        return new FullFrame(offset, // todo which way around is the register?
+            VerificationTypeInfo.of(storage, ours.register()),
+            VerificationTypeInfo.of(storage, ours.stack()));
+//        return new FullFrame(offset,
+//            VerificationTypeInfo.of(storage, ours.stack()),
+//            VerificationTypeInfo.of(storage, ours.register()));
     }
 
     U1 frame_type();
