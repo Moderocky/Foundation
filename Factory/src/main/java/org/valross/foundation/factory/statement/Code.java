@@ -3,6 +3,7 @@ package org.valross.foundation.factory.statement;
 import org.valross.foundation.assembler.code.OpCode;
 import org.valross.foundation.assembler.tool.CodePoint;
 
+import java.lang.constant.Constable;
 import java.lang.invoke.TypeDescriptor;
 
 import static org.valross.foundation.assembler.code.OpCode.*;
@@ -32,16 +33,18 @@ public interface Code {
         return (Phrase<Value>) get(slot, (TypeDescriptor) type);
     }
 
-    static Line set$(int slot, Phrase<?> value) {
-        if (value instanceof PrimitivePhrase<?> phrase) {
-            return switch (phrase.descriptorString()) {
-                case "I", "Z", "C", "S", "B" -> OpCode.ISTORE.var(slot)::addTo;
-                case "F" -> OpCode.FSTORE.var(slot)::addTo;
-                case "J" -> OpCode.LSTORE.var(slot)::addTo;
-                case "D" -> OpCode.DSTORE.var(slot)::addTo;
-                default -> OpCode.ASTORE.var(slot)::addTo;
-            };
-        }
+    static <Value extends Constable> Phrase<Value> literal(Value value) {
+        return LDC.value(value)::addTo;
+    }
+
+    static Line set(int slot, Phrase<?> value) {
+        if (value instanceof PrimitivePhrase<?> phrase) return switch (phrase.descriptorString()) {
+            case "I", "Z", "C", "S", "B" -> OpCode.ISTORE.var(slot)::addTo;
+            case "F" -> OpCode.FSTORE.var(slot)::addTo;
+            case "J" -> OpCode.LSTORE.var(slot)::addTo;
+            case "D" -> OpCode.DSTORE.var(slot)::addTo;
+            default -> OpCode.ASTORE.var(slot)::addTo;
+        };
         return OpCode.ASTORE.var(slot)::addTo;
     }
 
@@ -49,14 +52,31 @@ public interface Code {
         return OpCode.RETURN::addTo;
     }
 
-    static Line return$(Phrase<?> phrase) {
-        return of(phrase, OpCode.RETURN);
+    static Line return$(Phrase<?> value) {
+        return of(value, switch (value.descriptorString()) {
+            case "I", "Z", "C", "S", "B" -> IRETURN;
+            case "F" -> FRETURN;
+            case "J" -> LRETURN;
+            case "D" -> DRETURN;
+            default -> ARETURN;
+        });
     }
 
     private static Line of(CodePoint... elements) {
         return builder -> {
             for (CodePoint element : elements) element.addTo(builder);
         };
+    }
+
+    private static ReturnLine return0(CodePoint value, CodePoint instruction) {
+        return builder -> {
+            value.addTo(builder);
+            instruction.addTo(builder);
+        };
+    }
+
+    interface ReturnLine extends Line {
+
     }
 
 }

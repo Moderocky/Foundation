@@ -133,7 +133,7 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
     @Override
     public AttributeInfo build() {
         return Code.of(attributeName, U2.valueOf(maxStack), U2.valueOf(maxLocals), vector, new Code.Exception[0],
-                       attributes(new AttributeInfo.CodeAttribute[0]));
+            attributes(new AttributeInfo.CodeAttribute[0]));
     }
 
     public CodeBuilder attribute(AttributeInfo.CodeAttribute attribute) {
@@ -148,7 +148,7 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
             if (!Access.is(exit().access_flags, Access.STATIC)) {
                 if (exit().name().equals("<init>")) // constructor starts with an uninitialised 'this'
                     this.register().put(0, TypeHint.uninitialisedThis(method.exit()));
-                else this.register().put(0, method.exit());
+                else this.register().put(0, method.exit().asType());
             }
             for (Type parameter : this.exit().parameters()) this.register().putNext(parameter);
             int index = 0;
@@ -161,8 +161,11 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
                 } catch (IncompatibleBranchError ex) {
                     throw ex.setVector(vector).setBranch(branch).setProblem(element).setIndex(index);
                 } catch (UnsupportedOperationException | IllegalArgumentException ex) {
-                    throw new IncompatibleBranchError(ex).setBranch(branch).setProblem(element).setIndex(index)
-                                                         .setVector(vector);
+                    throw new IncompatibleBranchError(ex)
+                        .setBranch(branch)
+                        .setProblem(element)
+                        .setIndex(index)
+                        .setVector(vector);
                 }
             }
             this.maxStack = this.stack().maximum();
@@ -175,7 +178,7 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
                 this.tracker.branches.remove(branch);
             }
             if (tracker.branches.isEmpty() || !(tracker.branches.getFirst() instanceof Branch.ImplicitBranch))
-                this.tracker.branches.addFirst(new Branch.ImplicitBranch(this.exit().parameters()));
+                this.tracker.branches.addFirst(this.openingRegister());
             if (this.tracker.branches.size() == 1) break frames;
             this.tracker.builder = new StackMapTableBuilder(this.helper());
             Branch previous = null;
@@ -187,6 +190,18 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
             this.attributes.add(tracker.builder);
         }
         for (AttributeBuilder attribute : attributes) attribute.finalise();
+    }
+
+    private Branch openingRegister() {
+        // return the correct opening register for non-static methods
+        MethodBuilder builder = this.exit();
+        Type[] parameters = builder.parameters();
+        if (builder.hasModifier(Access.STATIC))
+            return new Branch.ImplicitBranch(parameters);
+        Type[] register = new Type[parameters.length + 1];
+        register[0] = builder.exit().asType();
+        System.arraycopy(parameters, 0, register, 1, parameters.length);
+        return new Branch.ImplicitBranch(register);
     }
 
     @Override

@@ -1,13 +1,19 @@
 package org.valross.foundation.factory.statement;
 
 import org.valross.foundation.assembler.tool.CodePoint;
+import org.valross.foundation.detail.Type;
 
 import java.lang.invoke.TypeDescriptor;
 
-public interface Phrase<Value> extends CodePoint {
+public interface Phrase<Value> extends CodePoint, TypeDescriptor {
 
     default boolean primitive() {
         return false;
+    }
+
+    default @Override
+    String descriptorString() {
+        return Type.OBJECT.descriptorString();
     }
 
 }

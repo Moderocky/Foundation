@@ -4,6 +4,7 @@ import org.valross.foundation.detail.Member;
 
 import java.lang.invoke.TypeDescriptor;
 
+@SuppressWarnings("unchecked")
 public interface AbstractInvokeCode extends OpCode {
 
     default <Klass extends java.lang.reflect.Type & TypeDescriptor>

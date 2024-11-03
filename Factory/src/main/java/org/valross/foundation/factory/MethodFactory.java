@@ -57,6 +57,9 @@ public class MethodFactory extends ModifiableFactory<MethodBuilder> implements M
         return this;
     }
 
+    private void verify() {
+    }
+
     @Override
     public ClassFactory source() {
         return factory;

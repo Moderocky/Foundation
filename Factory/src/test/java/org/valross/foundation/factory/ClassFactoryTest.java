@@ -7,11 +7,41 @@ import org.valross.foundation.assembler.tool.Access;
 import org.valross.foundation.detail.Type;
 import org.valross.foundation.detail.Version;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Objects;
+
 import static org.valross.foundation.assembler.tool.Access.*;
 
 public class ClassFactoryTest {
 
     protected static final Type TYPE = Type.of("org.example", "Test");
+
+    protected ClassFactory classFactory() {
+        return ClassFactory.create(Version.JAVA_22, false).type(TYPE).modifiers(PUBLIC);
+    }
+
+    protected MethodFactory methodFactory() {
+        return this.classFactory().method(Object.class, "test").modifiers(PUBLIC, STATIC);
+    }
+
+    protected void test(Object found, Object expected) {
+        assert Objects.equals(found, expected) : "Expected + '" + expected + "', found '" + found + "'";
+    }
+
+    protected void test(MethodFactory factory, Object result) {
+        final Class<?> type = Loader.createDefault().loadClass(factory.source());
+        assert type != null;
+        final Object object;
+        try {
+            final Method method = type.getDeclaredMethod(factory.name());
+            method.setAccessible(true);
+            object = method.invoke(null);
+        } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+            throw new AssertionError(e);
+        }
+        this.test(object, result);
+    }
 
     @Test
     public void create() {
