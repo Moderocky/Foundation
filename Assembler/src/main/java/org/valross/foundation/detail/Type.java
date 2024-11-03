@@ -76,9 +76,8 @@ public record Type(String getTypeName, String descriptorString, String internalN
             case "D" -> DOUBLE;
             case "C" -> CHAR;
             case "V" -> VOID;
-            default ->
-                getCached(descriptorCache, descriptor, _ -> new Type(getTypeName(descriptor), descriptor,
-                                                                     getInternalName(descriptor)));
+            default -> getCached(descriptorCache, descriptor, _ -> new Type(getTypeName(descriptor), descriptor,
+                getInternalName(descriptor)));
         };
     }
 
@@ -147,7 +146,7 @@ public record Type(String getTypeName, String descriptorString, String internalN
         if (value instanceof Type type) return type;
         if (value instanceof Class<?> thing) {
             return getCached(classCache, thing, _ -> new Type(value.getTypeName(), thing.descriptorString(),
-                                                              Type.internalName(value)));
+                Type.internalName(value)));
         } else return new Type(value.getTypeName(), Type.descriptorString(value), Type.internalName(value));
     }
 
@@ -293,6 +292,12 @@ public record Type(String getTypeName, String descriptorString, String internalN
         descriptorCache.computeIfAbsent(descriptorString, _ -> new SoftReference<>(this));
     }
 
+    public String getSimpleName() {
+        if (this.isPrimitive())
+            return this.getTypeName();
+        return getTypeName.substring(getTypeName.lastIndexOf('.') + 1);
+    }
+
     public Class<?> toClass() {
         return toClass(descriptorString, getTypeName);
     }
@@ -334,7 +339,7 @@ public record Type(String getTypeName, String descriptorString, String internalN
     public Type componentType() {
         if (!descriptorString.startsWith("[") || !getTypeName.endsWith("[]"))
             throw new UnsupportedOperationException("Cannot get component type of non-array " + descriptorString + " "
-                                                        + getTypeName);
+                + getTypeName);
         final String sub = descriptorString.substring(1);
         final String typeName = getTypeName.substring(0, getTypeName.length() - 2);
         if (sub.charAt(0) == 'L') return new Type(typeName, sub, sub.substring(0, sub.length() - 1));
