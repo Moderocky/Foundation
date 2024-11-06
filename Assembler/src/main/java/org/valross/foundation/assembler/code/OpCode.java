@@ -22,7 +22,7 @@ public interface OpCode {
         stack.push(stack.pop().asType().componentType());
     });
     Instruction AASTORE = new Instruction("AASTORE", Codes.AASTORE, (stack, _) -> stack.pop(3));
-    Instruction ACONST_NULL = new Instruction("ACONST_NULL", Codes.ACONST_NULL, StackNotifier.push(TypeHint.none()));
+    NullCode ACONST_NULL = new NullCode(TypeHint.none());
     Instruction ALOAD_0 = new Instruction("ALOAD_0", Codes.ALOAD_0, StackNotifier.pushVariable(0));
     Instruction ALOAD_1 = new Instruction("ALOAD_1", Codes.ALOAD_1, StackNotifier.pushVariable(1));
     Instruction ALOAD_2 = new Instruction("ALOAD_2", Codes.ALOAD_2, StackNotifier.pushVariable(2));

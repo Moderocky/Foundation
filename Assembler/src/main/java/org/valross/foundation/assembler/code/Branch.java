@@ -125,10 +125,16 @@ public class Branch implements CodeElement {
                                                                    .index() + " but found " + this.printTable(stack.toArray()));
         if (this.register == null || this.register.length == 0) {
             this.register = register.toArray();
+        } else if (this.startsWith(register.toArray(), this.register)) {
+            return; // we are chopping, todo check this is okay
         } else if (!register.isEmpty() && !this.isCompatible(this.register, register.toArray()))
             throw new IncompatibleBranchError("Expected register to be " + this.printTable(this.register) + " " +
                                                   "entering branch " + this.getHandle()
                                                                            .index() + " but found " + this.printTable(register.toArray()));
+    }
+
+    private boolean startsWith(TypeHint[] theirs, TypeHint[] ours) {
+        return this.isCompatible(ours, Arrays.copyOf(theirs, ours.length));
     }
 
     private boolean isCompatible(TypeHint[] ours, TypeHint[] theirs) {
