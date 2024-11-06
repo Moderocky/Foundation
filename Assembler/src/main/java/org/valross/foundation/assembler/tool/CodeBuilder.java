@@ -4,10 +4,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.valross.foundation.assembler.attribute.AttributeInfo;
 import org.valross.foundation.assembler.attribute.Code;
-import org.valross.foundation.assembler.code.Branch;
-import org.valross.foundation.assembler.code.CodeElement;
-import org.valross.foundation.assembler.code.CodeVector;
-import org.valross.foundation.assembler.code.UnboundedElement;
+import org.valross.foundation.assembler.code.*;
 import org.valross.foundation.assembler.error.IncompatibleBranchError;
 import org.valross.foundation.assembler.vector.U2;
 import org.valross.foundation.detail.Type;
@@ -85,7 +82,8 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
             this.tracker.branches.add(branch);
             final var last = vector.getLast(2);
             final CodeElement previous = last.getFirst();
-            if (previous instanceof Branch.UnconditionalBranch) {
+            if (previous instanceof Branch.UnconditionalBranch
+                || previous instanceof Branch.UnreachableBranch) {
                 last.removeFirst();
                 this.tracker.branches.remove(previous);
             } else if (previous instanceof Branch) {
@@ -140,6 +138,32 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
         return (CodeBuilder) super.attribute(attribute);
     }
 
+    private void checkMissingBranch(CodeElement element) {
+        switch (element.code()) {
+            case Codes.ARETURN, Codes.RETURN, Codes.RET, Codes.IRETURN, Codes.FRETURN, Codes.LRETURN, Codes.DRETURN:
+                break;
+            default:
+                return;
+        }
+        CodeElement after = this.vector.getAfter(element);
+        if (after == null) return;
+        if (!(after instanceof Branch)) {
+            Branch branch = new Branch.UnreachableBranch();
+            this.vector.insertAfter(element, branch);
+            int index = 0;
+            for (CodeElement code : vector) {
+                if (code == branch) break;
+                if (code instanceof Branch)
+                    index++;
+            }
+            this.tracker.branches.add(index, branch);
+        }
+    }
+
+    private void insertBranch(Branch branch) {
+
+    }
+
     @Override
     public void finalise() {
         if (this.trackStack()) {
@@ -155,6 +179,7 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
             Branch branch = new Branch.UnconditionalBranch();
             for (CodeElement element : this.vector) {
                 try {
+                    this.checkMissingBranch(element);
                     if (element instanceof Branch b) branch = b;
                     element.notify(this);
                     index += element.length();

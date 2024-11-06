@@ -36,7 +36,7 @@ public class CodeVector implements UVec, Iterable<CodeElement> {
 
     public void insertAfter(@NotNull CodeElement target, @NotNull CodeElement element) {
         final int index = code.indexOf(target);
-        if (index == code.size() - 1) code.add(element);
+        if (index >= code.size() - 1) code.add(element);
         else code.add(index + 1, element);
     }
 
@@ -65,7 +65,19 @@ public class CodeVector implements UVec, Iterable<CodeElement> {
     @NotNull
     @Override
     public Iterator<CodeElement> iterator() {
-        return code.iterator();
+        return new Iterator<>() {
+            int index;
+
+            @Override
+            public boolean hasNext() {
+                return index < code.size();
+            }
+
+            @Override
+            public CodeElement next() {
+                return code.get(index++);
+            }
+        };
     }
 
     public List<CodeElement> getLast(int instructions) {
@@ -106,6 +118,12 @@ public class CodeVector implements UVec, Iterable<CodeElement> {
 
     public boolean isEmpty() {
         return code.isEmpty();
+    }
+
+    public CodeElement getAfter(CodeElement element) {
+        final int index = code.indexOf(element);
+        if (index == -1 || index >= code.size() - 1) return null;
+        return this.code.get(index + 1);
     }
 
 }

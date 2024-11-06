@@ -952,16 +952,27 @@ public class OpCodeTest extends MethodBuilderTest {
 
     @Test
     public void testGOTO() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        final Branch to = new Branch();
-        assert this.compileForTest(this.method().returns(Object.class).code()
-            .write(GOTO.jump(to), LDC.value("hello"), ARETURN, to, LDC.value("there"),
-                ARETURN)
-            .exit()).invoke(null).equals("there");
-        final Branch a = new Branch(), b = new Branch();
-        assert this.compileForTest(this.method().returns(Object.class).code()
-            .write(GOTO.jump(a), b, LDC.value("there"), ARETURN, a, GOTO.jump(b),
-                ACONST_NULL, ATHROW)
-            .exit()).invoke(null).equals("there");
+        {
+            final Branch to = new Branch();
+            assert this.compileForTest(this.method().returns(Object.class).code()
+                .write(GOTO.jump(to), LDC.value("hello"), ARETURN, to, LDC.value("there"),
+                    ARETURN)
+                .exit()).invoke(null).equals("there");
+        }
+        {
+            final Branch a = new Branch(), b = new Branch();
+            assert this.compileForTest(this.method().returns(Object.class).code()
+                .write(GOTO.jump(a), b, LDC.value("there"), ARETURN, a, GOTO.jump(b),
+                    ACONST_NULL, ATHROW)
+                .exit()).invoke(null).equals("there");
+        }
+        {
+            final Branch branch = new Branch();
+            assert this.compileForTest(this.method().returns(Object.class).code()
+                .write(LDC.value("there"), ARETURN, GOTO.jump(branch), NOP, branch,
+                    ACONST_NULL, ATHROW)
+                .exit()).invoke(null).equals("there");
+        }
     }
 
     @Test

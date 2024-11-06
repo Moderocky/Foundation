@@ -2,6 +2,7 @@ package org.valross.foundation.assembler.code;
 
 import org.valross.constantine.Constant;
 import org.valross.foundation.assembler.error.IncompatibleBranchError;
+import org.valross.foundation.assembler.tool.ClassFileBuilder;
 import org.valross.foundation.assembler.tool.CodeBuilder;
 import org.valross.foundation.assembler.tool.ProgramRegister;
 import org.valross.foundation.assembler.tool.ProgramStack;
@@ -164,6 +165,10 @@ public class Branch implements CodeElement {
     }
 
     public static class UnconditionalBranch extends Branch {
+
+    }
+
+    public static class UnreachableBranch extends Branch {
 
     }
 
