@@ -2,7 +2,6 @@ package org.valross.foundation.assembler.code;
 
 import org.valross.constantine.Constant;
 import org.valross.foundation.assembler.error.IncompatibleBranchError;
-import org.valross.foundation.assembler.tool.ClassFileBuilder;
 import org.valross.foundation.assembler.tool.CodeBuilder;
 import org.valross.foundation.assembler.tool.ProgramRegister;
 import org.valross.foundation.assembler.tool.ProgramStack;
@@ -120,17 +119,17 @@ public class Branch implements CodeElement {
         if (this.stack == null || this.stack.length == 0) {
             this.stack = stack.toArray();
         } else if (!stack.isEmpty() && !this.isCompatible(this.stack, stack.toArray()))
-            throw new IncompatibleBranchError("Expected stack to be " + this.printTable(this.stack) + " entering" +
-                                                  " branch " + this.getHandle()
-                                                                   .index() + " but found " + this.printTable(stack.toArray()));
+            throw new IncompatibleBranchError("Expected stack to be " + this.printTable(this.stack)
+                + " entering  branch " + this.getHandle().index()
+                + " but found " + this.printTable(stack.toArray()));
         if (this.register == null || this.register.length == 0) {
             this.register = register.toArray();
         } else if (this.startsWith(register.toArray(), this.register)) {
             return; // we are chopping, todo check this is okay
         } else if (!register.isEmpty() && !this.isCompatible(this.register, register.toArray()))
-            throw new IncompatibleBranchError("Expected register to be " + this.printTable(this.register) + " " +
-                                                  "entering branch " + this.getHandle()
-                                                                           .index() + " but found " + this.printTable(register.toArray()));
+            throw new IncompatibleBranchError("Expected register to be " + this.printTable(this.register)
+                + " entering branch " + this.getHandle().index()
+                + " but found " + this.printTable(register.toArray()));
     }
 
     private boolean startsWith(TypeHint[] theirs, TypeHint[] ours) {
