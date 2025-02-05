@@ -80,6 +80,8 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
         bound.insert(this);
         if (bound instanceof Branch branch && this.trackFrames()) {
             this.tracker.branches.add(branch);
+            if (vector.length() < 2)
+                return this; // Can't do look-back yet
             final var last = vector.getLast(2);
             final CodeElement previous = last.getFirst();
             if (previous instanceof Branch.UnconditionalBranch

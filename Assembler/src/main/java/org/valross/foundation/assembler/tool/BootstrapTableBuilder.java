@@ -6,6 +6,7 @@ import org.valross.foundation.detail.Member;
 
 import java.lang.constant.Constable;
 import java.lang.constant.ConstantDesc;
+import java.lang.constant.ConstantDescs;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,9 +30,9 @@ public class BootstrapTableBuilder implements AttributeBuilder {
             references[i] = switch (arguments[i]) {
                 case Constable constable -> storage.constant(constable);
                 case ConstantDesc desc -> storage.constantFromDescription(desc);
+                case null -> storage.constantFromDescription(ConstantDescs.NULL);
                 default ->
-                    throw new IllegalArgumentException("Bootstrap argument " + arguments[i] + " doesn't resemble " +
-                                                           "a " + "constant.");
+                    throw new IllegalArgumentException("Bootstrap argument " + arguments[i] + " doesn't resemble a constant.");
             };
         }
         return this.registerMethod(invocation, references);
@@ -40,8 +41,8 @@ public class BootstrapTableBuilder implements AttributeBuilder {
     public BootstrapReference registerMethod(Member.Invocation invocation, PoolReference... arguments) {
         final BootstrapMethods.BootstrapMethod method;
         this.methods.add(method =
-                             new BootstrapMethods.BootstrapMethod(storage.constant(ConstantPoolInfo.METHOD_HANDLE,
-                                                                                   invocation), arguments));
+            new BootstrapMethods.BootstrapMethod(storage.constant(ConstantPoolInfo.METHOD_HANDLE,
+                invocation), arguments));
         return new BootstrapReference(methods, method);
     }
 
