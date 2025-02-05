@@ -142,7 +142,7 @@ public class Branch implements CodeElement {
         if (theirs.length != length) return false;
         for (int i = 0; i < length; i++) {
             final TypeHint our = ours[i], their = theirs[i];
-            if (Objects.equals(our, their)) continue;
+            if (Objects.equals(our, their) || Objects.equals(their, our)) continue;
             // Known null is assignable to any type, so it's okay if they change the type to void
             if (our != null && !our.isPrimitive() && Objects.equals(their, Type.VOID_WRAPPER)) continue;
             if (their != null && !their.isPrimitive() && Objects.equals(our, Type.VOID_WRAPPER)) continue;

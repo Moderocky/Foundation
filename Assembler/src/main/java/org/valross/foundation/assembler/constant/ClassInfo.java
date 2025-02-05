@@ -29,7 +29,7 @@ public record ClassInfo(PoolReference name_index) implements ConstantPoolInfo, D
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         ConstantPoolInfo.super.write(stream);
     }
 

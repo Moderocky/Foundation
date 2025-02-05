@@ -12,7 +12,7 @@ public interface Data {
     @Contract(pure = true)
     int length();
 
-    void write(OutputStream stream) throws IOException, ReflectiveOperationException;
+    void write(OutputStream stream) throws IOException;
 
     /**
      * Returns the data in a binary block.
@@ -30,8 +30,6 @@ public interface Data {
             return stream.toByteArray();
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);
-        } catch (ReflectiveOperationException ex) {
-            throw new RuntimeException(ex);
         }
     }
 

@@ -29,7 +29,7 @@ public interface ZeroAttribute extends AttributeInfo, AttributeBuilder {
     }
 
     @Override
-    default void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    default void write(OutputStream stream) throws IOException {
         this.attribute_name_index().write(stream);
         this.attribute_length().write(stream);
     }

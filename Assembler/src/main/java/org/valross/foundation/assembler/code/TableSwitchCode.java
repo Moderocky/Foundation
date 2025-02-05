@@ -86,7 +86,7 @@ public record TableSwitchCode(String mnemonic, byte code) implements RecordConst
         }
 
         @Override
-        public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+        public void write(OutputStream stream) throws IOException {
             stream.write(code);
             for (int i = 0; i < this.padding(); i++) stream.write(Codes.NOP);
             this.defaultCase.getWideJump(this).write(stream);

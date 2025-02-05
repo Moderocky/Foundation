@@ -28,7 +28,7 @@ public record StringInfo(PoolReference string_index)
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         ConstantPoolInfo.super.write(stream);
     }
 

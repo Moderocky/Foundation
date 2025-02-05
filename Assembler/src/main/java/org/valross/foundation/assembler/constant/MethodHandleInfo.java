@@ -27,7 +27,7 @@ public record MethodHandleInfo(ConstantType<MethodHandleInfo, Member.Invocation>
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         ConstantPoolInfo.super.write(stream);
     }
 

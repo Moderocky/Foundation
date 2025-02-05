@@ -28,7 +28,7 @@ public record LongNumberInfo<Type extends Number & Constable>(ConstantType<LongN
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         this.tag.write(stream);
         this.high_bytes.write(stream);
         this.low_bytes.write(stream);

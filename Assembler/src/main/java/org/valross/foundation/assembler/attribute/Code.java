@@ -35,7 +35,7 @@ public record Code(PoolReference attribute_name_index, U4 attribute_length, U2 m
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         this.attribute_name_index().write(stream);
         this.attribute_length().write(stream);
         this.max_stack.write(stream);
@@ -73,7 +73,7 @@ public record Code(PoolReference attribute_name_index, U4 attribute_length, U2 m
         }
 
         @Override
-        public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+        public void write(OutputStream stream) throws IOException {
             this.start_pc.write(stream);
             this.end_pc.write(stream);
             this.handler_pc.write(stream);

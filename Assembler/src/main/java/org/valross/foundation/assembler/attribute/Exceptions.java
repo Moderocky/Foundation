@@ -25,7 +25,7 @@ public record Exceptions(PoolReference attribute_name_index,
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         this.attribute_name_index.write(stream);
         this.attribute_length.write(stream);
         this.number_of_exceptions().write(stream);

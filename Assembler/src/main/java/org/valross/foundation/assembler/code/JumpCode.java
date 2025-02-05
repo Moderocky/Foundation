@@ -28,7 +28,7 @@ public record JumpCode(String mnemonic, byte code, Consumer<CodeBuilder> notifie
             }
 
             @Override
-            public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+            public void write(OutputStream stream) throws IOException {
                 stream.write(code);
                 branch.getJump(this).write(stream);
             }

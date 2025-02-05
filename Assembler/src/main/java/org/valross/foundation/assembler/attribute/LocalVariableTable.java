@@ -33,7 +33,7 @@ public record LocalVariableTable(PoolReference attribute_name_index, U2 local_va
         }
 
         @Override
-        public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+        public void write(OutputStream stream) throws IOException {
             this.start_pc.write(stream);
             this.code_length.write(stream);
             this.name_index.write(stream);

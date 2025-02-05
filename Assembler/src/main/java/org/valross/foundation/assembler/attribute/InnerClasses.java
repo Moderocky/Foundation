@@ -28,7 +28,7 @@ public record InnerClasses(PoolReference attribute_name_index, U4 attribute_leng
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         this.attribute_name_index.write(stream);
         this.attribute_length.write(stream);
         this.number_of_classes().write(stream);
@@ -45,7 +45,7 @@ public record InnerClasses(PoolReference attribute_name_index, U4 attribute_leng
         }
 
         @Override
-        public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+        public void write(OutputStream stream) throws IOException {
             this.inner_class_info_index.write(stream);
             this.outer_class_info_index.write(stream);
             this.inner_name_index.write(stream);

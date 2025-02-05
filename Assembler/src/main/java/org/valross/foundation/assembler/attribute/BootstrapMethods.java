@@ -40,7 +40,7 @@ public record BootstrapMethods(PoolReference attribute_name_index, BootstrapMeth
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         this.attribute_name_index.write(stream);
         this.attribute_length().write(stream);
         this.num_bootstrap_methods().write(stream);

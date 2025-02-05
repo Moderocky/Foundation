@@ -57,7 +57,7 @@ public record ClassFile(U4 magic, U2 minor_version, U2 major_version, U2 constan
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         this.magic.write(stream);
         this.minor_version.write(stream);
         this.major_version.write(stream);
@@ -138,7 +138,7 @@ public record ClassFile(U4 magic, U2 minor_version, U2 major_version, U2 constan
         final ByteArrayOutputStream stream = new ByteArrayOutputStream();
         try {
             data.write(stream);
-        } catch (IOException | ReflectiveOperationException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return stream.toByteArray();

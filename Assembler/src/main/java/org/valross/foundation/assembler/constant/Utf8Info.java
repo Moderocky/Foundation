@@ -70,7 +70,7 @@ public record Utf8Info(String value, byte[] data) implements ConstantPoolInfo, U
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         UTF8.write(stream);
         final short length = (short) data.length;
         stream.write((length) >>> 8);

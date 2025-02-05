@@ -32,7 +32,7 @@ public record LineNumberTable(PoolReference attribute_name_index, U2 line_number
         }
 
         @Override
-        public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+        public void write(OutputStream stream) throws IOException {
             this.start_pc.write(stream);
             this.line_number.write(stream);
         }

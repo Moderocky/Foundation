@@ -97,7 +97,7 @@ public class TypeCode implements OpCode {
     public record New(Type value, PoolReference reference) implements CodeElement, RecordConstant {
 
         @Override
-        public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+        public void write(OutputStream stream) throws IOException {
             stream.write(this.code());
             this.reference.write(stream);
         }

@@ -54,7 +54,7 @@ public interface ConstantPoolInfo extends Data, Comparable<ConstantPoolInfo> {
     boolean is(Constable object);
 
     @Override
-    default void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    default void write(OutputStream stream) throws IOException {
         this.tag().write(stream);
         this.info().write(stream);
     }

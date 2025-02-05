@@ -71,8 +71,6 @@ public interface UVec extends Data, Constantive {
             return of(stream.toByteArray());
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
         }
 
     }
@@ -88,7 +86,7 @@ public interface UVec extends Data, Constantive {
     }
 
     @Override
-    default void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    default void write(OutputStream stream) throws IOException {
         stream.write(this.binary());
     }
 

@@ -60,7 +60,7 @@ record UninitializedTypeInfo(UVec offset) implements VerificationTypeInfo, Recor
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         stream.write(this.tag());
         this.offset.write(stream);
     }
@@ -84,7 +84,7 @@ record ObjectTypeInfo(UVec cpool_index) implements VerificationTypeInfo, RecordC
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         stream.write(this.tag());
         this.cpool_index.write(stream);
     }

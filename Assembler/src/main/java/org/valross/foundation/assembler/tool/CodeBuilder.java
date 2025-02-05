@@ -87,7 +87,9 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
                 last.removeFirst();
                 this.tracker.branches.remove(previous);
             } else if (previous instanceof Branch) {
-                throw new IncompatibleBranchError("You have two branches at the same index " + vector.length());
+                // Could re-use the branch, but it's easier to spot a calculation error
+                this.vector.insertBefore(bound, OpCode.NOP);
+//                throw new IncompatibleBranchError("You have two branches at the same index " + vector.length());
             }
         }
         return this;

@@ -53,7 +53,7 @@ public class CodeVector implements UVec, Iterable<CodeElement> {
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         for (CodeElement element : code) element.write(stream);
     }
 

@@ -31,7 +31,7 @@ public interface AttributeInfo extends Data, UVec, AttributeBuilder {
     }
 
     @Override
-    default void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    default void write(OutputStream stream) throws IOException {
         this.attribute_name_index().write(stream);
         this.attribute_length().write(stream);
         this.info().write(stream);

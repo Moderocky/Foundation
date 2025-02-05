@@ -9,7 +9,7 @@ import java.io.OutputStream;
 public record UncheckedElement(byte code, UVec data) implements CodeElement, RecordConstant, UVec {
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         stream.write(code);
         this.data.write(stream);
     }

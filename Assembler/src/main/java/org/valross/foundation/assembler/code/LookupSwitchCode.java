@@ -87,7 +87,7 @@ public record LookupSwitchCode(String mnemonic, byte code) implements RecordCons
         }
 
         @Override
-        public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+        public void write(OutputStream stream) throws IOException {
             stream.write(code);
             for (int i = 0; i < this.padding(); i++) stream.write(Codes.NOP);
             this.defaultCase.getWideJump(this).write(stream);
@@ -134,7 +134,7 @@ public record LookupSwitchCode(String mnemonic, byte code) implements RecordCons
             }
 
             @Override
-            public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+            public void write(OutputStream stream) throws IOException {
                 U4.fromSigned(value).write(stream);
                 this.branch.getWideJump(LookupSwitch.this).write(stream);
             }

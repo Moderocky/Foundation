@@ -16,7 +16,7 @@ interface SingleInstruction extends OpCode, CodeElement {
         return new byte[] {this.code()};
     }
 
-    default void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    default void write(OutputStream stream) throws IOException {
         stream.write(this.code());
     }
 

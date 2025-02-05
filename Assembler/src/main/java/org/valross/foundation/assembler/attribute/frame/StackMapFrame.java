@@ -48,7 +48,7 @@ public interface StackMapFrame extends UVec, Constant {
     }
 
     @Override
-    default void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    default void write(OutputStream stream) throws IOException {
         this.frame_type().write(stream);
         this.info().write(stream);
     }

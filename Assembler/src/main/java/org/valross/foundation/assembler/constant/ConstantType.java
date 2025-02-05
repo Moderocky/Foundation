@@ -31,7 +31,7 @@ public record ConstantType<Info extends ConstantPoolInfo, Value extends Constabl
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         this.value.write(stream);
     }
 

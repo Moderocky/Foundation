@@ -38,7 +38,7 @@ public record DeadSpaceInfo() implements ConstantPoolInfo {
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
     }
 
     @Override

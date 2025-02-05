@@ -19,7 +19,7 @@ public record FieldInfo(U2 access_flags, PoolReference name_index, PoolReference
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         this.access_flags.write(stream);
         this.name_index.write(stream);
         this.descriptor_index.write(stream);

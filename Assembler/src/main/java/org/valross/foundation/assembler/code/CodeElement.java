@@ -35,7 +35,7 @@ public interface CodeElement extends Data, UVec, UnboundedElement {
             }
 
             @Override
-            public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+            public void write(OutputStream stream) throws IOException {
                 stream.write(code);
                 this.data.write(stream);
             }

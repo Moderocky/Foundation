@@ -15,7 +15,7 @@ import java.io.OutputStream;
 public record CoVec(Data... data) implements UVec, Constantive {
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         for (Data datum : data) datum.write(stream);
     }
 

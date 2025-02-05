@@ -27,7 +27,7 @@ public record ReferenceInfo(ConstantType<ReferenceInfo, Member> tag, PoolReferen
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         this.tag().write(stream);
         this.class_index().write(stream);
         this.name_and_type_index().write(stream);

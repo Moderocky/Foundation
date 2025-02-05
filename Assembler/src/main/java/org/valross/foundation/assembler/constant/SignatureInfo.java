@@ -32,7 +32,7 @@ public record SignatureInfo(PoolReference name_index,
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         ConstantPoolInfo.super.write(stream);
     }
 

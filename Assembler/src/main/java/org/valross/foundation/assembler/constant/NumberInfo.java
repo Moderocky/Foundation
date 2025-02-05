@@ -27,7 +27,7 @@ public record NumberInfo<Type extends Number & Constable>(ConstantType<NumberInf
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         this.tag.write(stream);
         this.bytes.write(stream);
     }

@@ -47,7 +47,7 @@ public record Record(PoolReference attribute_name_index, RecordComponent... reco
     }
 
     @Override
-    public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+    public void write(OutputStream stream) throws IOException {
         this.attribute_name_index.write(stream);
         this.attribute_length().write(stream);
         this.components_count().write(stream);
@@ -70,7 +70,7 @@ public record Record(PoolReference attribute_name_index, RecordComponent... reco
         }
 
         @Override
-        public void write(OutputStream stream) throws IOException, ReflectiveOperationException {
+        public void write(OutputStream stream) throws IOException {
             this.name_index.write(stream);
             this.descriptor_index.write(stream);
             this.attributes_count().write(stream);
