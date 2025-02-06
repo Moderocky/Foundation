@@ -20,7 +20,6 @@ public record FullFrame(int offset, VerificationTypeInfo[] locals, VerificationT
     @Override
 
     public UVec info() {
-        if (offset > 63) return U2.valueOf(offset);
         return UVec.of(this.offset_delta(), this.number_of_locals(), UVec.of(locals), this.number_of_stack_items(),
                        UVec.of(stack));
     }

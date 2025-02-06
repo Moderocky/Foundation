@@ -1,11 +1,13 @@
 package org.valross.foundation.assembler.code;
 
-import org.jetbrains.annotations.Contract;
 import org.junit.Test;
 import org.valross.constantine.RecordConstant;
 import org.valross.foundation.Loader;
 import org.valross.foundation.assembler.ClassFile;
-import org.valross.foundation.assembler.tool.*;
+import org.valross.foundation.assembler.tool.ClassFileBuilder;
+import org.valross.foundation.assembler.tool.CodeBuilder;
+import org.valross.foundation.assembler.tool.MethodBuilder;
+import org.valross.foundation.assembler.tool.MethodBuilderTest;
 import org.valross.foundation.detail.Type;
 
 import java.io.PrintStream;
@@ -15,12 +17,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
 import static org.valross.foundation.assembler.code.OpCode.*;
 import static org.valross.foundation.assembler.tool.Access.PUBLIC;
 import static org.valross.foundation.assembler.tool.Access.STATIC;
-import static org.valross.foundation.detail.Version.*;
+import static org.valross.foundation.detail.Version.JAVA_21;
 
 public class OpCodeTest extends MethodBuilderTest {
 
@@ -917,7 +922,7 @@ public class OpCodeTest extends MethodBuilderTest {
 
     @Test
     public void testGETFIELD()
-        throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         final Loader loader = Loader.createDefault();
         final Type type = Type.of("org.example", "Test");
 
@@ -1507,7 +1512,7 @@ public class OpCodeTest extends MethodBuilderTest {
 
     @Test
     public void testINSTANCEOF()
-        throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+    throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
         final Loader loader = Loader.createDefault();
         final Type type = Type.of("org.example", "Test");
 
@@ -1548,7 +1553,7 @@ public class OpCodeTest extends MethodBuilderTest {
 
     @Test
     public void testINVOKESPECIAL()
-        throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         assert this.compileForTest(this.method().returns(Object.class).code()
             .write(NEW.type(Object.class), DUP, INVOKESPECIAL.constructor(Object.class),
                 ARETURN)
@@ -2157,7 +2162,7 @@ public class OpCodeTest extends MethodBuilderTest {
 
     @Test
     public void testPUTFIELD()
-        throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+    throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
         final Loader loader = Loader.createDefault();
         final Type type = Type.of("org.example", "Test");
         final ClassFileBuilder classBuilder = new ClassFileBuilder(JAVA_21, type).addModifiers(PUBLIC);
@@ -2268,6 +2273,7 @@ public class OpCodeTest extends MethodBuilderTest {
             .equals(1);
     }
 
-    public record Thing(String name, int thing) implements RecordConstant {}
+    public record Thing(String name, int thing) implements RecordConstant {
+    }
 
 }

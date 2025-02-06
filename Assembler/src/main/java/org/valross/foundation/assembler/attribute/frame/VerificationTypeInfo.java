@@ -40,6 +40,8 @@ public interface VerificationTypeInfo extends UVec, Constant {
         if (type instanceof TypeHint.Uninitialised uninitialised)
             return new UninitializedTypeInfo(uninitialised.offset());
         else if (type.isInitialisedType() && type.isTypeKnown()) return new ObjectTypeInfo(type.asType(), storage);
+        else if (type instanceof TypeHint.Guess uninitialised)
+            return new ObjectTypeInfo(type.asType(), storage);
         throw new IllegalArgumentException("Don't know how to put " + type + " in the frame.");
     }
 

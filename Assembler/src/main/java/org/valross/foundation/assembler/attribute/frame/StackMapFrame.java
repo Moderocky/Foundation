@@ -13,6 +13,8 @@ import java.util.Arrays;
 public interface StackMapFrame extends UVec, Constant {
 
     static StackMapFrame of(ClassFileBuilder.Storage storage, int offset, Frame.Map previous, Frame.Map ours) {
+        if (offset > 63)
+            throw new Error("Branches are too far apart, abnormal usage.");
         final int stackSize = ours.stackSize();
         if (stackSize == 0) {
             if (Arrays.equals(ours.register(), previous.register())) return new SameFrame(offset);

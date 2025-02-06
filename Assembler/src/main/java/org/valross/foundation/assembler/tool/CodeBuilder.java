@@ -93,8 +93,29 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
                 this.vector.insertBefore(bound, OpCode.NOP);
 //                throw new IncompatibleBranchError("You have two branches at the same index " + vector.length());
             }
+        } else if (this.trackFrames() && sinceLastBranch() > 12) check: {
+            // Branches can't be more than 63 bytes apart because the offsets are encoded in the branch type byte
+            // for some ridiculous reason
+            // We also don't want to insert a branch between a new instance and its constructor call
+            // because we can't safely track its use
+            int uninitialised = 0;
+            for (CodeElement codeElement : vector.getLast(11)) {
+                if (codeElement.code() == Codes.NEW) uninitialised++;
+                else if (codeElement.code() == Codes.INVOKESPECIAL && uninitialised > 0) uninitialised--;
+            }
+            if (uninitialised > 0) break check;
+            return this.write(new Branch());
         }
         return this;
+    }
+
+    private int sinceLastBranch() {
+        int last = 0;
+        for (CodeElement codeElement : this.vector) {
+            if (codeElement instanceof Branch) last = 0;
+            else ++last;
+        }
+        return last;
     }
 
     public CodeBuilder write(@NotNull UnboundedElement @NotNull ... elements) {
@@ -162,10 +183,6 @@ public class CodeBuilder extends AttributableBuilder implements AttributeBuilder
             }
             this.tracker.branches.add(index, branch);
         }
-    }
-
-    private void insertBranch(Branch branch) {
-
     }
 
     @Override
