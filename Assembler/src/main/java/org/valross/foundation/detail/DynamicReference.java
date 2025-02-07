@@ -1,11 +1,11 @@
 package org.valross.foundation.detail;
 
-import org.valross.foundation.assembler.constant.MethodTypeReference;
-import org.valross.foundation.assembler.error.ConstantDeconstructionException;
 import org.jetbrains.annotations.NotNull;
 import org.valross.constantine.Array;
 import org.valross.constantine.Constant;
 import org.valross.constantine.RecordConstant;
+import org.valross.foundation.assembler.constant.MethodTypeReference;
+import org.valross.foundation.assembler.error.ConstantDeconstructionException;
 
 import java.lang.constant.Constable;
 import java.lang.constant.ConstantDesc;

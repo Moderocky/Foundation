@@ -1,7 +1,7 @@
 package org.valross.foundation.detail;
 
-import org.valross.foundation.Loader;
 import org.valross.constantine.RecordConstant;
+import org.valross.foundation.Loader;
 
 import java.io.File;
 import java.io.IOException;

@@ -23,14 +23,12 @@ public class CodeTest extends ClassFactoryTest {
 
     @Test
     public void setTest() {
-        this.test(this.methodFactory()
-                      .line(set(0, literal(1)))
-                      .line(return$(get(0, int.class))),
-                  1);
-        this.test(this.methodFactory()
-                      .line(set(0, literal(2.0)))
-                      .line(return$(get(0, double.class))),
-                  1);
+        this.test(this.methodFactory().returns(int.class)
+            .line(set(0, literal(1)))
+            .line(return$(get(0, int.class))), 1);
+        this.test(this.methodFactory().returns(double.class)
+            .line(set(0, literal(2.0)))
+            .line(return$(get(0, double.class))), 2.0);
     }
 
     @Test

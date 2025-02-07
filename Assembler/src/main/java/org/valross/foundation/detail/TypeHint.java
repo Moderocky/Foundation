@@ -1,10 +1,10 @@
 package org.valross.foundation.detail;
 
+import org.valross.constantine.RecordConstant;
 import org.valross.foundation.assembler.code.CodeElement;
 import org.valross.foundation.assembler.code.CodeVector;
 import org.valross.foundation.assembler.tool.InstructionReference;
 import org.valross.foundation.assembler.vector.UVec;
-import org.valross.constantine.RecordConstant;
 
 import java.lang.reflect.Type;
 import java.util.Objects;

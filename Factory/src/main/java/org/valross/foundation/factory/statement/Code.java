@@ -1,6 +1,5 @@
 package org.valross.foundation.factory.statement;
 
-import org.valross.foundation.assembler.code.OpCode;
 import org.valross.foundation.assembler.tool.CodePoint;
 
 import java.lang.constant.Constable;
@@ -10,8 +9,8 @@ import static org.valross.foundation.assembler.code.OpCode.*;
 
 /**
  * The set of code instructions.
- * Some instructions are {@link org.valross.foundation.factory.statement.Line}s, others are
- * {@link org.valross.foundation.factory.statement.Phrase}s.
+ * Some instructions are {@link Line}s, others are
+ * {@link Phrase}s.
  * A {@code Line} represents a complete statement of java code (e.g. {@code return 10;})
  * whereas a {@code Phrase} represents a value-providing part of that line (e.g. {@code 10}).
  */
@@ -33,23 +32,36 @@ public interface Code {
         return (Phrase<Value>) get(slot, (TypeDescriptor) type);
     }
 
-    static <Value extends Constable> Phrase<Value> literal(Value value) {
-        return LDC.value(value)::addTo;
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    static <Value extends Constable, P extends Phrase<? super Value>> P literal(Value value) {
+        return switch (value) {
+            case Integer _, Short _, Character _ -> (P) (IntPrimitivePhrase) LDC.value(value)::addTo;
+            case Double _ -> (P) (DoublePrimitivePhrase) LDC.value(value)::addTo;
+            case Float _ -> (P) (FloatPrimitivePhrase) LDC.value(value)::addTo;
+            case Long _ -> (P) (LongPrimitivePhrase) LDC.value(value)::addTo;
+            case Number _ ->  (P) (NumericPrimitivePhrase) LDC.value(value)::addTo;
+            case Boolean _ ->  (P) (PrimitivePhrase) LDC.value(value)::addTo;
+            case null -> (P) (Phrase) ACONST_NULL::addTo;
+            default -> (P) (Phrase) LDC.value(value)::addTo;
+        };
     }
 
     static Line set(int slot, Phrase<?> value) {
-        if (value instanceof PrimitivePhrase<?> phrase) return switch (phrase.descriptorString()) {
-            case "I", "Z", "C", "S", "B" -> OpCode.ISTORE.var(slot)::addTo;
-            case "F" -> OpCode.FSTORE.var(slot)::addTo;
-            case "J" -> OpCode.LSTORE.var(slot)::addTo;
-            case "D" -> OpCode.DSTORE.var(slot)::addTo;
-            default -> OpCode.ASTORE.var(slot)::addTo;
+        CodePoint store = value instanceof PrimitivePhrase<?> phrase ? switch (phrase.descriptorString()) {
+            case "I", "Z", "C", "S", "B" -> ISTORE.var(slot);
+            case "F" -> FSTORE.var(slot);
+            case "J" -> LSTORE.var(slot);
+            case "D" -> DSTORE.var(slot);
+            default -> ASTORE.var(slot);
+        } : ASTORE.var(slot);
+        return builder -> {
+            value.addTo(builder);
+            store.addTo(builder);
         };
-        return OpCode.ASTORE.var(slot)::addTo;
     }
 
     static Line return$() {
-        return OpCode.RETURN::addTo;
+        return RETURN::addTo;
     }
 
     static Line return$(Phrase<?> value) {

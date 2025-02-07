@@ -1,14 +1,14 @@
 package org.valross.foundation.assembler.constant;
 
+import org.jetbrains.annotations.NotNull;
 import org.valross.foundation.assembler.Data;
 import org.valross.foundation.assembler.tool.ClassFileBuilder;
 import org.valross.foundation.assembler.vector.UVec;
 import org.valross.foundation.detail.*;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.constant.Constable;import java.util.Objects;
+import java.lang.constant.Constable;
 
 /**
  * An entry into the constant pool, such as a primitive (number) value, a type, field or method name.

@@ -1,7 +1,6 @@
 package org.valross.foundation;
 
 import org.valross.foundation.detail.ReifiedType;
-import org.valross.foundation.detail.UnloadedClass;
 
 public interface Loader {
 
