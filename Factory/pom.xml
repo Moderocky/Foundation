@@ -16,13 +16,16 @@
         <maven.compiler.source>22</maven.compiler.source>
         <maven.compiler.target>22</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!--dependencies-->
+        <foundation-assembler.version>3.0.0</foundation-assembler.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.valross</groupId>
             <artifactId>foundation-assembler</artifactId>
-            <version>3.0.0</version>
+            <version>${foundation-assembler.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

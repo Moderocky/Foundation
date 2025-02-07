@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.valross.foundation.assembler.tool.CodeBuilder;
 import org.valross.foundation.assembler.tool.MethodBuilder;
 import org.valross.foundation.assembler.tool.MethodBuilderTest;
-import org.valross.foundation.detail.TypeHint;
 
 import java.lang.reflect.InvocationTargetException;
 

@@ -21,6 +21,11 @@
         <maven.compiler.source>22</maven.compiler.source>
         <maven.compiler.target>22</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!--dependencies-->
+        <annotations.version>23.0.0</annotations.version>
+        <junit.version>4.13.2</junit.version>
+        <constantine.version>1.0.0</constantine.version>
     </properties>
 
     <build>
@@ -55,19 +60,19 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>23.0.0</version>
+            <version>${annotations.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.2</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.valross</groupId>
             <artifactId>constantine</artifactId>
-            <version>1.0.0</version>
+            <version>${constantine.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
