@@ -10,7 +10,10 @@ import java.lang.reflect.Method;
 import static org.valross.foundation.detail.Modifier.*;
 import static org.valross.foundation.detail.Type.*;
 import static mx.kenzie.foundation.instruction.Instruction.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+
 
 public class PreMethodTest extends FoundationTest {
 
