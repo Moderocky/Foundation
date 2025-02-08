@@ -10,32 +10,49 @@ import java.lang.reflect.Method;
 import static org.valross.foundation.detail.Modifier.*;
 import static org.valross.foundation.detail.Type.*;
 import static mx.kenzie.foundation.instruction.Instruction.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+
 
 public class PreMethodTest extends FoundationTest {
 
+    /**
+     * Tests the ability to set and change the return type of a method.
+     * Verifies that the return type is correctly updated.
+     */
     @Test
-    public void testSetReturnType() {
+    public void testSetAndChangeReturnType() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, STRING, "testSetReturnType");
         method.line(RETURN.none());
         thing.add(method);
-        assert method.owner == thing;
-        assert method.returnType.toClass() == String.class;
+        assertEquals(thing, method.owner);
+        assertEquals(String.class, method.returnType.toClass());
+
         method.setReturnType(void.class);
-        assert method.returnType.toClass() == void.class;
+        assertEquals(void.class, method.returnType.toClass());
     }
 
+    /**
+     * Tests adding lines of code to a method and verifies that the method's return type is correct.
+     */
     @Test
-    public void testLine() {
+    public void testAddCodeLinesToMethod() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, STRING, "testLine");
         method.line(STORE_VAR.object(0, CONSTANT.of("hello")));
         method.line(RETURN.object(LOAD_VAR.object(0)));
         thing.add(method);
-        assert method.owner == thing;
-        assert method.returnType.toClass() == String.class;
+
+        assertEquals(thing, method.owner);
+        assertEquals(String.class, method.returnType.toClass());
     }
 
+    /**
+     * Tests calling another method within a method and verifies the result of the method call.
+     * Also checks that the method is correctly added to the class and can be invoked.
+     */
     @Test
-    public void testCallMethod() throws Throwable {
+    public void testCallAnotherMethodWithinMethod() throws Throwable {
         final PreClass blob = new PreClass("org.example", "Thing2");
         final PreMethod getter = new PreMethod(PUBLIC, STATIC, STRING, "testCallMethodGet");
         getter.line(RETURN.object(CONSTANT.of("beans")));
@@ -45,87 +62,114 @@ public class PreMethodTest extends FoundationTest {
         final CallMethod.Stub stub = METHOD.of(blob, STRING, "testCallMethodGet");
         method.line(STORE_VAR.object(0, stub.getStatic()));
         method.line(RETURN.object(LOAD_VAR.object(0)));
-        assert method.owner == blob;
-        assert method.returnType.toClass() == String.class;
+
+        assertEquals(blob, method.owner);
+        assertEquals(String.class, method.returnType.toClass());
+
         final Class<?> test = blob.load(Loader.DEFAULT);
         final Method found = test.getDeclaredMethod("testCallMethod");
         final String result = (String) found.invoke(null);
-        assert result.equals("beans");
+        assertEquals("beans", result);
         this.dump(blob);
     }
 
+    /**
+     * Tests adding modifiers to a method and verifies that the modifiers are correctly applied.
+     */
     @Test
-    public void testAddModifiers() {
+    public void testAddModifiersToMethod() {
         final PreMethod method = new PreMethod(PUBLIC, STRING, "testAddModifiers");
-        assert !java.lang.reflect.Modifier.isStatic(method.modifierCode());
+        assertFalse(java.lang.reflect.Modifier.isStatic(method.modifierCode()));
         method.addModifiers(STATIC);
-        assert java.lang.reflect.Modifier.isPublic(method.modifierCode());
-        assert java.lang.reflect.Modifier.isStatic(method.modifierCode());
+        assertTrue(java.lang.reflect.Modifier.isPublic(method.modifierCode()));
+        assertTrue(java.lang.reflect.Modifier.isStatic(method.modifierCode()));
     }
 
+    /**
+     * Tests removing modifiers from a method and verifies that the modifiers are correctly removed.
+     * Also tests adding a new modifier and verifies its application.
+     */
     @Test
-    public void testRemoveModifiers() {
+    public void testRemoveAndAddModifiersToMethod() {
         final PreMethod method = new PreMethod(PUBLIC, STATIC, STRING, "testRemoveModifiers");
-        assert java.lang.reflect.Modifier.isPublic(method.modifierCode());
-        assert java.lang.reflect.Modifier.isStatic(method.modifierCode());
+        assertTrue(java.lang.reflect.Modifier.isPublic(method.modifierCode()));
+        assertTrue(java.lang.reflect.Modifier.isStatic(method.modifierCode()));
         method.removeModifiers(STATIC);
-        assert !java.lang.reflect.Modifier.isStatic(method.modifierCode());
+        assertFalse(java.lang.reflect.Modifier.isStatic(method.modifierCode()));
+
         method.addModifiers(ABSTRACT);
-        assert java.lang.reflect.Modifier.isPublic(method.modifierCode());
-        assert java.lang.reflect.Modifier.isAbstract(method.modifierCode());
+        assertTrue(java.lang.reflect.Modifier.isPublic(method.modifierCode()));
+        assertTrue(java.lang.reflect.Modifier.isAbstract(method.modifierCode()));
     }
 
+    /**
+     * Tests checking if a method has specific modifiers and verifies the results.
+     */
     @Test
-    public void testHasModifier() {
+    public void testCheckMethodModifiers() {
         final PreMethod method = new PreMethod(PRIVATE, STATIC, STRING, "testHasModifier");
-        assert !java.lang.reflect.Modifier.isPublic(method.modifierCode());
-        assert java.lang.reflect.Modifier.isPrivate(method.modifierCode());
-        assert java.lang.reflect.Modifier.isStatic(method.modifierCode());
-        assert method.hasModifier(PRIVATE);
-        assert method.hasModifier(STATIC);
-        assert !method.hasModifier(PUBLIC);
-        assert !method.hasModifier(ABSTRACT);
+        assertFalse(java.lang.reflect.Modifier.isPublic(method.modifierCode()));
+        assertTrue(java.lang.reflect.Modifier.isPrivate(method.modifierCode()));
+        assertTrue(java.lang.reflect.Modifier.isStatic(method.modifierCode()));
+        assertTrue(method.hasModifier(PRIVATE));
+        assertTrue(method.hasModifier(STATIC));
+        assertFalse(method.hasModifier(PUBLIC));
+        assertFalse(method.hasModifier(ABSTRACT));
     }
 
+    /**
+     * Tests adding parameters to a method and verifies that the parameters are correctly added.
+     */
     @Test
-    public void testAddParameters() {
+    public void testAddParametersToMethod() {
         final PreMethod method = new PreMethod("testAddParameters");
-        assert method.getParameters().length == 0;
+        assertEquals(0, method.getParameters().length);
+
         method.addParameters(STRING, BOOLEAN);
-        assert method.getParameters().length == 2;
-        assert method.getParameters()[1] == BOOLEAN;
+        assertEquals(2, method.getParameters().length);
+        assertEquals(BOOLEAN, method.getParameters()[1]);
     }
 
+    /**
+     * Tests removing specific parameters from a method and verifies that the parameters are correctly removed.
+     */
     @Test
-    public void testRemoveParameters() {
+    public void testRemoveSpecificParametersFromMethod() {
         final PreMethod method = new PreMethod("testRemoveParameters", INT, LONG, INT);
-        assert method.getParameters().length == 3;
+        assertEquals(3, method.getParameters().length);
+
         method.removeParameters(INT);
         final Type[] types = method.getParameters();
-        assert types.length == 2;
-        assert types[0] == LONG;
-        assert types[1] == INT;
+        assertEquals(2, types.length);
+        assertEquals(LONG, types[0]);
+        assertEquals(INT, types[1]);
     }
 
+    /**
+     * Tests removing a parameter at a specific index from a method and verifies that the parameter is correctly removed.
+     */
     @Test
-    public void testRemoveParameter() {
+    public void testRemoveParameterAtIndexFromMethod() {
         final PreMethod method = new PreMethod("testRemoveParameter", INT, LONG, INT);
-        assert method.getParameters().length == 3;
+        assertEquals(3, method.getParameters().length);
+
         method.removeParameter(1);
         final Type[] types = method.getParameters();
-        assert types.length == 2;
-        assert types[0] == INT;
-        assert types[1] == INT;
+        assertEquals(2, types.length);
+        assertEquals(INT, types[0]);
+        assertEquals(INT, types[1]);
     }
 
+    /**
+     * Tests retrieving the parameters of a method and verifies that the parameters are correctly returned.
+     */
     @Test
-    public void testGetParameters() {
+    public void testRetrieveMethodParameters() {
         final PreMethod method = new PreMethod("testGetParameters", INT, LONG, INT);
         final Type[] types = method.getParameters();
-        assert types.length == 3;
-        assert types[0] == INT;
-        assert types[1] == LONG;
-        assert types[2] == INT;
+        assertEquals(3, types.length);
+        assertEquals(INT, types[0]);
+        assertEquals(LONG, types[1]);
+        assertEquals(INT, types[2]);
     }
-
 }
