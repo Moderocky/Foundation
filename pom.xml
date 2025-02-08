@@ -25,7 +25,7 @@
         <!--dependencies-->
         <annotations.version>23.0.0</annotations.version>
         <junit.version>4.13.2</junit.version>
-        <constantine.vaersiov>1.0.0</constantine.vaersiov>
+        <constantine.version>1.0.0</constantine.version>
     </properties>
 
     <build>
@@ -72,7 +72,7 @@
         <dependency>
             <groupId>org.valross</groupId>
             <artifactId>constantine</artifactId>
-            <version>${constantine.vaersiov}</version>
+            <version>${constantine.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
