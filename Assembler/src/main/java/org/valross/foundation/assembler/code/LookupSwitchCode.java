@@ -62,7 +62,11 @@ public record LookupSwitchCode(String mnemonic, byte code) implements RecordCons
         }
 
         private int padding() {
-            if (reference != null) return 4 - ((1 + reference.index()) % 4);
+            if (reference != null) {
+                int offset = (1 + reference.index()) % 4;
+                if (offset == 0) return 0;
+                return 4 - offset;
+            }
             return 0;
         }
 
@@ -77,6 +81,12 @@ public record LookupSwitchCode(String mnemonic, byte code) implements RecordCons
             if (builder.trackStack()) {
                 final TypeHint key = builder.stack().pop();
                 assert key.equals(Type.INT) : "Expected lookup switch key to be an int, found a " + key;
+                for (Case aCase : cases) {
+                    aCase.branch.checkFrame(builder.stack(), builder.register());
+                }
+                this.defaultCase.checkFrame(builder.stack(), builder.register());
+                builder.stack().reframe();
+                builder.register().reframe();
             }
             CodeElement.super.notify(builder);
         }

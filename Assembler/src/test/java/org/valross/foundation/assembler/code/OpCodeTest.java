@@ -1940,6 +1940,17 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     @Test
+    public void testLOOKUPSWITCH_withArguments() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        final Constable test = "hello";
+        final Branch end = new Branch(), def = new Branch(), c1 = new Branch();
+        assert this.compileForTest(this.method().returns(Object.class).code()
+            .write(LDC.value(test))
+            .write(ICONST_3, LOOKUPSWITCH.test(def).test(3, c1),
+                c1, NOP, GOTO.jump(end), def, POP, ACONST_NULL, end, ARETURN)
+            .exit()).invoke(null).equals(test);
+    }
+
+    @Test
     public void testLOR() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         final Random random = new Random();
         for (int i = 0; i < 100; i++) {
@@ -2274,6 +2285,7 @@ public class OpCodeTest extends MethodBuilderTest {
     }
 
     public record Thing(String name, int thing) implements RecordConstant {
+
     }
 
 }
