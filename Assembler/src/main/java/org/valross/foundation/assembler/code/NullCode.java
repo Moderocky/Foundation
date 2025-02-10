@@ -25,4 +25,9 @@ public record NullCode(TypeHint hint) implements RecordConstant, SingleInstructi
         return new NullCode(hint);
     }
 
+    @Override
+    public String toString() {
+        return this.mnemonic().toLowerCase() + "/" + Byte.toUnsignedInt(this.code());
+    }
+
 }

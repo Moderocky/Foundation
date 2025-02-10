@@ -160,11 +160,15 @@ public record LookupSwitchCode(String mnemonic, byte code) implements RecordCons
 
     public class Builder implements UnboundedElement {
 
-        final Branch defaultCase;
+        Branch defaultCase;
         final List<Match> matches;
 
         public Builder(Branch defaultCase) {
             this.defaultCase = defaultCase;
+            this.matches = new ArrayList<>(8);
+        }
+
+        public Builder() {
             this.matches = new ArrayList<>(8);
         }
 
@@ -175,6 +179,11 @@ public record LookupSwitchCode(String mnemonic, byte code) implements RecordCons
 
         public Builder test(Match match) {
             this.matches.add(match);
+            return this;
+        }
+
+        public Builder defaultCase(Branch defaultCase) {
+            this.defaultCase = defaultCase;
             return this;
         }
 
