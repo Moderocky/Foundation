@@ -140,6 +140,11 @@ public interface CodeElement extends Data, UVec, UnboundedElement {
                 return element.constant();
             }
 
+            @Override
+            public String toString() {
+                return element.toString();
+            }
+
         }
         //</editor-fold>
         return new WrapperElement(element, increment);
@@ -169,6 +174,11 @@ public interface CodeElement extends Data, UVec, UnboundedElement {
             @Override
             public byte[] binary() {
                 return element.binary();
+            }
+
+            @Override
+            public String toString() {
+                return element.toString();
             }
 
         }

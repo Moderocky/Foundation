@@ -11,6 +11,7 @@ import org.valross.foundation.detail.TypeHint;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.invoke.TypeDescriptor;
+import java.util.Arrays;
 
 import static org.valross.foundation.assembler.constant.ConstantPoolInfo.INTERFACE_METHOD_REFERENCE;
 
@@ -64,6 +65,7 @@ public record InvokeCode(String mnemonic, byte code) implements OpCode, Abstract
     private record Invocation(byte code, Member member, PoolReference reference, int width)
         implements CodeElement, RecordConstant {
 
+
         @Override
         public int length() {
             return 3;
@@ -93,6 +95,15 @@ public record InvokeCode(String mnemonic, byte code) implements OpCode, Abstract
                     stack.pop();
             }
             if (member.returnType().width() > 0) stack.push(member.returnType());
+        }
+
+        @Override
+        public String toString() {
+            return OpCode.getCode(Byte.toUnsignedInt(code)).mnemonic().toLowerCase() + "/" + Byte.toUnsignedInt(code)
+                + ": " + member.owner().getSimpleName() + "." + member.name()
+                + '('
+                + (String.join(", ", Arrays.stream(member.parameters()).map(Type::getSimpleName).toList()))
+                + ')';
         }
 
     }

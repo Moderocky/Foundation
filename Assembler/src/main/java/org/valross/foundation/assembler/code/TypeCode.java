@@ -40,7 +40,7 @@ public class TypeCode implements OpCode {
         return switch (code) {
             case Codes.NEW -> storage -> new New(value, storage.constant(ConstantPoolInfo.TYPE, value));
             default -> storage -> CodeElement.notify(new Typed(code, storage.constant(ConstantPoolInfo.TYPE, value)),
-                                                     builder -> notifier.accept(value, builder.stack()));
+                builder -> notifier.accept(value, builder.stack()));
         };
     }
 
@@ -92,6 +92,12 @@ public class TypeCode implements OpCode {
             this.reference.write(stream);
         }
 
+        @Override
+        public String toString() {
+            return OpCode.getCode(Byte.toUnsignedInt(code)).mnemonic().toLowerCase() + "/" + Byte.toUnsignedInt(code)
+                + ": " + ((Type) reference.get().unpack()).getSimpleName();
+        }
+
     }
 
     public record New(Type value, PoolReference reference) implements CodeElement, RecordConstant {
@@ -117,6 +123,12 @@ public class TypeCode implements OpCode {
         @Override
         public int length() {
             return 3;
+        }
+
+        @Override
+        public String toString() {
+            return OpCode.getCode(Byte.toUnsignedInt(this.code())).mnemonic().toLowerCase()
+                + "/" + Byte.toUnsignedInt(this.code()) + ": " + ((Type) reference.get().unpack()).getSimpleName();
         }
 
     }
@@ -150,8 +162,8 @@ public class TypeCode implements OpCode {
                 case "J" -> this.primitive(11, Type.of(long[].class));
                 default ->
                     storage -> CodeElement.notify(new Typed(Codes.ANEWARRAY, storage.constant(ConstantPoolInfo.TYPE,
-                                                                                              value)),
-                                                  StackNotifier.pop1push(value.arrayType()));
+                            value)),
+                        StackNotifier.pop1push(value.arrayType()));
             };
         }
 
@@ -221,8 +233,8 @@ public class TypeCode implements OpCode {
                         builder.stack().pop(MultiNewArray.this.dimensions);
                     } catch (ArrayIndexOutOfBoundsException ex) {
                         throw new IndexOutOfBoundsException("Tried to pop " + MultiNewArray.this.dimensions
-                                                                + " integers for multi-array creation, but the stack " +
-                                                                "under-flowed.");
+                            + " integers for multi-array creation, but the stack " +
+                            "under-flowed.");
                     }
                     builder.stack().push(type);
                 }

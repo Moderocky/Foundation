@@ -68,6 +68,13 @@ public record JumpCode(String mnemonic, byte code, Consumer<CodeBuilder> notifie
             public byte code() {
                 return code;
             }
+
+            @Override
+            public String toString() {
+                return OpCode.getCode(Byte.toUnsignedInt(code)).mnemonic().toLowerCase() + "/" + Byte.toUnsignedInt(code)
+                    + " -> " + branch.expectedIndex();
+            }
+
         };
     }
 

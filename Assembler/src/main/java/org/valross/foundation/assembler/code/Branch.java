@@ -93,6 +93,10 @@ public class Branch implements CodeElement {
         return handle;
     }
 
+    public int expectedIndex() {
+        return handle.index();
+    }
+
     protected UVec getJump(CodeElement source) {
         final int target = this.getHandle().index();
         int index = 0;
