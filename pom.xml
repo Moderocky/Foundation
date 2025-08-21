@@ -12,14 +12,14 @@
         <module>Legacy</module>
         <module>Factory</module>
     </modules>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
     <name>Foundation</name>
     <description>A virtual machine code compiler library and class file assembler.</description>
     <url>https://github.com/Moderocky/Foundation</url>
 
     <properties>
-        <maven.compiler.source>22</maven.compiler.source>
-        <maven.compiler.target>22</maven.compiler.target>
+        <maven.compiler.source>23</maven.compiler.source>
+        <maven.compiler.target>23</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!--dependencies-->
@@ -35,8 +35,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>22</source>
-                    <target>22</target>
+                    <source>23</source>
+                    <target>23</target>
                 </configuration>
             </plugin>
         </plugins>

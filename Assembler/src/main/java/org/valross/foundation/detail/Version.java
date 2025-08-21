@@ -8,7 +8,9 @@ public interface Version {
         JAVA_14 = 58,
         JAVA_17 = 61,
         JAVA_21 = 65,
-        JAVA_22 = 66;
+        JAVA_22 = 66,
+        JAVA_23 = 67,
+        JAVA_24 = 68;
 
     int PREVIEW = 65565, RELEASE = 0;
 
