@@ -16,10 +16,7 @@ import java.lang.constant.*;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.TypeDescriptor;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
 import static org.valross.foundation.assembler.constant.ConstantPoolInfo.*;
@@ -167,16 +164,30 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive, 
         return builder;
     }
 
+    public <Klass extends java.lang.reflect.Type & TypeDescriptor> FieldBuilder field(Klass type, String name) {
+        return this.field().signature(new Signature(type, name));
+    }
+
     public MethodBuilder method() {
         final MethodBuilder builder = new MethodBuilder(this.helper());
         this.methods.add(builder);
         return builder;
     }
 
+    @SafeVarargs
+    public final <Klass extends java.lang.reflect.Type & TypeDescriptor> MethodBuilder method(Klass returnType, String name, Klass... parameters) {
+        return this.method().signature(new Signature(returnType, name, parameters));
+    }
+
     public MethodBuilder constructor() {
         final MethodBuilder builder = new MethodBuilder(this.helper());
         this.methods.add(builder);
         return builder.named("<init>");
+    }
+
+    @SafeVarargs
+    public final <Klass extends java.lang.reflect.Type & TypeDescriptor> MethodBuilder constructor(Klass... parameters) {
+        return this.method().signature(new Signature(Type.VOID, "<init>", parameters));
     }
 
     @Override
@@ -240,6 +251,8 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive, 
 
     public class Storage {
 
+        protected transient Map<Constable, PoolReference> cachedValues = new HashMap<>();
+
         public ClassFileBuilder source() {
             return ClassFileBuilder.this;
         }
@@ -255,9 +268,16 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive, 
             };
         }
 
+        protected PoolReference cache(Constable value, PoolReference reference) {
+            this.cachedValues.put(value, reference);
+            return reference;
+        }
+
         public PoolReference constant(Constable constable) {
             if (constable == null) return PoolReference.ZERO;
-            return switch (constable) {
+            PoolReference found = cachedValues.get(constable);
+            if (found != null) return found;
+            return this.cache(constable, switch (constable) {
                 case PoolReference reference -> reference;
                 case Long j -> this.constant(LONG, j);
                 case Double d -> this.constant(DOUBLE, d);
@@ -277,7 +297,7 @@ public class ClassFileBuilder extends ModifiableBuilder implements Constantive, 
                 case Descriptor value -> this.constant(METHOD_TYPE, value);
                 case Constantive constant -> this.constant(DYNAMIC, DynamicReference.of(constant.constant()));
                 default -> throw new IllegalArgumentException("Unhandled constant value: " + constable);
-            };
+            });
         }
 
         public <Value extends Constable> PoolReference constant(ConstantType<?, Value> type, Value value) {
