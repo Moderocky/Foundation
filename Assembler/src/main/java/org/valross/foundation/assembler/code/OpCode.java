@@ -353,7 +353,7 @@ public interface OpCode {
     FieldCode PUTFIELD = new FieldCode("PUTFIELD", Codes.PUTFIELD);
     FieldCode PUTSTATIC = new FieldCode("PUTSTATIC", Codes.PUTSTATIC);
     VariableCode RET = new VariableCode("RET", Codes.RET) {};
-    Instruction RETURN = new Instruction("RETURN", Codes.RETURN, (stack, _) -> stack.reframe());
+    ReturnCode RETURN = new ReturnCode("RETURN", Codes.RETURN, (stack, _) -> stack.reframe());
     Instruction SALOAD = new Instruction("SALOAD", Codes.SALOAD, StackNotifier.pop2push(Type.INT));
     Instruction SASTORE = new Instruction("SASTORE", Codes.SASTORE, StackNotifier.pop(3));
     PushCode SIPUSH = new PushCode("SIPUSH", Codes.SIPUSH);
