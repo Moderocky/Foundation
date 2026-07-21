@@ -236,11 +236,33 @@ public class OpCodeTest extends MethodBuilderTest {
         assert method.invoke(null).equals("test");
     }
 
-    @Test(expected = Error.class)
+    public static class TestError extends Error {
+        public TestError() {
+            super();
+        }
+
+        public TestError(String message) {
+            super(message);
+        }
+    }
+
+    @Test(expected = TestError.class)
     public void testATHROW() throws Throwable {
         final MethodBuilder builder = this.method();
-        builder.code().write(NEW.type(Error.class), DUP, INVOKESPECIAL.constructor(Error.class));
+        builder.code().write(NEW.type(TestError.class), DUP, INVOKESPECIAL.constructor(TestError.class));
         builder.code().write(ATHROW);
+        final Method method = this.compileForTest(builder);
+        try {
+            method.invoke(null);
+        } catch (InvocationTargetException ex) {
+            throw ex.getCause();
+        }
+    }
+
+    @Test(expected = TestError.class)
+    public void testATHROW_withMessage() throws Throwable {
+        final MethodBuilder builder = this.method();
+        builder.code().write(NEW.type(TestError.class), DUP, LDC.value("test"), INVOKESPECIAL.constructor(TestError.class, String.class), ATHROW);
         final Method method = this.compileForTest(builder);
         try {
             method.invoke(null);

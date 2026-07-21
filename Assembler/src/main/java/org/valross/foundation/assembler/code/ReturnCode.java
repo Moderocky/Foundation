@@ -28,6 +28,7 @@ public record ReturnCode(String mnemonic, byte code, Consumer<CodeBuilder> notif
     public CodeElement type(Class<?> type) {
         if (type == void.class) return RETURN;
         if (type == int.class) return IRETURN;
+        if (type == char.class) return IRETURN;
         if (type == boolean.class) return IRETURN;
         if (type == byte.class) return IRETURN;
         if (type == short.class) return IRETURN;

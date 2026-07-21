@@ -27,6 +27,26 @@ public record LoadConstantCode(String mnemonic, byte code) implements OpCode {
     }
 
     public UnboundedElement value(Constable value) {
+        if (value instanceof Class) {
+            if (value == byte.class)
+                return GETSTATIC.field(Byte.class, "TYPE", Class.class);
+            if (value == boolean.class)
+                return GETSTATIC.field(Boolean.class, "TYPE", Class.class);
+            if (value == char.class)
+                return GETSTATIC.field(Character.class, "TYPE", Class.class);
+            if (value == short.class)
+                return GETSTATIC.field(Short.class, "TYPE", Class.class);
+            if (value == int.class)
+                return GETSTATIC.field(Integer.class, "TYPE", Class.class);
+            if (value == long.class)
+                return GETSTATIC.field(Long.class, "TYPE", Class.class);
+            if (value == float.class)
+                return GETSTATIC.field(Float.class, "TYPE", Class.class);
+            if (value == double.class)
+                return GETSTATIC.field(Double.class, "TYPE", Class.class);
+            if (value == void.class)
+                return GETSTATIC.field(Void.class, "TYPE", Class.class);
+        }
         return switch (value) {
             case null -> ACONST_NULL;
             case Long j -> storage -> new WideType(Type.LONG, storage.constant(ConstantPoolInfo.LONG, j));
